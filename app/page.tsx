@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SignupForm from "./ui/signup-form";
+import SignupForm from "./ui/auth-form";
 
 export default function Home() {
   return (

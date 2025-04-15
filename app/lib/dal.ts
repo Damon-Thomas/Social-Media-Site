@@ -1,17 +1,22 @@
 import "server-only";
-import { prisma } from "@/app/lib/prisma";
+import prisma from "@/app/lib/prisma";
 import { cookies } from "next/headers";
 import { decrypt } from "@/app/lib/session";
+import { cache } from "react";
 
 export const verifySession = cache(async () => {
-  const cookie = (await cookies()).get("session")?.value;
-  const session = await decrypt(cookie);
+  try {
+    const cookie = (await cookies()).get("session")?.value;
+    if (!cookie) return null;
 
-  if (!session?.userId) {
-    redirect("/login");
+    const session = await decrypt(cookie);
+    if (!session?.userId) return null;
+
+    return { isAuth: true, userId: session.userId };
+  } catch (error) {
+    console.error("Failed to verify session:", error);
+    return null;
   }
-
-  return { isAuth: true, userId: session.userId };
 });
 
 export const getUser = cache(async () => {
@@ -19,9 +24,9 @@ export const getUser = cache(async () => {
   if (!session) return null;
 
   try {
-    const data = await prisma.users.findMany({
+    const data = await prisma.user.findUnique({
       where: {
-        id: session.userId,
+        id: session.userId.toString(),
       },
       select: {
         id: true,
@@ -32,11 +37,11 @@ export const getUser = cache(async () => {
       },
     });
 
-    const user = data[0];
+    const user = data;
 
     return user;
   } catch (error) {
-    console.log("Failed to fetch user");
+    console.log("Failed to fetch user", error);
     return null;
   }
 });

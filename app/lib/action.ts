@@ -1,14 +1,32 @@
 "use server";
 import { verifySession } from "@/app/lib/dal";
+import { signIn } from "next-auth/react";
+import { AuthError } from "next-auth";
 
 export async function serverAction(formData: FormData) {
   const session = await verifySession();
-  const userRole = session?.user?.role;
+  console.log("session", session, formData);
+}
 
-  // Return early if user is not authorized to perform the action
-  if (userRole !== "admin") {
-    return null;
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    const formDataObject: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      formDataObject[key] = value.toString();
+    });
+    await signIn("credentials", formDataObject);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid credentials.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
   }
-
-  // Proceed with the action for authorized users
 }

@@ -3,6 +3,7 @@ import { verifySession } from "@/app/lib/dal";
 
 const protectedRoutes = ["/dashboard"];
 const publicRoutes = ["/login"];
+const homeRoute = "/";
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -17,6 +18,15 @@ export default async function middleware(req: NextRequest) {
 
   if (isPublicRoute && session) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  }
+
+  if (path === homeRoute && session) {
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  }
+
+  // Ensure session is passed to the request headers for server-side rendering
+  if (session) {
+    req.headers.set("x-session", JSON.stringify(session));
   }
 
   return NextResponse.next();

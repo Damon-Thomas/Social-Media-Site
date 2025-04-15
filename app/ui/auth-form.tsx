@@ -1,7 +1,8 @@
 "use client";
 
-import { formAuth } from "@/app/actions/auth";
+// import { formAuth } from "@/app/actions/auth";
 import { useActionState, useState } from "react";
+import { authenticate } from "../lib/action";
 
 // type AuthErrors = {
 //   longin?: string[];
@@ -12,13 +13,13 @@ import { useActionState, useState } from "react";
 // };
 
 export default function AuthForm() {
-  const [state, action, pending] = useActionState(formAuth, undefined);
+  const [state, action, pending] = useActionState(authenticate, undefined);
   const [login, setLogin] = useState(true);
 
   return (
     <form action={action}>
       <input type="hidden" name="login" value={login ? "true" : "false"} />
-      {login && (
+      {!login && (
         <>
           <div>
             <label htmlFor="name">Name</label>

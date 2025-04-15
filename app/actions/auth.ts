@@ -31,10 +31,6 @@ export async function formAuth(state: FormState, formData?: FormData) {
   const { login, name, email, password } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const userCheck = await prisma.user.findUnique({
-    where: { email },
-  });
-
   if (login === "true") {
     if (!userCheck) {
       return {

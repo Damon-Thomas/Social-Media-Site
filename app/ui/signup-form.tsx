@@ -26,7 +26,6 @@ export default function SignupForm() {
       </div>
       {state?.errors?.password && (
         <div>
-          <p>Password must:</p>
           <ul>
             {state.errors.password.map((error) => (
               <li key={error}>- {error}</li>

@@ -4,7 +4,7 @@ import { z } from "zod";
 import prisma from "./prisma";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
-import { createSession } from "@/app/lib/session";
+import { createSession } from "@/app/lib/session.server";
 // import { AuthError } from "next-auth";
 
 // interface FormSchemaType {

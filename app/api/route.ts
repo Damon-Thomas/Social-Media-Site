@@ -1,4 +1,6 @@
 import { verifySession } from "@/app/lib/dal";
+import { deleteSession } from "@/app/lib/session.server";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   // User authentication and role verification
@@ -10,11 +12,18 @@ export async function GET() {
     return new Response(null, { status: 401 });
   }
 
-  // Check if the user has the 'admin' role
-  if (session.user.role !== "admin") {
-    // User is authenticated but does not have the right permissions
-    return new Response(null, { status: 403 });
-  }
-
   // Continue for authorized users
+}
+
+export async function POST() {
+  try {
+    await deleteSession();
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete session:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to delete session." },
+      { status: 500 }
+    );
+  }
 }

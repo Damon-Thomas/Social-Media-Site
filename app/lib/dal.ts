@@ -1,7 +1,7 @@
 import "server-only";
 import prisma from "@/app/lib/prisma";
 import { cookies } from "next/headers";
-import { decrypt } from "@/app/lib/session";
+import { decrypt } from "@/app/lib/session.server";
 import { cache } from "react";
 
 export const verifySession = cache(async () => {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/app/lib/dal";
 
 const protectedRoutes = ["/dashboard"];
-const publicRoutes = ["/login"];
+const publicRoutes = ["/"];
 const homeRoute = "/";
 
 export default async function middleware(req: NextRequest) {
@@ -13,7 +13,7 @@ export default async function middleware(req: NextRequest) {
   const session = await verifySession();
 
   if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+    return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   if (isPublicRoute && session) {

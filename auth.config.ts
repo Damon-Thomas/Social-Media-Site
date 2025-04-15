@@ -5,7 +5,7 @@ import prisma from "@/app/lib/prisma";
 
 export const authConfig = {
   pages: {
-    signIn: "/login",
+    signIn: "/",
   },
   callbacks: {
     authorized({

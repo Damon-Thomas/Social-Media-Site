@@ -1,7 +1,19 @@
 "use server";
 import { verifySession } from "@/app/lib/dal";
 import { z } from "zod";
+import prisma from "./prisma";
+import { redirect } from "next/navigation";
+import bcrypt from "bcryptjs";
+import { createSession } from "@/app/lib/session";
 // import { AuthError } from "next-auth";
+
+// interface FormSchemaType {
+//   login: string;
+//   name?: string;
+//   email: string;
+//   password: string;
+//   confirmpassword?: string;
+// }
 
 const FormSchema = z
   .object({
@@ -10,31 +22,29 @@ const FormSchema = z
     }),
     name: z
       .string()
-      .min(2, { message: "Name must be at least 2 characters long." })
-      .trim()
-      .optional()
-      .default(""),
-    email: z.string().email({ message: "Please enter a valid email." }).trim(),
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters long" })
-      .trim(),
-    confirmpassword: z.string().trim().optional().default(""),
+      .min(2, "Name must be at least 2 characters long.")
+      .optional(),
+    email: z.string().email("Invalid email address."),
+    password: z.string().min(6, "Password must be at least 6 characters long."),
+    confirmpassword: z.string().optional(),
   })
-  .refine(
-    (data) => data.login === "true" || (data.login === "false" && data.name),
-    {
-      message: "Name is required for signup.",
-      path: ["name"],
+  .superRefine((data, ctx) => {
+    if (data.login === "false" && !data.name) {
+      ctx.addIssue({
+        path: ["name"],
+        message: "Name is required for signup.",
+        code: "custom",
+      });
     }
-  )
-  .refine(
-    (data) => data.login === "true" || data.confirmpassword === data.password,
-    {
-      message: "Passwords do not match.",
-      path: ["confirmpassword"],
+
+    if (data.login === "false" && data.confirmpassword !== data.password) {
+      ctx.addIssue({
+        path: ["confirmpassword"],
+        message: "Passwords do not match.",
+        code: "custom",
+      });
     }
-  );
+  });
 
 export type State = {
   errors?: {
@@ -52,11 +62,25 @@ export async function serverAction(formData: FormData) {
   console.log("session", session, formData);
 }
 
-export async function authenticate(prevState: State, formData: FormData) {
-  // Preprocess FormData to replace null values with empty strings
+export async function authenticate(
+  state:
+    | {
+        errors?: {
+          login?: string;
+          name?: string;
+          email?: string;
+          password?: string;
+          confirmpassword?: string;
+        };
+        message?: string;
+      }
+    | undefined,
+  payload: FormData
+) {
+  // Preprocess FormData to replace null or missing values with empty strings
   const processedData: Record<string, string> = {};
-  formData.forEach((value, key) => {
-    processedData[key] = value === null ? "" : value.toString();
+  payload.forEach((value, key) => {
+    processedData[key] = value ? value.toString() : "";
   });
 
   const validatedFields = FormSchema.safeParse({
@@ -69,50 +93,71 @@ export async function authenticate(prevState: State, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Authenticate.",
+      errors: {
+        login: validatedFields.error.flatten().fieldErrors.login?.[0] || "",
+        name: validatedFields.error.flatten().fieldErrors.name?.[0] || "",
+        email: validatedFields.error.flatten().fieldErrors.email?.[0] || "",
+        password:
+          validatedFields.error.flatten().fieldErrors.password?.[0] || "",
+        confirmpassword:
+          validatedFields.error.flatten().fieldErrors.confirmpassword?.[0] ||
+          "",
+      },
+      message: "Validation failed. Please check your input.",
     };
   }
 
-  console.log("formData", formData);
-  try {
-    const formDataObject: Record<string, string> = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value.toString();
-    });
+  const { login, name, email, password } = validatedFields.data;
 
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/auth/callback/credentials`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams(formDataObject),
-    });
-    console.log("response", response);
-    if (response.status === 404) {
+  if (login === "false") {
+    if (!name || name.length < 2) {
       return {
-        success: false,
-        errors: { message: "Endpoint not found." },
-      };
-    }
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.log("errorData", errorData);
-      return {
-        success: false,
-        errors: { message: errorData.message || "Authentication failed." },
+        errors: { name: "Name must be at least 2 characters long." },
+        message: "Validation failed. Please check your input.",
       };
     }
 
-    const result = await response.json();
-    console.log("result", result);
-    return { success: true, data: result };
-  } catch (error) {
-    console.log("Error during authentication:", error);
-    return {
-      success: false,
-      errors: { message: error || "An unexpected error occurred." },
-    };
+    const userExists = await prisma.user.findUnique({ where: { email } });
+    if (userExists) {
+      return {
+        errors: { email: "Email already exists." },
+        message: "Validation failed. Please check your input.",
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.user.create({
+      data: { name, email, password: hashedPassword },
+    });
+
+    if (!newUser) {
+      return {
+        errors: { message: "Failed to create account." },
+        message: "Validation failed. Please check your input.",
+      };
+    }
+
+    await createSession(newUser.id);
+    redirect("/dashboard");
+  } else {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return {
+        errors: { email: "Email not found." },
+        message: "Validation failed. Please check your input.",
+      };
+    }
+
+    const isPasswordValid =
+      user.password && (await bcrypt.compare(password, user.password));
+    if (!isPasswordValid) {
+      return {
+        errors: { password: "Invalid password." },
+        message: "Validation failed. Please check your input.",
+      };
+    }
+
+    await createSession(user.id);
+    redirect("/dashboard");
   }
 }

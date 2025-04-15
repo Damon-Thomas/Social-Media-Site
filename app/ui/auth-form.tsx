@@ -39,7 +39,8 @@ export default function AuthForm() {
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" />
       </div>
-      {state?.errors?.password && (
+      {state?.errors?.password && <p>{state.errors.password}</p>}
+      {/* {state?.errors?.password && (
         <div>
           <ul>
             {state.errors.password.map((error) => (
@@ -47,7 +48,7 @@ export default function AuthForm() {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
       {!login && (
         <>
           <div>

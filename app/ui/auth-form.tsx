@@ -6,6 +6,9 @@ import { authenticate } from "../lib/action";
 import InputWrapper from "./form/InputWrapper";
 import Input from "./form/Input";
 import ErrorMessage from "./form/ErrorMessage";
+import Google from "next-auth/providers/google";
+import GoogleButton from "./form/GoogleButton";
+import GithubButton from "./form/GithubButton";
 
 // type AuthErrors = {
 //   longin?: string[];
@@ -30,21 +33,35 @@ export default function AuthForm() {
         <h2 className="text-lg font-semibold md:text-xl text-white">{`Welcome to Zuno, ${
           login ? "login" : "register"
         } with`}</h2>
+        <div className="flex justify-around py-2 gap-6">
+          <GoogleButton />
+          <GithubButton />
+        </div>
         <div className="flex items-center text-[var(--light-grey)]">
           <div className="h-[1px] bg-[var(--light-grey)] grow "></div>
           <p className="w-fit px-2">Or continue with email</p>
           <div className="h-[1px] bg-[var(--light-grey)] grow "></div>
         </div>
-        <div className="flex flex-col my-4">
+        <div className="flex flex-col my-2">
           <input type="hidden" name="login" value={login ? "true" : "false"} />
           {!login && (
             <InputWrapper>
-              <Input type="text" label="Name" id="name" />
+              <Input
+                type="text"
+                label="Name"
+                id="name"
+                placeholder="Your Name"
+              />
               <ErrorMessage>{state?.errors?.name || ""}</ErrorMessage>
             </InputWrapper>
           )}
           <InputWrapper>
-            <Input type="text" label="Email" id="email" />
+            <Input
+              type="text"
+              label="Email"
+              id="email"
+              placeholder="hello@zuno.dev"
+            />
             <ErrorMessage>{state?.errors?.email}</ErrorMessage>
           </InputWrapper>
           <InputWrapper>
@@ -52,7 +69,7 @@ export default function AuthForm() {
               label="Password"
               type="password"
               id="password"
-              placeholder="Password"
+              placeholder="Your Password"
             />
             <ErrorMessage>{state?.errors?.password || ""}</ErrorMessage>
           </InputWrapper>
@@ -70,15 +87,27 @@ export default function AuthForm() {
             </InputWrapper>
           )}
         </div>
-        <div className="flex flex-wrap gap-4 justify-baseline">
+        <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline">
           <button
             className="w-fit"
             type="button"
             onClick={() => setLogin(!login)}
           >
-            {!login
-              ? "Already have an account? Login"
-              : "Don't have an account? Register"}
+            <div className="">
+              {!login ? (
+                <>
+                  Already have an account?{" "}
+                  <span className="text-[var(--primary)] font-bold">Login</span>
+                </>
+              ) : (
+                <>
+                  Don&apos;t have an account?{" "}
+                  <span className="text-[var(--primary)] font-bold">
+                    Register
+                  </span>
+                </>
+              )}
+            </div>
           </button>
           <button
             className="w-fit py-2 px-4 rounded-lg font-bold text-[var(--text-color)] bg-[var(--background)] "

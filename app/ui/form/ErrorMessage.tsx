@@ -7,7 +7,7 @@ export default function ErrorMessage({
 }>) {
   return (
     <div
-      className={`text-sm h-6 text-red-500 font-medium ${className}`}
+      className={`flex items-start py-1 text-xs md:text-sm h-3 md:h-5 leading-0 text-red-500 font-medium ${className}`}
       role="alert"
     >
       {children}

@@ -7,6 +7,9 @@ export async function POST() {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete session:", error);
-    return NextResponse.json({ success: false, error: "Failed to delete session." }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to delete session." },
+      { status: 500 }
+    );
   }
 }

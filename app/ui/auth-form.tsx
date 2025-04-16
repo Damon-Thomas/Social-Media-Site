@@ -19,7 +19,7 @@ export default function AuthForm() {
   return (
     <div className="auth-form-container">
       <form
-        className="p-4 md:p-8 rounded-md flex flex-col gap-4 justify-baseline items-center bg-[var(--color-foreground)] text-[var(--background)] "
+        className="p-4 md:p-8 rounded-md flex flex-col gap-4 justify-baseline items-center bg-[var(--color-foreground)] text-[var(--text-color-inverse)]"
         action={action}
       >
         <input type="hidden" name="login" value={login ? "true" : "false"} />

@@ -21,6 +21,7 @@ body {
 :root {
   --primary: #ffb504;
   --background: #ffb504;
+  --rbackground: #0a0a0a;
   --foreground: #171717;
   --dark: #0a0a0a;
   --mono: #171717;
@@ -44,6 +45,7 @@ body {
 
 [data-theme="light"] {
   --background: #ffb504;
+  --rbackground: #0a0a0a;
   --foreground: #171717;
   --mono: #171717;
   --rmono: #ffffff;
@@ -54,6 +56,7 @@ body {
 
 [data-theme="dark"] {
   --background: #0a0a0a;
+  --rbackground: #ffb504;
   --foreground: #ffb504;
   --mono: #ffffff;
   --rmono: #171717;

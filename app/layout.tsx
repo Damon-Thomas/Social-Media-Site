@@ -5,6 +5,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { useTheme } from "next-themes";
+import sun from "../public/sun.svg";
+import moon from "../public/moon.svg";
+import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +27,19 @@ function ThemeSwitcher() {
         onClick={() => {
           setTheme(theme === "light" ? "dark" : "light");
         }}
-        className="bg-white"
+        className="fixed top-4 right-4 p-2 bg-[var(--rbackground)] rounded-full shadow-md hover:shadow-lg transition-shadow duration-300"
       >
-        switch theme
+        <Image
+          src={theme === "light" ? sun : moon}
+          alt={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          width={24}
+          height={24}
+          className="w-6 h-6"
+        />
+        {/* {moon} */}
+        {/* <span className="sr-only">
+          Toggle {theme === "light" ? "dark" : "light"} mode
+        </span> */}
       </button>
     </footer>
   );

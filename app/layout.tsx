@@ -37,10 +37,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { theme } = useTheme();
-
   return (
-    <html lang="en" className={theme} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>{String(metadata.title ?? "Zuno")}</title>
         <meta
@@ -51,7 +49,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider enableSystem defaultTheme="system">
+        <ThemeProvider defaultTheme="light" enableSystem={false}>
           {children}
           <ThemeSwitcher />
         </ThemeProvider>

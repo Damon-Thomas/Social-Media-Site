@@ -6,7 +6,6 @@ import { authenticate } from "../lib/action";
 import InputWrapper from "./form/InputWrapper";
 import Input from "./form/Input";
 import ErrorMessage from "./form/ErrorMessage";
-import Google from "next-auth/providers/google";
 import GoogleButton from "./form/GoogleButton";
 import GithubButton from "./form/GithubButton";
 
@@ -27,7 +26,7 @@ export default function AuthForm() {
       <form
         // className={`p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--color-foreground)] text-[var(--text-color)] shadow-[10px_10px_25px_black]`}
         // className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--rmono)] text-[var(--mono)]  shadow-[10px_10px_25px_black]"
-        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black]"
+        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1"
         action={action}
       >
         <h2 className="text-lg font-semibold md:text-xl text-white">{`Welcome to Zuno, ${
@@ -93,7 +92,7 @@ export default function AuthForm() {
             type="button"
             onClick={() => setLogin(!login)}
           >
-            <div className="">
+            <div className="w-full">
               {!login ? (
                 <>
                   Already have an account?{" "}
@@ -110,7 +109,7 @@ export default function AuthForm() {
             </div>
           </button>
           <button
-            className="w-fit py-2 px-4 rounded-lg font-bold text-[var(--text-color)] bg-[var(--background)] "
+            className="w-fit py-2 px-4 rounded-lg font-bold text-black bg-[var(--primary)] "
             disabled={pending}
             type="submit"
           >

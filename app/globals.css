@@ -113,3 +113,36 @@ button:hover {
 .spin-animation {
   animation: spin 0.7s ease-in-out;
 }
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.transition-all {
+  transition-property: all;
+}
+
+.duration-500 {
+  transition-duration: 500ms;
+}
+
+.ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes flip {
+  0% {
+    transform: perspective(400px) rotateX(0deg);
+  }
+  100% {
+    transform: perspective(400px) rotateX(180deg);
+  }
+}
+
+.flip-container {
+  perspective: 1000px;
+}
+
+.flip-vertical {
+  transition: transform 0.5s ease-in-out;
+}

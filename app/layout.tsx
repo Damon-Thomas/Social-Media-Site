@@ -9,6 +9,8 @@ import sun from "../public/sun.svg";
 import moon from "../public/moon.svg";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import chevron from "../public/chevron-up.svg";
+import pchevron from "../public/chevron-primary.svg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +75,66 @@ function ThemeSwitcher() {
   );
 }
 
+function Footer() {
+  const [open, setOpen] = useState(false);
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Add useEffect to handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <footer
+        className={`fixed ${
+          open ? "translate-y-0" : "translate-y-12"
+        } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out`}
+      >
+        {/* Placeholder content */}
+      </footer>
+    );
+  }
+
+  return (
+    <footer
+      className={`fixed ${
+        open ? "translate-y-0" : "translate-y-12"
+      } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out`}
+    >
+      <div className="relative flex justify-center h-full w-full">
+        <div className="absolute -top-8 transform -translate-y-1/2">
+          <div
+            onClick={() => setOpen(!open)}
+            className="cursor-pointer bg-[var(--background)] rounded-full p-1 w-8 h-8 flex items-center justify-center"
+            style={{ perspective: "1000px" }}
+          >
+            <Image
+              src={theme === "light" ? chevron : pchevron}
+              alt="Open Footer"
+              width={16}
+              height={16}
+              className={open ? "flip-vertical-active" : ""}
+              style={{
+                transition: "transform 0.5s ease-in-out",
+                transformStyle: "preserve-3d",
+                backfaceVisibility: "visible",
+                transform: open ? "rotateX(180deg)" : "rotateX(0deg)",
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex justify-center items-center">
+          <p className="text-sm text-[var(--background)]">
+            © {new Date().getFullYear()} Zuno. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -91,8 +153,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider defaultTheme="light" enableSystem={false}>
-          {children}
           <ThemeSwitcher />
+          {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

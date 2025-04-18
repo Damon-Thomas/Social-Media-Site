@@ -124,7 +124,7 @@ export default function AuthForm() {
             <button
               className=" py-2 flex items-center justify-center px-4 w-[100px] h-[36.5px] rounded-lg font-bold border-1 border-[var(--grey)] text-[var(--primary)] bg-[var(--greyRing)] "
               disabled={pending}
-              type="submit"
+              type="button"
             >
               Guest
             </button>

@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import sun from "../public/sun.svg";
 import moon from "../public/moon.svg";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import chevron from "../public/chevron-up.svg";
 import pchevron from "../public/chevron-primary.svg";
 
@@ -79,6 +79,7 @@ function Footer() {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const footerRef = useRef(null);
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
@@ -98,40 +99,51 @@ function Footer() {
   }
 
   return (
-    <footer
-      className={`fixed ${
-        open ? "translate-y-0" : "translate-y-12"
-      } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out`}
-    >
-      <div className="relative flex justify-center h-full w-full">
-        <div className="absolute -top-8 transform -translate-y-1/2">
-          <div
-            onClick={() => setOpen(!open)}
-            className="cursor-pointer bg-[var(--background)] rounded-full p-1 w-8 h-8 flex items-center justify-center"
-            style={{ perspective: "1000px" }}
-          >
-            <Image
-              src={theme === "light" ? chevron : pchevron}
-              alt="Open Footer"
-              width={16}
-              height={16}
-              className={open ? "flip-vertical-active" : ""}
-              style={{
-                transition: "transform 0.5s ease-in-out",
-                transformStyle: "preserve-3d",
-                backfaceVisibility: "visible",
-                transform: open ? "rotateX(180deg)" : "rotateX(0deg)",
-              }}
-            />
+    <>
+      {/* Invisible hover trigger area */}
+      <div
+        className="fixed bottom-0 w-full h-[22px] z-10"
+        onMouseEnter={() => setOpen(true)}
+      />
+
+      <footer
+        ref={footerRef}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className={`fixed ${
+          open ? "translate-y-0" : "translate-y-12"
+        } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out z-20`}
+      >
+        <div className="relative flex justify-center h-full w-full">
+          <div className="absolute -top-8 transform -translate-y-1/2">
+            <div
+              className="cursor-pointer rounded-full p-1 w-8 h-8 flex items-center justify-center theme-transition"
+              style={{ perspective: "1000px" }}
+              onClick={() => setOpen(!open)}
+            >
+              <Image
+                src={theme === "light" ? chevron : pchevron}
+                alt="Footer indicator"
+                width={16}
+                height={16}
+                className={open ? "flip-vertical-active" : ""}
+                style={{
+                  transition: "transform 0.5s ease-in-out",
+                  transformStyle: "preserve-3d",
+                  backfaceVisibility: "visible",
+                  transform: open ? "rotateX(180deg)" : "rotateX(0deg)",
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex justify-center items-center">
+            <p className="text-sm text-[var(--background)]">
+              © {new Date().getFullYear()} Zuno. All rights reserved.
+            </p>
           </div>
         </div>
-        <div className="flex justify-center items-center">
-          <p className="text-sm text-[var(--background)]">
-            © {new Date().getFullYear()} Zuno. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 

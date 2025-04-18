@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-start md:justify-center min-h-screen p-1 md:p-8 font-[family-name:var(--font-geist-sans)] bg-[var(--background)] transition-colors duration-500">
-      <main className="flex flex-col grow md:flex-row items-center justify-start md:justify-around w-full">
+      <main className="flex flex-col grow md:flex-row items-center justify-start md:justify-around w-full pb-10">
         <div className="relative w-[150px] h-[50px] my-10 md:w-[400px] md:h-[400px]">
           {mounted && (
             <>

@@ -71,6 +71,30 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+button {
+  transition: filter 0.2s ease-in-out;
+}
+
+button:hover {
+  filter: brightness(1.1); /* Increases brightness by 20% */
+  scale: 1.05; /* Slightly increases size */
+  cursor: pointer;
+}
+
+.no-button-effects {
+  transition: none !important;
+}
+
+.no-button-effects:hover {
+  filter: none !important;
+  scale: 1 !important;
+  cursor: pointer;
+}
+
+.no-button-effects::before {
+  display: none !important;
+}
+
 *,
 *::before,
 *::after {

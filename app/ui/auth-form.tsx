@@ -24,7 +24,7 @@ export default function AuthForm() {
   return (
     <div className="auth-form-container min-w-[300px] flex justify-center">
       <form
-        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1 w-full sm:w-[441px]"
+        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1 w-full sm:w-[450px]"
         action={action}
       >
         <h2 className="text-lg font-semibold md:text-xl text-white">{`Welcome to Zuno, ${
@@ -84,35 +84,51 @@ export default function AuthForm() {
             </InputWrapper>
           )}
         </div>
-        <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline">
-          <button
-            className="w-fit"
-            type="button"
-            onClick={() => setLogin(!login)}
-          >
-            <div className="w-full">
-              {!login ? (
-                <>
-                  Already have an account?{" "}
-                  <span className="text-[var(--primary)] font-bold">Login</span>
-                </>
-              ) : (
-                <>
-                  Don&apos;t have an account?{" "}
-                  <span className="text-[var(--primary)] font-bold">
-                    Register
-                  </span>
-                </>
-              )}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline sm:justify-between">
+            <button
+              className="w-fit no-button-effects"
+              type="button"
+              onClick={() => setLogin(!login)}
+            >
+              <div className="w-full">
+                {!login ? (
+                  <>
+                    Already have an account?{" "}
+                    <span className="text-[var(--primary)] font-bold">
+                      Login
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Don&apos;t have an account?{" "}
+                    <span className="text-[var(--primary)] font-bold">
+                      Register
+                    </span>
+                  </>
+                )}
+              </div>
+            </button>
+            <button
+              className=" py-2 px-4 w-[100px] rounded-lg font-bold text-black bg-[var(--primary)] "
+              disabled={pending}
+              type="submit"
+            >
+              {login ? "Log in" : "Register"}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline sm:justify-between items-center">
+            <div className="max-w-[235px]">
+              <p>Want to see what all the hype is about? Log in as a guest</p>
             </div>
-          </button>
-          <button
-            className=" py-2 px-4 rounded-lg font-bold text-black bg-[var(--primary)] "
-            disabled={pending}
-            type="submit"
-          >
-            {login ? "Log in" : "Register"}
-          </button>
+            <button
+              className=" py-2 flex items-center justify-center px-4 w-[100px] h-[36.5px] rounded-lg font-bold border-1 border-[var(--grey)] text-[var(--primary)] bg-[var(--greyRing)] "
+              disabled={pending}
+              type="submit"
+            >
+              Guest
+            </button>
+          </div>
         </div>
       </form>
     </div>

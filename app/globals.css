@@ -76,3 +76,16 @@ body {
 *::after {
   transition: background-color 0.3s ease;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(720deg); /* 720 degrees = 2 full rotations */
+  }
+}
+
+.spin-animation {
+  animation: spin 0.7s ease-in-out;
+}

@@ -22,11 +22,9 @@ export default function AuthForm() {
   const [login, setLogin] = useState(true);
 
   return (
-    <div className="auth-form-container min-w-[300px]">
+    <div className="auth-form-container min-w-[300px] flex justify-center">
       <form
-        // className={`p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--color-foreground)] text-[var(--text-color)] shadow-[10px_10px_25px_black]`}
-        // className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--rmono)] text-[var(--mono)]  shadow-[10px_10px_25px_black]"
-        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1"
+        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1 w-full sm:w-[441px]"
         action={action}
       >
         <h2 className="text-lg font-semibold md:text-xl text-white">{`Welcome to Zuno, ${
@@ -109,7 +107,7 @@ export default function AuthForm() {
             </div>
           </button>
           <button
-            className="w-fit py-2 px-4 rounded-lg font-bold text-black bg-[var(--primary)] "
+            className=" py-2 px-4 rounded-lg font-bold text-black bg-[var(--primary)] "
             disabled={pending}
             type="submit"
           >

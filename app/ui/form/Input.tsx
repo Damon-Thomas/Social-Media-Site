@@ -1,35 +1,34 @@
 export default function Input({
-  type,
-  id,
-  placeholder,
-  className,
   label,
-  labelClassName,
-  ...props
+  id,
+  type,
+  placeholder,
+  value,
+  onChange,
+  className = "",
 }: Readonly<{
-  type: string;
+  label: string;
   id: string;
+  type: string;
   placeholder?: string;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
-  label?: string;
-  labelClassName?: string;
 }>) {
   return (
-    <>
-      <label
-        className={labelClassName + " text-[var(--offwhite)]"}
-        htmlFor={id}
-      >
+    <div className="relative flex flex-col gap-1 w-full">
+      <label htmlFor={id} className="block text-sm">
         {label}
       </label>
       <input
         type={type}
-        placeholder={placeholder}
-        name={id}
         id={id}
+        name={id}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
         className={`w-full h-9 md:h-10 px-4 py-1 md:py-2 bg-[var(--grey)] border border-[var(--greyRing)] rounded-xs ${className}`}
-        {...props}
       />
-    </>
+    </div>
   );
 }

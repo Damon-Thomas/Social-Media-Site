@@ -1,7 +1,7 @@
 "use client";
 
 // import { formAuth } from "@/app/actions/auth";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { authenticate } from "../lib/action";
 import InputWrapper from "./form/InputWrapper";
 import Input from "./form/Input";
@@ -20,6 +20,37 @@ import GithubButton from "./form/GithubButton";
 export default function AuthForm() {
   const [state, action, pending] = useActionState(authenticate, undefined);
   const [login, setLogin] = useState(true);
+
+  // Form state to persist values
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmpassword: "",
+  });
+
+  // Update form data when inputs change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target as HTMLInputElement & {
+      id: keyof typeof formData;
+    };
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  // When server returns validation errors, prefill the form with submitted values
+  useEffect(() => {
+    if (state?.serverFormData) {
+      setFormData({
+        name: state.serverFormData.name || "",
+        email: state.serverFormData.email || "",
+        password: state.serverFormData.password || "",
+        confirmpassword: state.serverFormData.confirmpassword || "",
+      });
+    }
+  }, [state?.serverFormData]);
 
   return (
     <div className="auth-form-container min-w-[300px] flex justify-center">
@@ -48,6 +79,8 @@ export default function AuthForm() {
                 label="Name"
                 id="name"
                 placeholder="Your Name"
+                value={formData.name}
+                onChange={handleInputChange}
               />
               <ErrorMessage>{state?.errors?.name || ""}</ErrorMessage>
             </InputWrapper>
@@ -58,6 +91,8 @@ export default function AuthForm() {
               label="Email"
               id="email"
               placeholder="hello@zuno.dev"
+              value={formData.email}
+              onChange={handleInputChange}
             />
             <ErrorMessage>{state?.errors?.email}</ErrorMessage>
           </InputWrapper>
@@ -67,6 +102,8 @@ export default function AuthForm() {
               type="password"
               id="password"
               placeholder="Your Password"
+              value={formData.password}
+              onChange={handleInputChange}
             />
             <ErrorMessage>{state?.errors?.password || ""}</ErrorMessage>
           </InputWrapper>
@@ -77,6 +114,8 @@ export default function AuthForm() {
                 type="password"
                 id="confirmpassword"
                 placeholder="Confirm Password"
+                value={formData.confirmpassword}
+                onChange={handleInputChange}
               />
               <ErrorMessage>
                 {state?.errors?.confirmpassword || ""}

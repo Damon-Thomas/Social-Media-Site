@@ -43,8 +43,8 @@ export default function Footer() {
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         className={`fixed ${
-          open ? "translate-y-0" : "translate-y-12"
-        } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out z-20`}
+          open ? "translate-y-0" : "translate-y-36"
+        } h-40 bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out z-20`}
       >
         <div className="relative flex justify-center h-full w-full">
           <div className="absolute -top-8 transform -translate-y-1/2">
@@ -68,33 +68,48 @@ export default function Footer() {
               />
             </div>
           </div>
-          <div className="flex justify-center items-center">
+          <div className="flex flex-col justify-between items-center">
+            <div className="flex flex-col md:flex-row md:gap-4 justify-between items-center w-full">
+              <div className="flex flex-col items-start">
+                <h4 className="text-lg font-bold text-[var(--background)]">
+                  Built by Damon Thomas
+                </h4>
+                <p className="text-sm text-[var(--background)]">
+                  Check out my work on GitHub and connect with me on LinkedIn!
+                </p>
+              </div>
+              <div className="flex flex-col items-start">
+                <h4 className="text-[var(--background)]">
+                  Get in touch with me
+                </h4>
+                <div className="icons flex items-center justify-end">
+                  <Image
+                    src={linkedIn}
+                    alt="Icon 1"
+                    width={24}
+                    height={24}
+                    className="mx-2 cursor-pointer"
+                    onClick={() => {
+                      location.href =
+                        "https://www.linkedin.com/in/damon-thomas-445a39126/";
+                    }}
+                  />
+                  <Image
+                    src={theme === "light" ? githubWhite : githubBlack}
+                    alt="Icon 2"
+                    width={24}
+                    height={24}
+                    className="mx-2 cursor-pointer"
+                    onClick={() => {
+                      location.href = "https://github.com/Damon-Thomas";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
             <p className="text-sm text-[var(--background)]">
               © {new Date().getFullYear()} Zuno. All rights reserved.
             </p>
-            <div className="icons flex items-center justify-end">
-              <Image
-                src={linkedIn}
-                alt="Icon 1"
-                width={24}
-                height={24}
-                className="mx-2 cursor-pointer"
-                onClick={() => {
-                  location.href =
-                    "https://www.linkedin.com/in/damon-thomas-445a39126/";
-                }}
-              />
-              <Image
-                src={theme === "light" ? githubWhite : githubBlack}
-                alt="Icon 2"
-                width={24}
-                height={24}
-                className="mx-2 cursor-pointer"
-                onClick={() => {
-                  location.href = "https://github.com/Damon-Thomas";
-                }}
-              />
-            </div>
           </div>
         </div>
       </footer>

@@ -1,11 +1,15 @@
 import { authenticate } from "@/app/lib/action";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const result = await authenticate(undefined, formData);
+
+  // If authentication was successful, redirect to dashboard
   if (!result?.errors) {
-    return NextResponse.json({ success: true });
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
-  return NextResponse.json({ success: false, errors: result.errors });
+
+  // If there are errors, redirect to auth page with error param
+  return NextResponse.redirect(new URL("/auth?error=oauth", req.nextUrl));
 }

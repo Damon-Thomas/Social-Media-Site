@@ -59,32 +59,129 @@ export type State = {
   message?: string | null;
 };
 
+type AuthState =
+  | {
+      errors: {
+        login?: string;
+        name?: string;
+        email?: string;
+        password?: string;
+        confirmpassword?: string;
+      };
+      serverFormData?: {
+        name?: string;
+        email?: string;
+        password?: string;
+        confirmpassword?: string;
+      };
+      message?: string;
+    }
+  | {
+      errors: { login: string };
+      message?: string;
+    }
+  | undefined;
+
 export async function serverAction(formData: FormData) {
   const session = await verifySession();
   console.log("session", session, formData);
 }
 
-export async function authenticate(
-  state:
-    | {
-        errors?: {
-          login?: string;
-          name?: string;
-          email?: string;
-          password?: string;
-          confirmpassword?: string;
-        };
-        serverFormData?: {
-          name?: string;
-          email?: string;
-          password?: string;
-          confirmpassword?: string;
-        };
-        message?: string;
+export async function authenticate(state: AuthState, payload: FormData) {
+  // 1. Check for OAuth login first
+  const oauthProvider = payload.get("oauthProvider");
+  const oauthCode = payload.get("oauthCode");
+
+  if (oauthProvider && oauthCode) {
+    // --- OAUTH HANDLING ---
+    let oauthEmail: string | undefined;
+    let oauthName: string | undefined;
+
+    if (oauthProvider === "google") {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI // e.g. http://localhost:3000/api/oauth/google/callback
+      );
+      const { tokens } = await oauth2Client.getToken(oauthCode.toString());
+      oauth2Client.setCredentials(tokens);
+      const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
+      const { data } = await oauth2.userinfo.get();
+      oauthEmail = data.email || undefined;
+      oauthName = data.name || undefined;
+    }
+
+    if (oauthProvider === "github") {
+      const octokit = new Octokit();
+      // Exchange code for access token
+      console.log("GitHub OAuth: exchanging code", oauthCode);
+      const res = await fetch(
+        `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${oauthCode}`,
+        {
+          method: "POST",
+          headers: { Accept: "application/json" },
+        }
+      );
+      const data = await res.json();
+      console.log("GitHub token exchange response:", data);
+      const { access_token } = data;
+      if (!access_token) {
+        return { errors: { login: "GitHub OAuth failed." } };
       }
-    | undefined,
-  payload: FormData
-) {
+      // Get user info
+      const { data: user } = await octokit.request("GET /user", {
+        headers: { authorization: `token ${access_token}` },
+      });
+
+      // If email is not public, fetch from /user/emails
+      let email = user.email;
+      if (!email) {
+        const emailsRes = await octokit.request("GET /user/emails", {
+          headers: { authorization: `token ${access_token}` },
+        });
+        // Find the primary, verified email
+        const primaryEmailObj = emailsRes.data.find(
+          (e: { primary: boolean; verified: boolean; email: string }) =>
+            e.primary && e.verified
+        );
+        email = primaryEmailObj?.email ?? null;
+      }
+
+      oauthEmail = email || undefined;
+      oauthName = user.name || user.login || undefined;
+      console.log(
+        "GitHub user data:",
+        user,
+        "oauthEmail",
+        oauthEmail,
+        "oauthName",
+        oauthName
+      );
+    }
+
+    if (!oauthEmail) {
+      console.error("OAuth login failed: no email found.", {
+        oauthProvider,
+        oauthCode,
+        oauthEmail,
+        oauthName,
+      });
+      return { errors: { login: "OAuth login failed: no email found." } };
+    }
+
+    // Find or create user
+    let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: { name: oauthName || "OAuth User", email: oauthEmail },
+      });
+    }
+    await createSession(user.id);
+    redirect("/dashboard");
+    return; // Make sure to return so the rest of the function does not run!
+  }
+
+  // 2. Only run form validation if not OAuth
   // Preprocess FormData to replace null or missing values with empty strings
   const processedData: Record<string, string> = {};
   payload.forEach((value, key) => {
@@ -132,65 +229,6 @@ export async function authenticate(
   }
 
   const { login, name, email, password } = validatedFields.data;
-
-  // --- OAUTH HANDLING ---
-  const oauthProvider = payload.get("oauthProvider");
-  const oauthCode = payload.get("oauthCode");
-
-  if (oauthProvider && oauthCode) {
-    let oauthEmail: string | undefined;
-    let oauthName: string | undefined;
-
-    if (oauthProvider === "google") {
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI // e.g. http://localhost:3000/api/oauth/google/callback
-      );
-      const { tokens } = await oauth2Client.getToken(oauthCode.toString());
-      oauth2Client.setCredentials(tokens);
-      const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
-      const { data } = await oauth2.userinfo.get();
-      oauthEmail = data.email || undefined;
-      oauthName = data.name || undefined;
-    }
-
-    if (oauthProvider === "github") {
-      const octokit = new Octokit();
-      // Exchange code for access token
-      const res = await fetch(
-        `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${oauthCode}`,
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-        }
-      );
-      const { access_token } = await res.json();
-      if (!access_token) {
-        return { errors: { login: "GitHub OAuth failed." } };
-      }
-      // Get user info
-      const { data: user } = await octokit.request("GET /user", {
-        headers: { authorization: `token ${access_token}` },
-      });
-      oauthEmail = user.email || undefined;
-      oauthName = user.name || user.login || undefined;
-    }
-
-    if (!oauthEmail) {
-      return { errors: { login: "OAuth login failed: no email found." } };
-    }
-
-    // Find or create user
-    let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
-    if (!user) {
-      user = await prisma.user.create({
-        data: { name: oauthName || "OAuth User", email: oauthEmail },
-      });
-    }
-    await createSession(user.id);
-    redirect("/dashboard");
-  }
 
   if (login === "false") {
     if (!name || name.length < 2) {

@@ -41,9 +41,14 @@ export default function AuthForm() {
     }));
   };
 
+  const getError = (key: string) =>
+    state?.errors && typeof state.errors === "object" && key in state.errors
+      ? (state.errors as Record<string, string>)[key] ?? ""
+      : "";
+
   // When server returns validation errors, prefill the form with submitted values
   useEffect(() => {
-    if (state?.serverFormData) {
+    if (state && "serverFormData" in state && state.serverFormData) {
       setFormData({
         name: state.serverFormData.name || "",
         email: state.serverFormData.email || "",
@@ -51,7 +56,7 @@ export default function AuthForm() {
         confirmpassword: state.serverFormData.confirmpassword || "",
       });
     }
-  }, [state?.serverFormData]);
+  }, [state]);
 
   return (
     <div className="auth-form-container min-w-[300px] flex justify-center">
@@ -83,7 +88,7 @@ export default function AuthForm() {
                 value={formData.name}
                 onChange={handleInputChange}
               />
-              <ErrorMessage>{state?.errors?.name || ""}</ErrorMessage>
+              <ErrorMessage>{getError("name")}</ErrorMessage>
             </InputWrapper>
           )}
           <InputWrapper>
@@ -95,7 +100,7 @@ export default function AuthForm() {
               value={formData.email}
               onChange={handleInputChange}
             />
-            <ErrorMessage>{state?.errors?.email}</ErrorMessage>
+            <ErrorMessage>{getError("email")}</ErrorMessage>
           </InputWrapper>
           <InputWrapper>
             <Input
@@ -106,7 +111,7 @@ export default function AuthForm() {
               value={formData.password}
               onChange={handleInputChange}
             />
-            <ErrorMessage>{state?.errors?.password || ""}</ErrorMessage>
+            <ErrorMessage>{getError("password")}</ErrorMessage>
           </InputWrapper>
           {!login && (
             <InputWrapper>
@@ -118,9 +123,7 @@ export default function AuthForm() {
                 value={formData.confirmpassword}
                 onChange={handleInputChange}
               />
-              <ErrorMessage>
-                {state?.errors?.confirmpassword || ""}
-              </ErrorMessage>
+              <ErrorMessage>{getError("confirmpassword")}</ErrorMessage>
             </InputWrapper>
           )}
         </div>

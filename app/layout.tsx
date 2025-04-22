@@ -6,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 import Footer from "./ui/landing-page/Footer";
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,13 +35,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-          <ThemeProvider defaultTheme="light" enableSystem={false}>
-            <ThemeSwitcher />
-            {children}
-            <Footer />
-          </ThemeProvider>
-        </SessionProvider>
+        {/* <SessionProvider> */}
+        <ThemeProvider defaultTheme="light" enableSystem={false}>
+          <ThemeSwitcher />
+          {children}
+          <Footer />
+        </ThemeProvider>
+        {/* </SessionProvider> */}
       </body>
     </html>
   );

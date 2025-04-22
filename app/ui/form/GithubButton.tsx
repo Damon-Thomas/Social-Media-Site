@@ -23,6 +23,7 @@ function GithubIcon(props: React.ComponentPropsWithoutRef<"svg">) {
 
 export default function GithubButton() {
   const handleGithubLogin = () => {
+    console.log("GITHUB_ID", process.env.NEXT_PUBLIC_GITHUB_ID);
     const params = new URLSearchParams({
       client_id: process.env.NEXT_PUBLIC_GITHUB_ID!,
       redirect_uri: "http://localhost:3000/auth/oauth-callback?provider=github",

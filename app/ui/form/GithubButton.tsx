@@ -1,3 +1,4 @@
+"use client";
 import AuthButton from "./AuthButton";
 
 function GithubIcon(props: React.ComponentPropsWithoutRef<"svg">) {
@@ -21,8 +22,18 @@ function GithubIcon(props: React.ComponentPropsWithoutRef<"svg">) {
 }
 
 export default function GithubButton() {
+  const handleGithubLogin = () => {
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_GITHUB_ID!,
+      redirect_uri: "http://localhost:3000/auth/oauth-callback?provider=github",
+      scope: "read:user user:email",
+      allow_signup: "true",
+    });
+    window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
+  };
+
   return (
-    <AuthButton>
+    <AuthButton onClick={handleGithubLogin}>
       <GithubIcon />
       Github
     </AuthButton>

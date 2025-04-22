@@ -5,6 +5,8 @@ import prisma from "./prisma";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { createSession } from "@/app/lib/session.server";
+import { google } from "googleapis";
+import { Octokit } from "@octokit/rest";
 // import { AuthError } from "next-auth";
 
 // interface FormSchemaType {
@@ -130,6 +132,65 @@ export async function authenticate(
   }
 
   const { login, name, email, password } = validatedFields.data;
+
+  // --- OAUTH HANDLING ---
+  const oauthProvider = payload.get("oauthProvider");
+  const oauthCode = payload.get("oauthCode");
+
+  if (oauthProvider && oauthCode) {
+    let oauthEmail: string | undefined;
+    let oauthName: string | undefined;
+
+    if (oauthProvider === "google") {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI // e.g. http://localhost:3000/api/oauth/google/callback
+      );
+      const { tokens } = await oauth2Client.getToken(oauthCode.toString());
+      oauth2Client.setCredentials(tokens);
+      const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
+      const { data } = await oauth2.userinfo.get();
+      oauthEmail = data.email || undefined;
+      oauthName = data.name || undefined;
+    }
+
+    if (oauthProvider === "github") {
+      const octokit = new Octokit();
+      // Exchange code for access token
+      const res = await fetch(
+        `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${oauthCode}`,
+        {
+          method: "POST",
+          headers: { Accept: "application/json" },
+        }
+      );
+      const { access_token } = await res.json();
+      if (!access_token) {
+        return { errors: { login: "GitHub OAuth failed." } };
+      }
+      // Get user info
+      const { data: user } = await octokit.request("GET /user", {
+        headers: { authorization: `token ${access_token}` },
+      });
+      oauthEmail = user.email || undefined;
+      oauthName = user.name || user.login || undefined;
+    }
+
+    if (!oauthEmail) {
+      return { errors: { login: "OAuth login failed: no email found." } };
+    }
+
+    // Find or create user
+    let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: { name: oauthName || "OAuth User", email: oauthEmail },
+      });
+    }
+    await createSession(user.id);
+    redirect("/dashboard");
+  }
 
   if (login === "false") {
     if (!name || name.length < 2) {

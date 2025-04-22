@@ -1,3 +1,4 @@
+"use client";
 import AuthButton from "./AuthButton";
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<"svg">) {
@@ -30,8 +31,20 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<"svg">) {
 }
 
 export default function GoogleButton() {
+  const handleGoogleLogin = () => {
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      redirect_uri: "http://localhost:3000/auth/oauth-callback?provider=google",
+      response_type: "code",
+      scope: "openid email profile",
+      access_type: "offline",
+      prompt: "consent",
+    });
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  };
+
   return (
-    <AuthButton>
+    <AuthButton onClick={handleGoogleLogin}>
       <GoogleIcon />
       Google
     </AuthButton>

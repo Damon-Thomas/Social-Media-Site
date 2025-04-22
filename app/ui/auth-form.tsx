@@ -34,6 +34,7 @@ export default function AuthForm() {
     const { id, value } = e.target as HTMLInputElement & {
       id: keyof typeof formData;
     };
+
     setFormData((prev) => ({
       ...prev,
       [id]: value,

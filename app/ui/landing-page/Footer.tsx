@@ -43,13 +43,13 @@ export default function Footer() {
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         className={`fixed ${
-          open ? "translate-y-0" : "translate-y-36"
-        } h-40 bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out z-20`}
+          open ? "translate-y-0" : "translate-y-26"
+        } h-28 bottom-0 w-screen bg-[var(--rbackground)] py-1 px-2 md:p-4 transition-all duration-500 ease-in-out z-20`}
       >
         <div className="relative flex justify-center h-full w-full">
-          <div className="absolute -top-8 transform -translate-y-1/2">
+          <div className="absolute -top-4 md:-top-6 transform -translate-y-1/2">
             <div
-              className="cursor-pointer rounded-full p-1 w-8 h-8 flex items-center justify-center theme-transition"
+              className="cursor-pointer rounded-full p-1  h-8 flex w-full items-center justify-center theme-transition"
               style={{ perspective: "1000px" }}
               onClick={() => setOpen(!open)}
             >
@@ -68,21 +68,18 @@ export default function Footer() {
               />
             </div>
           </div>
-          <div className="flex flex-col justify-between items-center">
-            <div className="flex flex-col md:flex-row md:gap-4 justify-between items-center w-full">
-              <div className="flex flex-col items-start">
+          <div className="flex flex-col justify-between items-center w-full">
+            <div className="flex gap-4 justify-around md:justify-between items-center w-full">
+              <div className="flex flex-col items-center justify-between grow">
                 <h4 className="text-lg font-bold text-[var(--background)]">
                   Built by Damon Thomas
                 </h4>
-                <p className="text-sm text-[var(--background)]">
-                  Check out my work on GitHub and connect with me on LinkedIn!
-                </p>
               </div>
-              <div className="flex flex-col items-start">
-                <h4 className="text-[var(--background)]">
+              <div className="flex flex-col items-center gap-2 pt-2 md:pt-4 grow">
+                <h4 className="text-[var(--background)] text-center">
                   Get in touch with me
                 </h4>
-                <div className="icons flex items-center justify-end">
+                <div className="icons flex items-center w-full justify-center ">
                   <Image
                     src={linkedIn}
                     alt="Icon 1"

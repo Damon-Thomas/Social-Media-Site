@@ -39,7 +39,6 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="light" enableSystem={false}>
           <ThemeSwitcher />
           {children}
-          <Footer />
         </ThemeProvider>
         {/* </SessionProvider> */}
       </body>

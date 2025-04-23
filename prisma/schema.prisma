@@ -15,10 +15,63 @@ datasource db {
 }
 
 model User {
+  id                     String    @id @default(cuid())
+  name                   String?
+  email                  String?   @unique
+  password               String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  posts                  Post[]    @relation("postAuthor")
+  profile                Profile?
+  likes                  Post[]    @relation("likes")
+  commentLikes           Comment[] @relation("likes")
+  comments               Comment[] @relation("commentAuthor")
+  profileId              String?
+  friendRequestsReceived User[]    @relation("friendRequests")
+  friendRequestsSent     User[]    @relation("friendRequests")
+  friends                User[]    @relation("userFriends")
+  friendsOfUser          User[]    @relation("userFriends")
+  followers              User[]    @relation("follow")
+  following              User[]    @relation("follow")
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  content   String?
+  published Boolean   @default(false)
+  author    User?     @relation("postAuthor", fields: [authorId], references: [id])
+  authorId  String?
+  profile   Profile?  @relation(fields: [profileId], references: [id])
+  profileId String?
+  likes     User[]    @relation("likes")
+  comments  Comment[] @relation("postComments")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String?
+  author    User?     @relation("commentAuthor", fields: [authorId], references: [id])
+  authorId  String?
+  post      Post?     @relation("postComments", fields: [postId], references: [id])
+  postId    String?
+  likes     User[]    @relation("likes")
+  replies   Comment[] @relation("commentReplies")
+  parent    Comment?  @relation("commentReplies", fields: [parentId], references: [id])
+  parentId  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Profile {
   id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
-  password  String?
+  photo     String?
+  bio       String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @unique
+  posts     Post[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  authorId  String?
 }

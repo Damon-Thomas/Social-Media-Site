@@ -5,8 +5,9 @@ html {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable overlay;
 }
-
 body {
   margin: 0;
   padding: 0;

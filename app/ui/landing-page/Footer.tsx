@@ -1,6 +1,11 @@
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
+import chevron from "@/public/chevron-up.svg";
+import pchevron from "@/public/chevron-primary.svg";
+import githubWhite from "@/public/github-mark-white.svg";
+import githubBlack from "@/public/github-mark.svg";
+import linkedIn from "@/public/linkedIn.svg";
 
 export default function Footer() {
   const [open, setOpen] = useState(false);
@@ -8,12 +13,11 @@ export default function Footer() {
   const [mounted, setMounted] = useState(false);
   const footerRef = useRef(null);
 
-  // Use public path strings for SVGs instead of imports
-  const chevron = "/chevron-up.svg";
-  const pchevron = "/chevron-primary.svg";
-  const linkedIn = "/linkedIn.svg";
-  const githubWhite = "/github-mark-white.svg";
-  const githubBlack = "/github-mark.svg";
+  // const chevron = "/chevron-up.svg";
+  // const pchevron = "/chevron-primary.svg";
+  // const linkedIn = "/linkedIn.svg";
+  // const githubWhite = "/github-mark-white.svg";
+  // const githubBlack = "/github-mark.svg";
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
@@ -25,7 +29,7 @@ export default function Footer() {
       <footer
         className={`fixed ${
           open ? "translate-y-0" : "translate-y-12"
-        } bottom-0 w-screen bg-[var(--rbackground)] p-4 transition-all duration-500 ease-in-out`}
+        } bottom-0 w-screen bg-zinc-900 dark:bg-yellow-500 p-4 transition-all duration-500 ease-in-out`}
       >
         {/* Placeholder content */}
       </footer>
@@ -46,12 +50,12 @@ export default function Footer() {
         onMouseLeave={() => setOpen(false)}
         className={`fixed ${
           open ? "translate-y-0" : "translate-y-26"
-        } h-28 bottom-0 w-screen bg-[var(--rbackground)] py-1 px-2 md:p-4 transition-all duration-500 ease-in-out z-20`}
+        } h-28 bottom-0 w-screen text-[var(--background)]  bg-[var(--rbackground)] py-1 px-2 md:p-4 transition-all duration-500 ease-in-out z-20`}
       >
         <div className="relative flex justify-center h-full w-full">
           <div className="absolute -top-4 md:-top-6 transform -translate-y-1/2">
             <div
-              className="cursor-pointer rounded-full p-1  h-8 flex w-full items-center justify-center theme-transition"
+              className="cursor-pointer rounded-full p-1 h-8 flex w-full items-center justify-center transition-colors duration-300"
               style={{ perspective: "1000px" }}
               onClick={() => setOpen(!open)}
             >
@@ -73,18 +77,18 @@ export default function Footer() {
           <div className="flex flex-col justify-between items-center w-full">
             <div className="flex gap-4 justify-around md:justify-between items-center w-full">
               <div className="flex flex-col items-center justify-between grow">
-                <h4 className="text-lg font-bold text-[var(--background)] theme-transition">
+                <h4 className="text-lg font-bold  transition-colors duration-300">
                   Built by Damon Thomas
                 </h4>
               </div>
               <div className="flex flex-col items-center gap-2 pt-2 md:pt-4 grow">
-                <h4 className="text-[var(--background)] text-center theme-transition">
+                <h4 className=" text-center transition-colors duration-300">
                   Get in touch with me
                 </h4>
-                <div className="icons flex items-center w-full justify-center ">
+                <div className="icons flex items-center w-full justify-center">
                   <Image
                     src={linkedIn}
-                    alt="Icon 1"
+                    alt="LinkedIn"
                     width={24}
                     height={24}
                     className="mx-2 cursor-pointer"
@@ -95,7 +99,7 @@ export default function Footer() {
                   />
                   <Image
                     src={theme === "light" ? githubWhite : githubBlack}
-                    alt="Icon 2"
+                    alt="GitHub"
                     width={24}
                     height={24}
                     className="mx-2 cursor-pointer"
@@ -106,7 +110,7 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-            <p className="text-sm text-[var(--background)] theme-transition">
+            <p className="text-sm   transition-colors duration-300">
               © {new Date().getFullYear()} Zuno. All rights reserved.
             </p>
           </div>

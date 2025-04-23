@@ -14,9 +14,13 @@ export default function ThemeSwitcher() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    console.log("ThemeSwitcher mounted. Current theme:", theme);
+  }, [theme]);
+
   const handleThemeChange = () => {
     setIsSpinning(true);
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(theme === "dark" ? "light" : "dark");
 
     // Reset animation state after animation completes
     setTimeout(() => {
@@ -28,9 +32,7 @@ export default function ThemeSwitcher() {
   if (!mounted) {
     return (
       <header>
-        <button
-          className={`fixed top-4 right-4 p-2 bg-[var(--rbackground)] rounded-full shadow-md hover:shadow-lg transition-shadow duration-300`}
-        >
+        <button className="fixed top-4 right-4 p-2 bg-[var(--rbackground)] rounded-full shadow-md hover:shadow-lg transition-shadow duration-300">
           <div className="w-6 h-6"></div>
         </button>
       </header>
@@ -46,8 +48,8 @@ export default function ThemeSwitcher() {
         }`}
       >
         <Image
-          src={theme === "light" ? sun : moon}
-          alt={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          src={theme === "dark" ? moon : sun}
+          alt={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           width={24}
           height={24}
           className="w-6 h-6"

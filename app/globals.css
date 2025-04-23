@@ -15,6 +15,7 @@ body {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  visibility: visible;
 }
 
 @import "tailwindcss";
@@ -28,37 +29,20 @@ body {
   --mono: #171717;
   --rmono: #ffffff;
   --dmono: #0a0a0a;
-  --text-color: #252525;
-  --text-color-inverse: #c7c7c7;
+  --tcolor: #0a0a0a;
+  --itcolor: #ffffff;
   --light-grey: #9ba0a7;
   --grey: #2e2e2e;
   --darkgrey: #252525;
   --greyRing: #424242;
   --lFormbg: #171717;
   --offWhite: #c7c7c7;
+  --aBlack: #0a0a0a;
+  --aWhite: #ffffff;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-[data-theme="light"] {
-  --background: #ffb504;
-  --rbackground: #0a0a0a;
-  --foreground: #171717;
-  --mono: #171717;
-  --rmono: #ffffff;
-  --dmono: #0a0a0a;
-  --rdmono: #ffffff;
-  --text-color: #171717;
-  --text-color-inverse: #ffffff;
-  --light-grey: #9ba0a7;
-}
-
-[data-theme="dark"] {
+/* Tailwind dark mode styles */
+.dark {
   --background: #0a0a0a;
   --rbackground: #ffb504;
   --foreground: #ffb504;
@@ -78,12 +62,8 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Hide content until theme is hydrated to prevent flicker */
-html:not(.theme-hydrated) * {
-  transition: none !important;
-}
-
-body:not(.theme-hydrated) {
+/* Temporarily hide content during hydration */
+html:not(.theme-hydrated) body {
   visibility: hidden;
 }
 
@@ -115,12 +95,6 @@ button:hover {
 .theme-transition {
   transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out,
     transform 0.5s ease-in-out !important;
-}
-
-*,
-*::before,
-*::after {
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @keyframes spin {

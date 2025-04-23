@@ -1,6 +1,5 @@
 "use client";
 
-// import { formAuth } from "@/app/actions/auth";
 import { useActionState, useState, useEffect } from "react";
 import { authenticate } from "../lib/action";
 import InputWrapper from "./form/InputWrapper";
@@ -8,14 +7,6 @@ import Input from "./form/Input";
 import ErrorMessage from "./form/ErrorMessage";
 import GoogleButton from "./form/GoogleButton";
 import GithubButton from "./form/GithubButton";
-
-// type AuthErrors = {
-//   longin?: string[];
-//   name?: string[];
-//   email?: string[];
-//   password?: string[];
-//   confirmpassword?: string[];
-// };
 
 export default function AuthForm() {
   const [state, action, pending] = useActionState(authenticate, undefined);
@@ -69,20 +60,20 @@ export default function AuthForm() {
   return (
     <div className="auth-form-container min-w-[300px] flex justify-center">
       <form
-        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-[var(--darkgrey)] text-[var(--offWhite)] shadow-[15px_15px_50px_black] border-[var(--greyRing)] border-1 w-full sm:w-[450px]"
+        className="p-4 md:p-8 rounded-md flex flex-col gap-2 justify-start bg-zinc-800 dark:bg-zinc-900 text-gray-200 shadow-[15px_15px_50px_black] border border-zinc-700 w-full sm:w-[450px] transition-colors duration-300"
         action={action}
       >
-        <h2 className="text-lg font-semibold md:text-xl text-white">{`Welcome to Zuno, ${
+        <h2 className="text-lg font-semibold md:text-xl text-white transition-colors duration-300">{`Welcome to Zuno, ${
           login ? "login" : "register"
         } with`}</h2>
         <div className="flex justify-around py-2 gap-6">
           <GoogleButton />
           <GithubButton />
         </div>
-        <div className="flex items-center text-[var(--light-grey)]">
-          <div className="h-[1px] bg-[var(--light-grey)] grow "></div>
+        <div className="flex items-center text-gray-400 transition-colors duration-300">
+          <div className="h-[1px] bg-gray-400 grow"></div>
           <p className="w-fit px-2">Or continue with email</p>
-          <div className="h-[1px] bg-[var(--light-grey)] grow "></div>
+          <div className="h-[1px] bg-gray-400 grow"></div>
         </div>
         <div className="flex flex-col my-2">
           <input type="hidden" name="login" value={login ? "true" : "false"} />
@@ -142,26 +133,22 @@ export default function AuthForm() {
               type="button"
               onClick={() => setLogin(!login)}
             >
-              <div className="w-full">
+              <div className="w-full transition-colors duration-300">
                 {!login ? (
                   <>
                     Already have an account?{" "}
-                    <span className="text-[var(--primary)] font-bold">
-                      Login
-                    </span>
+                    <span className="text-yellow-500 font-bold">Login</span>
                   </>
                 ) : (
                   <>
                     Don&apos;t have an account?{" "}
-                    <span className="text-[var(--primary)] font-bold">
-                      Register
-                    </span>
+                    <span className="text-yellow-500 font-bold">Register</span>
                   </>
                 )}
               </div>
             </button>
             <button
-              className=" py-2 px-4 w-[100px] rounded-lg font-bold text-black bg-[var(--primary)] "
+              className="py-2 px-4 w-[100px] rounded-lg font-bold text-[var(--aBlack)] bg-[var(--primary)] transition-colors duration-300"
               disabled={pending}
               type="submit"
             >
@@ -169,11 +156,11 @@ export default function AuthForm() {
             </button>
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline sm:justify-between items-center">
-            <div className="max-w-[235px]">
+            <div className="max-w-[235px] transition-colors duration-300">
               <p>Want to see what all the hype is about? Log in as a guest</p>
             </div>
             <button
-              className=" py-2 flex items-center justify-center px-4 w-[100px] h-[36.5px] rounded-lg font-bold border-1 border-[var(--grey)] text-[var(--primary)] bg-[var(--greyRing)] "
+              className="py-2 flex items-center justify-center px-4 w-[100px] h-[36.5px] rounded-lg font-bold border border-zinc-700 text-yellow-500 bg-zinc-800 transition-colors duration-300"
               disabled={pending}
               type="button"
               onClick={() => {

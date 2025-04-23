@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 import ThemeHydrationGuard from "./ui/ThemeHydrationGuard";
+import DebugTheme from "./ui/DebugTheme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,12 +33,18 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <ThemeHydrationGuard>
-          <ThemeProvider defaultTheme="light" enableSystem={false}>
+        <ThemeHydrationGuard theme="light">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+            value={{ light: "light", dark: "dark" }}
+          >
+            <DebugTheme />
             <ThemeSwitcher />
-            {children}
+            <main className="transition-colors duration-300">{children}</main>
           </ThemeProvider>
         </ThemeHydrationGuard>
       </body>

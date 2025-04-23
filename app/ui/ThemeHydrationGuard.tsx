@@ -1,17 +1,28 @@
 // app/ui/ThemeHydrationGuard.tsx
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function ThemeHydrationGuard({
   children,
+  theme,
 }: {
   children: React.ReactNode;
+  theme: string;
 }) {
-  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
-    document.body.classList.add("theme-hydrated");
+    document.documentElement.classList.add("theme-hydrated");
   }, []);
-  if (!mounted) return null;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+      console.log("Dark theme applied");
+    } else {
+      root.classList.remove("dark");
+      console.log("Light theme applied");
+    }
+  }, [theme]);
+
   return <>{children}</>;
 }

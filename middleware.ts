@@ -10,7 +10,11 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
+  console.log("Middleware triggered for path:", path);
+
   const session = await verifySession();
+
+  console.log("Session status:", session ? "Authenticated" : "Unauthenticated");
 
   if (isProtectedRoute && !session) {
     return NextResponse.redirect(new URL("/", req.nextUrl));

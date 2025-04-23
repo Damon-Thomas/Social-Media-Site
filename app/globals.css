@@ -27,6 +27,7 @@ body {
   --dark: #0a0a0a;
   --mono: #171717;
   --rmono: #ffffff;
+  --dmono: #0a0a0a;
   --text-color: #252525;
   --text-color-inverse: #c7c7c7;
   --light-grey: #9ba0a7;
@@ -50,6 +51,8 @@ body {
   --foreground: #171717;
   --mono: #171717;
   --rmono: #ffffff;
+  --dmono: #0a0a0a;
+  --rdmono: #ffffff;
   --text-color: #171717;
   --text-color-inverse: #ffffff;
   --light-grey: #9ba0a7;
@@ -61,6 +64,8 @@ body {
   --foreground: #ffb504;
   --mono: #ffffff;
   --rmono: #171717;
+  --dmono: #ffffff;
+  --rdmono: #0a0a0a;
   --text-color: #c7c7c7;
   --text-color-inverse: #252525;
   --light-grey: #9ba0a7;
@@ -70,6 +75,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hide content until theme is hydrated to prevent flicker */
+html:not(.theme-hydrated) * {
+  transition: none !important;
+}
+
+body:not(.theme-hydrated) {
+  visibility: hidden;
 }
 
 button {
@@ -96,15 +111,16 @@ button:hover {
   display: none !important;
 }
 
+/* Consolidated theme transition properties */
+.theme-transition {
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out,
+    transform 0.5s ease-in-out !important;
+}
+
 *,
 *::before,
 *::after {
-  transition: background-color 0.5s ease, color 0.5s ease;
-}
-
-.theme-transition {
-  transition: background-color 0.5s ease, color 0.5s ease,
-    transform 0.5s ease-in-out;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @keyframes spin {

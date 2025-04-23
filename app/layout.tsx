@@ -5,8 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
-import Footer from "./ui/landing-page/Footer";
-// import { SessionProvider } from "next-auth/react";
+import ThemeHydrationGuard from "./ui/ThemeHydrationGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,12 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <SessionProvider> */}
-        <ThemeProvider defaultTheme="light" enableSystem={false}>
-          <ThemeSwitcher />
-          {children}
-        </ThemeProvider>
-        {/* </SessionProvider> */}
+        <ThemeHydrationGuard>
+          <ThemeProvider defaultTheme="light" enableSystem={false}>
+            <ThemeSwitcher />
+            {children}
+          </ThemeProvider>
+        </ThemeHydrationGuard>
       </body>
     </html>
   );

@@ -1,17 +1,19 @@
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import chevron from "@public/chevron-up.svg";
-import pchevron from "@public/chevron-primary.svg";
-import linkedIn from "@public/linkedIn.svg";
-import githubWhite from "@public/github-mark-white.svg";
-import githubBlack from "@public/github-mark.svg";
 
 export default function Footer() {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const footerRef = useRef(null);
+
+  // Use public path strings for SVGs instead of imports
+  const chevron = "/chevron-up.svg";
+  const pchevron = "/chevron-primary.svg";
+  const linkedIn = "/linkedIn.svg";
+  const githubWhite = "/github-mark-white.svg";
+  const githubBlack = "/github-mark.svg";
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
@@ -71,12 +73,12 @@ export default function Footer() {
           <div className="flex flex-col justify-between items-center w-full">
             <div className="flex gap-4 justify-around md:justify-between items-center w-full">
               <div className="flex flex-col items-center justify-between grow">
-                <h4 className="text-lg font-bold text-[var(--background)]">
+                <h4 className="text-lg font-bold text-[var(--background)] theme-transition">
                   Built by Damon Thomas
                 </h4>
               </div>
               <div className="flex flex-col items-center gap-2 pt-2 md:pt-4 grow">
-                <h4 className="text-[var(--background)] text-center">
+                <h4 className="text-[var(--background)] text-center theme-transition">
                   Get in touch with me
                 </h4>
                 <div className="icons flex items-center w-full justify-center ">
@@ -104,7 +106,7 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-            <p className="text-sm text-[var(--background)]">
+            <p className="text-sm text-[var(--background)] theme-transition">
               © {new Date().getFullYear()} Zuno. All rights reserved.
             </p>
           </div>

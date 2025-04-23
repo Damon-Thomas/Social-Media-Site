@@ -41,7 +41,7 @@ export default function ThemeSwitcher() {
     <header>
       <button
         onClick={handleThemeChange}
-        className={`fixed top-4 right-4 p-2 bg-[var(--rbackground)] rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ${
+        className={`fixed top-4 right-4 p-2 bg-[var(--rbackground)] rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 z-50 ${
           isSpinning ? "spin-animation" : ""
         }`}
       >

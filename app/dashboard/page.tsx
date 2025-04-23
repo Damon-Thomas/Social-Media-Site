@@ -8,11 +8,16 @@ export default async function Dashboard() {
     redirect("/auth");
   }
 
+  // Prevent rendering until user is loaded (prevents flicker on theme change)
+  if (!user) return null;
+
   return (
     <div>
-      <h1>Welcome, {user.name}!</h1>
-      <p>Email: {user.email}</p>
-      <p>Account created on: {new Date(user.createdAt).toLocaleDateString()}</p>
+      <h1 className="theme-transition">Welcome, {user.name}!</h1>
+      <p className="theme-transition">Email: {user.email}</p>
+      <p className="theme-transition">
+        Account created on: {new Date(user.createdAt).toLocaleDateString()}
+      </p>
     </div>
   );
 }

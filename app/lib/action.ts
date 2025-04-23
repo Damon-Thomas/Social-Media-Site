@@ -29,6 +29,7 @@ const FormSchema = z
     email: z.string().email("Invalid email address."),
     password: z.string().min(6, "Password must be at least 6 characters long."),
     confirmpassword: z.string().optional(),
+    guest: z.union([z.boolean(), z.string()]).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.login === "false" && !data.name) {
@@ -187,6 +188,29 @@ export async function authenticate(state: AuthState, payload: FormData) {
   payload.forEach((value, key) => {
     processedData[key] = value ? value.toString() : "";
   });
+
+  // Check if the user is a guest
+  // If the user is a guest, create a session for the guest user
+  // and redirect to the dashboard
+  if (processedData["guest"] === "true") {
+    let guestUser = await prisma.user.findFirst({
+      where: {
+        email: "guestUser@email.com",
+      },
+    });
+    if (!guestUser) {
+      guestUser = await prisma.user.create({
+        data: {
+          name: "Guest User",
+          email: "guestUser@email.com",
+          password: "12345678",
+        },
+      });
+    }
+    await createSession(guestUser.id);
+    redirect("/dashboard");
+    return;
+  }
 
   // Create serverFormData once to reuse throughout the function
   const serverFormData = {

@@ -27,6 +27,7 @@ export default function AuthForm() {
     email: "",
     password: "",
     confirmpassword: "",
+    guest: false,
   });
 
   // Update form data when inputs change
@@ -41,6 +42,12 @@ export default function AuthForm() {
     }));
   };
 
+  function guestLogin() {
+    const formData = new FormData();
+    formData.append("guest", "true");
+    authenticate(undefined, formData);
+  }
+
   const getError = (key: string) =>
     state?.errors && typeof state.errors === "object" && key in state.errors
       ? (state.errors as Record<string, string>)[key] ?? ""
@@ -54,6 +61,7 @@ export default function AuthForm() {
         email: state.serverFormData.email || "",
         password: state.serverFormData.password || "",
         confirmpassword: state.serverFormData.confirmpassword || "",
+        guest: false,
       });
     }
   }, [state]);
@@ -169,7 +177,7 @@ export default function AuthForm() {
               disabled={pending}
               type="button"
               onClick={() => {
-                console.log("Guest login");
+                guestLogin();
               }}
             >
               Guest

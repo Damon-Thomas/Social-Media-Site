@@ -54,7 +54,7 @@ export default function LongInput({
         value={value}
         onChange={handleInput}
         rows={1}
-        className={`w-full px-4 py-1 md:py-2 resize-none overflow-hidden ${className}`}
+        className={`w-full px-4 py-1 md:py-2 resize-none overflow-hidden text-xl focus:outline-none focus:ring-0 focus:border-none ${className}`}
       />
     </div>
   );

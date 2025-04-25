@@ -10,20 +10,22 @@ type PostCreatorProps = {
 export default function PostCreator({ image }: PostCreatorProps) {
   return (
     <div className="flex flex-col gap-4">
-      <form className="flex flex-col gap-4">
-        <Image
-          src={image}
-          alt="User profile picture"
-          width={100}
-          height={100}
-          className="rounded-full mb-4"
-        />
-        <LongInput
-          label=""
-          id="post"
-          placeholder="Broadcast Now"
-          className="p-2 rounded"
-        />
+      <form className="flex flex-col gap-4 border-b-1 border-b-[var(--borderc)] pb-4">
+        <div className="flex gap-4">
+          <Image
+            src={image}
+            alt="User profile picture"
+            width={50}
+            height={50}
+            className="rounded-full flex-shrink-0 h-fit w-fit"
+          />
+          <LongInput
+            label=""
+            id="post"
+            placeholder="Broadcast Now"
+            className="p-2 rounded"
+          />
+        </div>
         <div className="flex gap-4 w-full no-wrap h-fit">
           <ErrorMessage className="grow flex flex-wrap"></ErrorMessage>
           <button

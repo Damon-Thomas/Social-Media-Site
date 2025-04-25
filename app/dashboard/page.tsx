@@ -1,6 +1,5 @@
 import { getUser } from "@/app/lib/dal";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/lib/session";
 
 export default async function Dashboard() {
   const user = await getUser();
@@ -16,9 +15,6 @@ export default async function Dashboard() {
       <p className="">
         Account created on: {new Date(user.createdAt).toLocaleDateString()}
       </p>
-      <div onClick={logout} className="cursor-pointer">
-        logout
-      </div>
     </div>
   );
 }

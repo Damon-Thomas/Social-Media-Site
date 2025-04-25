@@ -1,39 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Linker from "./Linker";
+import Nav from "./Nav";
+import NavWrapper from "./NavWrapper";
+import NavLogo from "./NavLogo";
+import { usePathname } from "next/navigation";
+import { logout } from "@/app/lib/session";
 
-export default function Navigator({ className }: { className: string }) {
+export default function Navigator() {
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname(); // Get the current route's pathname
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // Prevent flicker
+  if (!mounted) return null;
 
   return (
-    <div
-      className={
-        `fixed bottom-0 md:top-0 flex items-center w-full ` + className
-      }
-    >
-      <div className="flex items-center justify-center h-full ">
-        <h1 className="text-2xl font-extrabold ">Zuno</h1>
-      </div>
-      <nav className="flex p-4 gap-6 items-center h-full ">
-        <a href="/dashboard" className="text-lg hover:text-gray-400 ">
+    <NavWrapper>
+      <NavLogo />
+      <Nav>
+        <Linker active={pathname === "/dashboard"} route="/dashboard">
           Dashboard
-        </a>
-        <a href="/profile" className="text-lg hover:text-gray-400 ">
+        </Linker>
+        <Linker active={pathname === "/profile"} route="/profile">
           Profile
-        </a>
-        <a href="/settings" className="text-lg hover:text-gray-400 ">
+        </Linker>
+        <Linker active={pathname === "/settings"} route="/settings">
           Settings
-        </a>
-        <a href="/logout" className="text-lg hover:text-gray-400 ">
+        </Linker>
+        <Linker onClick={logout} type="logout">
           Logout
-        </a>
-      </nav>
-    </div>
+        </Linker>
+      </Nav>
+    </NavWrapper>
   );
 }

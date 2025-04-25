@@ -30,6 +30,8 @@ body {
   --rmono: #ffffff;
   --dmono: #0a0a0a;
   --rdmono: #ffffff;
+  --opdmono: #0a0a0a50;
+  --oprdmono: #ffffff50;
   --tcolor: #0a0a0a;
   --itcolor: #ffffff;
   --light-grey: #9ba0a7;
@@ -51,6 +53,8 @@ body {
   --rmono: #171717;
   --dmono: #ffffff;
   --rdmono: #0a0a0a;
+  --opdmono: #ffffff50;
+  --oprdmono: #0a0a0a50;
   --text-color: #c7c7c7;
   --text-color-inverse: #252525;
   --light-grey: #9ba0a7;

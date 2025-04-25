@@ -9,10 +9,10 @@ export default function DashboardLayout({
 }) {
   return (
     <div
-      className={`flex flex-col-reverse md:flex-col h-screen overflow-hidden bg-[var(--rdmono)] text-[var(--dmono)] p-2 md:p-4`}
+      className={`flex flex-col-reverse md:flex-col h-screen overflow-hidden bg-[var(--rdmono)] text-[var(--dmono)]`}
     >
       <Navigator />
-      <div className="overflow-auto grow">{children}</div>
+      <div className="overflow-hidden grow">{children}</div>
     </div>
   );
 }

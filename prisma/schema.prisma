@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id                     String         @id @default(cuid())
+  id                     String         @id @default(uuid())
   name                   String?
   email                  String?        @unique
   password               String?
@@ -36,12 +36,13 @@ model User {
   following              User[]         @relation("follow")
   receivedNotifications  Notification[]
   createdNotifications   Notification[] @relation("notificationCreator")
+  likedPosts             Post[]         @relation("UserLikedPosts")
+  likedComments          Comment[]      @relation("UserLikedComments")
 }
 
 model Post {
-  id           String         @id @default(cuid())
+  id           String         @id @default(uuid())
   content      String?
-  published    Boolean        @default(false)
   author       User?          @relation("postAuthor", fields: [authorId], references: [id])
   authorId     String?
   likes        User[]         @relation("likes")
@@ -49,6 +50,7 @@ model Post {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   Notification Notification[]
+  likedBy      User[]         @relation("UserLikedPosts")
 }
 
 model Comment {
@@ -65,6 +67,7 @@ model Comment {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   Notification Notification[]
+  likedBy      User[]         @relation("UserLikedComments")
 }
 
 model Profile {

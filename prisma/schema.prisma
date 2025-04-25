@@ -21,6 +21,7 @@ model User {
   password               String?
   createdAt              DateTime       @default(now())
   updatedAt              DateTime       @updatedAt
+  image                  String?        @default("")
   posts                  Post[]         @relation("postAuthor")
   profile                Profile?
   likes                  Post[]         @relation("likes")
@@ -43,8 +44,6 @@ model Post {
   published    Boolean        @default(false)
   author       User?          @relation("postAuthor", fields: [authorId], references: [id])
   authorId     String?
-  profile      Profile?       @relation(fields: [profileId], references: [id])
-  profileId    String?
   likes        User[]         @relation("likes")
   comments     Comment[]      @relation("postComments")
   createdAt    DateTime       @default(now())
@@ -70,11 +69,9 @@ model Comment {
 
 model Profile {
   id        String   @id @default(cuid())
-  photo     String?
   bio       String?
   user      User?    @relation(fields: [userId], references: [id])
   userId    String?  @unique
-  posts     Post[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   authorId  String?

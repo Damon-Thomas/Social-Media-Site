@@ -62,8 +62,79 @@ export type SessionPayload = {
 
 export type User = {
   id: string;
-  name: string;
-  email: string;
+  name: string | null;
+  email: string | null;
+  password?: string | null;
   createdAt: Date;
   updatedAt: Date;
-};
+  image?: string | null;
+  posts?: Post[];
+  profile?: Profile | null;
+  likes?: Post[];
+  commentLikes?: Comment[];
+  comments?: Comment[];
+  profileId?: string | null;
+  friendRequestsReceived?: User[];
+  friendRequestsSent?: User[];
+  friends?: User[];
+  friendsOfUser?: User[];
+  followers?: User[];
+  following?: User[];
+  receivedNotifications?: Notification[];
+  createdNotifications?: Notification[];
+} | null;
+
+export type Post = {
+  id: string;
+  content?: string | null;
+  published: boolean;
+  author?: User | null;
+  authorId?: string | null;
+  likes?: User[];
+  comments?: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+  Notification?: Notification[];
+} | null;
+
+export type Comment = {
+  id: string;
+  content?: string | null;
+  author?: User | null;
+  authorId?: string | null;
+  post?: Post | null;
+  postId?: string | null;
+  likes?: User[];
+  replies?: Comment[];
+  parent?: Comment | null;
+  parentId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  Notification?: Notification[];
+} | null;
+
+export type Profile = {
+  id: string;
+  bio?: string | null;
+  user?: User | null;
+  userId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId?: string | null;
+} | null;
+
+export type Notification = {
+  id: string;
+  userId: string;
+  user: User;
+  type: string;
+  seen: boolean;
+  postId?: string | null;
+  post?: Post | null;
+  commentId?: string | null;
+  comment?: Comment | null;
+  createdBy?: string | null;
+  creator?: User | null;
+  createdAt: Date;
+  updatedAt: Date;
+} | null;

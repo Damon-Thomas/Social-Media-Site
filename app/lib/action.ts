@@ -97,7 +97,7 @@ export async function authenticate(state: AuthState, payload: FormData) {
     // --- OAUTH HANDLING ---
     let oauthEmail: string | undefined;
     let oauthName: string | undefined;
-
+    let profileImage: string | null = null;
     if (oauthProvider === "google") {
       const oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
@@ -110,6 +110,8 @@ export async function authenticate(state: AuthState, payload: FormData) {
       const { data } = await oauth2.userinfo.get();
       oauthEmail = data.email || undefined;
       oauthName = data.name || undefined;
+      profileImage = data.picture || null;
+      console.log(profileImage);
     }
 
     if (oauthProvider === "github") {
@@ -150,16 +152,27 @@ export async function authenticate(state: AuthState, payload: FormData) {
 
       oauthEmail = email || undefined;
       oauthName = user.name || user.login || undefined;
+      profileImage = user.avatar_url || null;
       console.log(
         "GitHub user data:",
         user,
         "oauthEmail",
         oauthEmail,
         "oauthName",
-        oauthName
+        oauthName,
+        "profileImage",
+        profileImage,
+        "avatar_url",
+        user.avatar_url
       );
     }
-
+    console.log("OAuth login data:", {
+      oauthProvider,
+      oauthCode,
+      oauthEmail,
+      oauthName,
+      profileImage,
+    });
     if (!oauthEmail) {
       console.error("OAuth login failed: no email found.", {
         oauthProvider,
@@ -174,7 +187,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
     let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
     if (!user) {
       user = await prisma.user.create({
-        data: { name: oauthName || "OAuth User", email: oauthEmail },
+        data: {
+          name: oauthName || "OAuth User",
+          email: oauthEmail,
+          password: null,
+          image: profileImage || null,
+        },
       });
     }
     await createSession(user.id);

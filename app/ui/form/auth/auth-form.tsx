@@ -1,12 +1,12 @@
 "use client";
 
 import { useActionState, useState, useEffect } from "react";
-import { authenticate } from "../lib/action";
-import InputWrapper from "./form/InputWrapper";
-import Input from "./form/Input";
-import ErrorMessage from "./form/ErrorMessage";
-import GoogleButton from "./form/GoogleButton";
-import GithubButton from "./form/GithubButton";
+import { authenticate } from "../../../lib/action";
+import InputWrapper from "../InputWrapper";
+import Input from "../Input";
+import ErrorMessage from "../ErrorMessage";
+import GoogleButton from "./GoogleButton";
+import GithubButton from "./GithubButton";
 
 export default function AuthForm() {
   const [state, action, pending] = useActionState(authenticate, undefined);

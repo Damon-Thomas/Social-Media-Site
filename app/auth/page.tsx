@@ -1,4 +1,4 @@
-import AuthForm from "@/app/ui/auth-form";
+import AuthForm from "@/app/ui/form/auth/auth-form";
 
 export default async function AuthPage() {
   return (

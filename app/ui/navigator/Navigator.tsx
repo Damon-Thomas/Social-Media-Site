@@ -25,11 +25,23 @@ export default function Navigator() {
         <Linker active={pathname === "/dashboard"} route="/dashboard">
           Dashboard
         </Linker>
-        <Linker active={pathname === "/profile"} route="/profile">
+        <Linker
+          active={pathname === "/dashboard/profile"}
+          route="/dashboard/profile"
+        >
           Profile
         </Linker>
-        <Linker active={pathname === "/settings"} route="/settings">
+        <Linker
+          active={pathname === "/dashboard/settings"}
+          route="/dashboard/settings"
+        >
           Settings
+        </Linker>
+        <Linker
+          active={pathname === "/dashboard/connections"}
+          route="/dashboard/connections"
+        >
+          Connections
         </Linker>
         <Linker onClick={logout} type="logout">
           Logout

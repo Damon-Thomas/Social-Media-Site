@@ -1,6 +1,6 @@
 "use client";
 
-import AuthForm from "./ui/auth-form";
+import AuthForm from "./ui/form/auth/auth-form";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";

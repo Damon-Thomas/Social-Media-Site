@@ -15,53 +15,57 @@ datasource db {
 }
 
 model User {
-  id                     String    @id @default(cuid())
+  id                     String         @id @default(cuid())
   name                   String?
-  email                  String?   @unique
+  email                  String?        @unique
   password               String?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-  posts                  Post[]    @relation("postAuthor")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  posts                  Post[]         @relation("postAuthor")
   profile                Profile?
-  likes                  Post[]    @relation("likes")
-  commentLikes           Comment[] @relation("likes")
-  comments               Comment[] @relation("commentAuthor")
+  likes                  Post[]         @relation("likes")
+  commentLikes           Comment[]      @relation("likes")
+  comments               Comment[]      @relation("commentAuthor")
   profileId              String?
-  friendRequestsReceived User[]    @relation("friendRequests")
-  friendRequestsSent     User[]    @relation("friendRequests")
-  friends                User[]    @relation("userFriends")
-  friendsOfUser          User[]    @relation("userFriends")
-  followers              User[]    @relation("follow")
-  following              User[]    @relation("follow")
+  friendRequestsReceived User[]         @relation("friendRequests")
+  friendRequestsSent     User[]         @relation("friendRequests")
+  friends                User[]         @relation("userFriends")
+  friendsOfUser          User[]         @relation("userFriends")
+  followers              User[]         @relation("follow")
+  following              User[]         @relation("follow")
+  receivedNotifications  Notification[]
+  createdNotifications   Notification[] @relation("notificationCreator")
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  content   String?
-  published Boolean   @default(false)
-  author    User?     @relation("postAuthor", fields: [authorId], references: [id])
-  authorId  String?
-  profile   Profile?  @relation(fields: [profileId], references: [id])
-  profileId String?
-  likes     User[]    @relation("likes")
-  comments  Comment[] @relation("postComments")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String         @id @default(cuid())
+  content      String?
+  published    Boolean        @default(false)
+  author       User?          @relation("postAuthor", fields: [authorId], references: [id])
+  authorId     String?
+  profile      Profile?       @relation(fields: [profileId], references: [id])
+  profileId    String?
+  likes        User[]         @relation("likes")
+  comments     Comment[]      @relation("postComments")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  content   String?
-  author    User?     @relation("commentAuthor", fields: [authorId], references: [id])
-  authorId  String?
-  post      Post?     @relation("postComments", fields: [postId], references: [id])
-  postId    String?
-  likes     User[]    @relation("likes")
-  replies   Comment[] @relation("commentReplies")
-  parent    Comment?  @relation("commentReplies", fields: [parentId], references: [id])
-  parentId  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String         @id @default(cuid())
+  content      String?
+  author       User?          @relation("commentAuthor", fields: [authorId], references: [id])
+  authorId     String?
+  post         Post?          @relation("postComments", fields: [postId], references: [id])
+  postId       String?
+  likes        User[]         @relation("likes")
+  replies      Comment[]      @relation("commentReplies")
+  parent       Comment?       @relation("commentReplies", fields: [parentId], references: [id])
+  parentId     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
 }
 
 model Profile {
@@ -74,4 +78,20 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   authorId  String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String // User who receives the notification
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // "COMMENT", "LIKE", "REPLY", etc.
+  seen      Boolean  @default(false)
+  postId    String? // Optional reference to a post
+  post      Post?    @relation(fields: [postId], references: [id])
+  commentId String? // Optional reference to a comment
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  createdBy String? // ID of user who triggered the notification
+  creator   User?    @relation("notificationCreator", fields: [createdBy], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

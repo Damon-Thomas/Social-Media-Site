@@ -9,11 +9,28 @@ async function main() {
   // 1. Create 50 users
   const users = [];
   for (let i = 0; i < 50; i++) {
+    // Determine gender first
+    const gender = Math.random() > 0.5 ? "male" : "female";
+
+    // Generate name and avatar based on the same gender
+    const firstName = faker.person.firstName(gender);
+    const lastName = faker.person.lastName();
+    const fullName = `${firstName} ${lastName}`;
+
+    // Generate a random avatar URL
+    const avatar =
+      gender === "male"
+        ? `https://randomuser.me/api/portraits/men/${getRandomInt(1, 99)}.jpg`
+        : `https://randomuser.me/api/portraits/women/${getRandomInt(
+            1,
+            99
+          )}.jpg`;
+
     const user = await prisma.user.create({
       data: {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        image: faker.image.avatar(),
+        name: fullName,
+        email: faker.internet.email({ firstName, lastName }),
+        image: avatar,
         password: faker.internet.password(),
       },
     });

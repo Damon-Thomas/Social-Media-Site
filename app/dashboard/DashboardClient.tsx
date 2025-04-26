@@ -6,6 +6,7 @@ import defaultProfileDark from "@public/defaultProfileDark.svg";
 import defaultProfileLight from "@public/defaultProfileLight.svg";
 import PostCreator from "../ui/posts/PostCreater";
 import type { User } from "../lib/definitions";
+import Goats from "../ui/dashboard/Goats";
 
 export default function DashboardClient({ user }: { user: User }) {
   const { theme } = useTheme();
@@ -25,8 +26,7 @@ export default function DashboardClient({ user }: { user: User }) {
           <PostCreator image={profileImage} />
         </div>
         <div className="sideContent w-fit max-w-xs">
-          <h2 className="text-xl font-bold mb-4">Side Content</h2>
-          <p>This is where you can add additional content or widgets.</p>
+          <Goats />
         </div>
       </div>
     </div>

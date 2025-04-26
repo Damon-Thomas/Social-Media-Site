@@ -89,10 +89,11 @@ export async function serverAction(formData: FormData) {
 }
 
 export async function authenticate(state: AuthState, payload: FormData) {
+  console.log("authenticate called with state:", state, "payload:", payload);
   // 1. Check for OAuth login first
   const oauthProvider = payload.get("oauthProvider");
   const oauthCode = payload.get("oauthCode");
-
+  console.log("OAuth provider:", oauthProvider, "OAuth code:", oauthCode);
   if (oauthProvider && oauthCode) {
     // --- OAUTH HANDLING ---
     let oauthEmail: string | undefined;
@@ -182,7 +183,13 @@ export async function authenticate(state: AuthState, payload: FormData) {
       });
       return { errors: { login: "OAuth login failed: no email found." } };
     }
-
+    console.log("OAuth login successful:", {
+      oauthProvider,
+      oauthCode,
+      oauthEmail,
+      oauthName,
+      profileImage,
+    });
     // Find or create user
     let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
     if (!user) {
@@ -195,9 +202,11 @@ export async function authenticate(state: AuthState, payload: FormData) {
         },
       });
     }
+    console.log("User found or created:", user);
     await createSession(user.id);
+    console.log("Session created for user:", user.id);
     redirect("/dashboard");
-    return; // Make sure to return so the rest of the function does not run!
+    return;
   }
 
   // 2. Only run form validation if not OAuth

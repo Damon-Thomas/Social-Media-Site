@@ -1,20 +1,45 @@
 import "server-only";
 import prisma from "@/app/lib/prisma";
 import { cookies } from "next/headers";
-import { decrypt } from "@/app/lib/session.server";
+import { decrypt, deleteSession } from "@/app/lib/session.server";
 import { cache } from "react";
 
 export const verifySession = cache(async () => {
+  console.log("Verifying session...");
   try {
     const cookie = (await cookies()).get("session")?.value;
-    if (!cookie) return null;
+    if (!cookie) {
+      console.log("No session cookie found.");
+      return null;
+    }
 
     const session = await decrypt(cookie);
+    if (!session) {
+      console.log("Session decryption failed.", session);
+      return null;
+    }
+    console.log("Session decrypted successfully:", session);
+
     if (!session?.userId) return null;
+
+    // Verify the user actually exists in the database
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId.toString() },
+      select: { id: true },
+    });
+    console.log("User found in DB:", user);
+
+    // If user doesn't exist in DB, delete the session cookie and return null
+    if (!user) {
+      await deleteSession();
+      return null;
+    }
 
     return { isAuth: true, userId: session.userId };
   } catch (error) {
     console.error("Failed to verify session:", error);
+    // Make sure to delete any invalid session cookies
+    await deleteSession();
     return null;
   }
 });

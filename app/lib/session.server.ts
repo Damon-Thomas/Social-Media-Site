@@ -12,7 +12,7 @@ export async function createSession(userId: string) {
 
   cookieStore.set("session", session, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production", // Only secure in production
     expires: expiresAt,
     sameSite: "lax",
     path: "/",
@@ -23,7 +23,7 @@ export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.set("session", "", {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production", // Only secure in production
     expires: new Date(0), // Expire the cookie immediately
     sameSite: "lax",
     path: "/",
@@ -51,6 +51,19 @@ export async function decrypt(session: string | undefined = "") {
     return payload as SessionPayload;
   } catch (error) {
     console.error("Failed to verify session token:", error);
+    // Invalid session token - we should clear it
+    try {
+      const cookieStore = await cookies();
+      cookieStore.set("session", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Only secure in production
+        expires: new Date(0), // Expire the cookie immediately
+        sameSite: "lax",
+        path: "/",
+      });
+    } catch (e) {
+      console.error("Failed to clear invalid cookie:", e);
+    }
     return null;
   }
 }

@@ -6,7 +6,7 @@ import Nav from "./Nav";
 import NavWrapper from "./NavWrapper";
 import NavLogo from "./NavLogo";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/lib/session";
+import { logout } from "@/app/actions/auth";
 import NavGroup from "./NavGroup";
 
 export default function Navigator() {

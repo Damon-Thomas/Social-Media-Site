@@ -1,5 +1,6 @@
 import { getUser } from "@/app/lib/dal";
 import DashboardClient from "./DashboardClient";
+export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
   const user = await getUser();

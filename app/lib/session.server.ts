@@ -1,3 +1,5 @@
+"use server";
+
 import { SignJWT, jwtVerify } from "jose";
 import { SessionPayload } from "@/app/lib/definitions";
 import { cookies } from "next/headers";
@@ -23,7 +25,7 @@ export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.set("session", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Only secure in production
+    secure: process.env.NODE_ENV === "production",
     expires: new Date(0), // Expire the cookie immediately
     sameSite: "lax",
     path: "/",
@@ -48,6 +50,7 @@ export async function decrypt(session: string | undefined = "") {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     });
+
     return payload as SessionPayload;
   } catch (error) {
     console.error("Failed to verify session token:", error);

@@ -9,6 +9,8 @@ import yellowRemoveBgPreview from "../public/yellow-removebg-preview.png";
 import yellowmobile from "../public/mobileyellow.png";
 import blackmobile from "../public/blackmobile.png";
 import Footer from "./ui/landing-page/Footer";
+// import { validateSessionOrClear } from "@/app/actions/auth";
+// import { verify } from "crypto";
 
 export default function Home() {
   const { theme } = useTheme();

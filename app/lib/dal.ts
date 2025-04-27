@@ -1,7 +1,7 @@
 import "server-only";
 import prisma from "@/app/lib/prisma";
 import { cookies } from "next/headers";
-import { decrypt, deleteSession } from "@/app/lib/session.server";
+import { decrypt } from "@/app/lib/session.server";
 import { cache } from "react";
 
 export const verifySession = cache(async () => {
@@ -29,17 +29,15 @@ export const verifySession = cache(async () => {
     });
     console.log("User found in DB:", user);
 
-    // If user doesn't exist in DB, delete the session cookie and return null
+    // If user doesn't exist in DB, return null
     if (!user) {
-      await deleteSession();
+      console.log("User not found in database");
       return null;
     }
 
     return { isAuth: true, userId: session.userId };
   } catch (error) {
     console.error("Failed to verify session:", error);
-    // Make sure to delete any invalid session cookies
-    await deleteSession();
     return null;
   }
 });

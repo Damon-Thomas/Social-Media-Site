@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import mostPopular from "@/app/actions/fetch";
+import { mostPopular } from "@/app/actions/fetch";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Goats() {
   const [popularUsers, setPopularUsers] = useState<
@@ -58,7 +59,8 @@ export default function Goats() {
       ) : popularUsers.length > 0 ? (
         <div className="space-y-4">
           {popularUsers.map((user) => (
-            <div
+            <Link
+              href={`/dashboard/profile/${user.id}`}
               key={user.id}
               className="p-4 border rounded-lg flex items-center"
             >
@@ -77,7 +79,7 @@ export default function Goats() {
                   {user._count?.followers || 0} followers
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (

@@ -32,6 +32,7 @@ export async function fetchUserById(id: string) {
       image: true,
       createdAt: true,
       updatedAt: true,
+      bio: true,
       posts: {
         orderBy: { createdAt: "desc" },
         include: { comments: { include: { author: true } } },

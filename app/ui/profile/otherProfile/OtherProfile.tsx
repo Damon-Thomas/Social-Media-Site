@@ -1,4 +1,5 @@
 import type { User } from "@/app/lib/definitions";
+import PersInfo from "./PersInfo";
 // import PostsSection from "./PostsSection";
 
 export default function OtherProfile({ userData }: { userData: User }) {
@@ -13,5 +14,9 @@ export default function OtherProfile({ userData }: { userData: User }) {
     );
   }
 
-  return <div className="max-w-2xl mx-auto"></div>;
+  return (
+    <div className="max-w-2xl mx-auto">
+      <PersInfo userData={userData} />
+    </div>
+  );
 }

@@ -16,7 +16,6 @@ export default async function ProfilePage({ params }: PageParams) {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto p-6 overflow-auto">
-      <h1>{userData?.name}</h1>
       <OtherProfile userData={userData} />
     </div>
   );

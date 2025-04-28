@@ -34,7 +34,7 @@ export async function fetchUserById(id: string) {
       updatedAt: true,
       posts: {
         orderBy: { createdAt: "desc" },
-        include: { likes: true, comments: { include: { author: true } } },
+        include: { comments: { include: { author: true } } },
       },
       comments: {
         orderBy: { createdAt: "desc" },
@@ -60,7 +60,6 @@ export async function fetchPaginatedPosts(
     cursor: cursor ? { id: cursor } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
-      likes: true,
       comments: { include: { author: true } },
     },
   });

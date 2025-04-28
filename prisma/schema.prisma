@@ -25,8 +25,6 @@ model User {
   updatedAt              DateTime       @updatedAt
   image                  String?        @default("")
   posts                  Post[]         @relation("postAuthor")
-  likes                  Post[]         @relation("likes")
-  commentLikes           Comment[]      @relation("likes")
   comments               Comment[]      @relation("commentAuthor")
   profileId              String?
   friendRequestsReceived User[]         @relation("friendRequests")
@@ -46,7 +44,6 @@ model Post {
   content      String?
   author       User?          @relation("postAuthor", fields: [authorId], references: [id])
   authorId     String?
-  likes        User[]         @relation("likes")
   comments     Comment[]      @relation("postComments")
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -61,7 +58,6 @@ model Comment {
   authorId     String?
   post         Post?          @relation("postComments", fields: [postId], references: [id])
   postId       String?
-  likes        User[]         @relation("likes")
   replies      Comment[]      @relation("commentReplies")
   parent       Comment?       @relation("commentReplies", fields: [parentId], references: [id])
   parentId     String?

@@ -65,13 +65,11 @@ export type User = {
   name: string | null;
   email: string | null;
   password?: string | null;
+  bio?: string | null;
   createdAt: Date;
   updatedAt: Date;
   image?: string | null;
   posts?: Post[];
-  profile?: Profile | null;
-  likes?: Post[];
-  commentLikes?: Comment[];
   comments?: Comment[];
   profileId?: string | null;
   friendRequestsReceived?: User[];
@@ -82,6 +80,8 @@ export type User = {
   following?: User[];
   receivedNotifications?: Notification[];
   createdNotifications?: Notification[];
+  likedPosts?: Post[];
+  likedComments?: Comment[];
 } | null;
 
 export type Post = {

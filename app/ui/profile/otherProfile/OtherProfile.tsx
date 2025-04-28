@@ -1,6 +1,5 @@
 import type { User } from "@/app/lib/definitions";
-import Image from "next/image";
-import PostsSection from "./PostsSection";
+// import PostsSection from "./PostsSection";
 
 export default function OtherProfile({ userData }: { userData: User }) {
   if (!userData) {
@@ -14,12 +13,5 @@ export default function OtherProfile({ userData }: { userData: User }) {
     );
   }
 
-  // Get initial posts for the PostsSection component
-  const initialPosts = userData.posts || [];
-
-  return (
-    <div className="max-w-2xl mx-auto">
-      <PostsSection userId={userData.id} initialPosts={initialPosts} />
-    </div>
-  );
+  return <div className="max-w-2xl mx-auto"></div>;
 }

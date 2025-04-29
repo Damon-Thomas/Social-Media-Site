@@ -4,7 +4,13 @@ import BioText from "./BioText";
 import CardWrapper from "../CardWrapper";
 import SectionWrapper from "../SectionWrapper";
 
-export default function PersInfo({ userData }: { userData: User }) {
+export default function PersInfo({
+  userData,
+  children,
+}: {
+  userData: User;
+  children?: React.ReactNode;
+}) {
   if (!userData) {
     return;
   }
@@ -45,9 +51,7 @@ export default function PersInfo({ userData }: { userData: User }) {
           </div>
         </div>
         <div className="flex flex-col gap-4 md:gap-8 justify-start h-full w-full grow">
-          <SectionWrapper>Latest Activity</SectionWrapper>
-          <SectionWrapper content={userData.posts}>Posts</SectionWrapper>
-          <SectionWrapper>Comments</SectionWrapper>
+          {children}
         </div>
       </div>
       <div className="grow flex flex-col gap-4 md:gap-8">

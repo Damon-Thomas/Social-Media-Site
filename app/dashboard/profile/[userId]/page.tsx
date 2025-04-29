@@ -6,12 +6,8 @@ import {
   fetchPaginatedLikedComments,
 } from "@/app/actions/fetch";
 import { notFound } from "next/navigation";
-import type { User } from "@/app/lib/definitions";
+import type { User, Post, Comment } from "@/app/lib/definitions";
 import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
-import PostsSection from "@/app/ui/profile/otherProfile/PostsSection";
-import CommentsSection from "@/app/ui/profile/otherProfile/CommentsSection";
-import LikedPostsSection from "@/app/ui/profile/otherProfile/LikedPostsSection";
-import LikedCommentsSection from "@/app/ui/profile/otherProfile/LikedCommentsSection";
 
 type PageParams = {
   params: Promise<{ userId: string }>;
@@ -26,59 +22,54 @@ export default async function ProfilePage({ params }: PageParams) {
   const userData = fetched as User;
 
   // Get initial data for each section with cursor
-  const { posts: initialPosts, nextCursor: postsCursor } =
-    await fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE);
+  const postsResponse = await fetchPaginatedPosts(
+    userId,
+    undefined,
+    ITEMS_PER_PAGE
+  );
+  const commentsResponse = await fetchPaginatedComments(
+    userId,
+    undefined,
+    ITEMS_PER_PAGE
+  );
+  const likedPostsResponse = await fetchPaginatedLikedPosts(
+    userId,
+    undefined,
+    ITEMS_PER_PAGE
+  );
+  const likedCommentsResponse = await fetchPaginatedLikedComments(
+    userId,
+    undefined,
+    ITEMS_PER_PAGE
+  );
 
-  const { comments: initialComments, nextCursor: commentsCursor } =
-    await fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE);
+  // Apply proper type assertions
+  const initialPosts = (postsResponse.posts || []) as Post[];
+  const postsCursor = postsResponse.nextCursor;
 
-  const { posts: initialLikedPosts, nextCursor: likedPostsCursor } =
-    await fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE);
+  const initialComments = (commentsResponse.comments || []) as Comment[];
+  const commentsCursor = commentsResponse.nextCursor;
 
-  const { comments: initialLikedComments, nextCursor: likedCommentsCursor } =
-    await fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE);
+  const initialLikedPosts = (likedPostsResponse.posts || []) as Post[];
+  const likedPostsCursor = likedPostsResponse.nextCursor;
+
+  const initialLikedComments = (likedCommentsResponse.comments ||
+    []) as Comment[];
+  const likedCommentsCursor = likedCommentsResponse.nextCursor;
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto p-6 overflow-auto flex flex-col w-full">
-      <OtherProfile userData={userData} />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-xl font-bold mb-4">Posts</h2>
-          <PostsSection
-            userId={userId}
-            initialPosts={initialPosts}
-            initialCursor={postsCursor}
-          />
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold mb-4">Comments</h2>
-          <CommentsSection
-            userId={userId}
-            initialComments={initialComments}
-            initialCursor={commentsCursor}
-          />
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold mb-4">Liked Posts</h2>
-          <LikedPostsSection
-            userId={userId}
-            initialPosts={initialLikedPosts}
-            initialCursor={likedPostsCursor}
-          />
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold mb-4">Liked Comments</h2>
-          <LikedCommentsSection
-            userId={userId}
-            initialComments={initialLikedComments}
-            initialCursor={likedCommentsCursor}
-          />
-        </div>
-      </div>
+      <OtherProfile
+        userData={userData}
+        initialPosts={initialPosts}
+        postsCursor={postsCursor}
+        initialComments={initialComments}
+        commentsCursor={commentsCursor}
+        initialLikedPosts={initialLikedPosts}
+        likedPostsCursor={likedPostsCursor}
+        initialLikedComments={initialLikedComments}
+        likedCommentsCursor={likedCommentsCursor}
+      />
     </div>
   );
 }

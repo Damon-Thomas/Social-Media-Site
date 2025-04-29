@@ -244,24 +244,57 @@ function generateRealisticBio() {
   return bio;
 }
 
+// Add this function to generate a longer, more detailed bio for the super user
+function generateSuperUserBio() {
+  const profession = faker.person.jobTitle();
+  const mainCompany = faker.company.name();
+  const previousCompany = faker.company.name();
+  const techSkills = Array(5)
+    .fill()
+    .map(() => faker.hacker.noun())
+    .join(", ");
+  const hobbies = Array(4)
+    .fill()
+    .map(() => faker.word.words(2))
+    .join(", ");
+  const countries = getRandomInt(15, 30);
+
+  return `Senior ${profession} at ${mainCompany} with over 15 years of experience in the industry. Previously led teams at ${previousCompany} where I developed expertise in ${techSkills}. 
+  
+  I've traveled to ${countries} countries across 6 continents, documenting my experiences through writing and photography. 
+  
+  When I'm not coding or traveling, I enjoy ${hobbies}. I'm passionate about mentoring junior developers and regularly speak at industry conferences about emerging technologies and career growth.
+  
+  I publish weekly articles on modern development practices and maintain several popular open-source projects with over 10k stars on GitHub. Let's connect if you're interested in collaboration or just want to chat about ${faker.hacker.noun()} or ${faker.hacker.noun()}!
+  
+  ${faker.lorem.paragraphs(2)}`;
+}
+
 async function main() {
-  // 1. Create 50 users
-  const powerUserData = createRandomUser();
-  // Create the power user in the database first
-  const powerUser = await prisma.user.create({
+  // 1. Create super user with custom data
+  const superUserData = {
+    firstName: "Super",
+    lastName: "User",
+    fullName: "Super User",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    email: "super.user@example.com",
+    password: "superuser",
+  };
+
+  // Create the super user in the database
+  const superUser = await prisma.user.create({
     data: {
-      name: powerUserData.fullName,
-      email: powerUserData.email,
-      image: powerUserData.avatar,
-      password: powerUserData.password,
+      name: superUserData.fullName,
+      email: superUserData.email,
+      image: superUserData.avatar,
+      password: superUserData.password,
     },
   });
 
+  // Create regular users as before
   const users = [];
   for (let i = 0; i < 50; i++) {
-    // Determine gender first
     const person = createRandomUser();
-
     const user = await prisma.user.create({
       data: {
         name: person.fullName,
@@ -273,93 +306,151 @@ async function main() {
     users.push(user);
   }
 
-  // 2. Each user makes posts
+  // 2. Super user creates 50 posts (increased from 20)
   const posts = [];
-  async function postMaker(id) {
-    // Create more realistic post content
-    const postType = Math.random();
+  for (let i = 0; i < 50; i++) {
+    // Mix of different post types for variety
     let content;
+    const postType = i % 3;
 
-    if (postType < 0.33) {
+    if (postType === 0) {
       content = generateTechPost();
-    } else if (postType < 0.66) {
+    } else if (postType === 1) {
       content = generateLifeUpdate();
     } else {
       content = generateQuestion();
     }
 
-    return await prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         content: content,
-        author: {
-          connect: { id: id },
-        },
+        author: { connect: { id: superUser.id } },
       },
     });
-  }
-  for (let i = 0; i < 20; i++) {
-    const post = await postMaker(powerUser.id);
     posts.push(post);
   }
 
+  // Regular users also create posts
   for (const user of users) {
     const numPosts = getRandomInt(5, 7);
     for (let i = 0; i < numPosts; i++) {
-      const post = await postMaker(user.id);
+      const postType = Math.random();
+      let content;
+
+      if (postType < 0.33) {
+        content = generateTechPost();
+      } else if (postType < 0.66) {
+        content = generateLifeUpdate();
+      } else {
+        content = generateQuestion();
+      }
+
+      const post = await prisma.post.create({
+        data: {
+          content: content,
+          author: { connect: { id: user.id } },
+        },
+      });
       posts.push(post);
     }
   }
 
-  // 3. Each user makes comments on random posts
+  // 3. Super user makes 100 comments on various posts
   const comments = [];
+  const superUserComments = [];
+
+  // Super user makes 100 comments
+  for (let i = 0; i < 100; i++) {
+    const post = posts[getRandomInt(0, posts.length - 1)];
+    const comment = await prisma.comment.create({
+      data: {
+        content: generateComment(),
+        author: { connect: { id: superUser.id } },
+        post: { connect: { id: post.id } },
+      },
+    });
+    superUserComments.push(comment);
+    comments.push(comment);
+  }
+
+  // Regular users make comments
   for (const user of users) {
-    const numComments = getRandomInt(6, 10);
+    const numComments = getRandomInt(10, 13);
     for (let i = 0; i < numComments; i++) {
-      const post = posts[getRandomInt(0, posts.length - 1)];
+      // 50% chance of commenting on a super user's post for higher engagement
+      const postPool =
+        Math.random() < 0.5
+          ? posts.filter((post) => post.authorId === superUser.id)
+          : posts;
+
+      const post = postPool[getRandomInt(0, postPool.length - 1)];
       const comment = await prisma.comment.create({
         data: {
           content: generateComment(),
-          author: {
-            connect: { id: user.id },
-          },
-          post: {
-            connect: { id: post.id },
-          },
+          author: { connect: { id: user.id } },
+          post: { connect: { id: post.id } },
         },
       });
       comments.push(comment);
     }
   }
 
-  // 4. Each user makes 5-7 comments on random comments
+  // 4. Add replies to comments, with higher engagement on super user content
   const replyComments = [];
+
+  // Each user replies to super user comments more frequently
   for (const user of users) {
-    const numReplies = getRandomInt(5, 7);
+    const numReplies = getRandomInt(10, 13);
     for (let i = 0; i < numReplies; i++) {
-      const parentComment = comments[getRandomInt(0, comments.length - 1)];
+      // 60% chance of replying to a super user's comment
+      const commentPool = Math.random() < 0.6 ? superUserComments : comments;
+
+      const parentComment =
+        commentPool[getRandomInt(0, commentPool.length - 1)];
+
       const reply = await prisma.comment.create({
         data: {
           content: generateReply(),
-          author: {
-            connect: { id: user.id },
-          },
-          post: {
-            connect: { id: parentComment.postId },
-          },
-          parent: {
-            connect: { id: parentComment.id },
-          },
+          author: { connect: { id: user.id } },
+          post: { connect: { id: parentComment.postId } },
+          parent: { connect: { id: parentComment.id } },
         },
       });
       replyComments.push(reply);
     }
   }
 
-  // 5. Each user likes 10-17 random posts
+  // 5. Ensure super user's posts get more likes
+  const allComments = comments.concat(replyComments);
+
+  // All users like more of super user's posts
   for (const user of users) {
+    // Get super user's posts
+    const superUserPosts = posts.filter(
+      (post) => post.authorId === superUser.id
+    );
+
+    // Like 70-90% of super user's posts
+    const numSuperLikes = getRandomInt(
+      Math.floor(superUserPosts.length * 0.7),
+      Math.floor(superUserPosts.length * 0.9)
+    );
+
     const likedPosts = new Set();
-    const numLikes = getRandomInt(10, 17);
-    for (let i = 0; i < numLikes; i++) {
+
+    // Like super user posts first
+    for (let i = 0; i < numSuperLikes && i < superUserPosts.length; i++) {
+      const post = superUserPosts[i];
+      likedPosts.add(post.id);
+      await prisma.post.update({
+        where: { id: post.id },
+        data: { likedBy: { connect: { id: user.id } } },
+      });
+    }
+
+    // Then like some other random posts
+    const totalLikes = getRandomInt(15, 22);
+    for (let i = 0; i < totalLikes - numSuperLikes; i++) {
       let post;
       do {
         post = posts[getRandomInt(0, posts.length - 1)];
@@ -372,77 +463,181 @@ async function main() {
     }
   }
 
-  // 6. Each user likes 9-12 random comments
-  const allComments = comments.concat(replyComments);
+  // 6. Create following relationships (80-90% of users follow the super user)
+  console.log("Creating following relationships...");
   for (const user of users) {
-    const likedComments = new Set();
-    const numLikes = getRandomInt(15, 22);
-    for (let i = 0; i < numLikes; i++) {
-      let comment;
-      do {
-        comment = allComments[getRandomInt(0, allComments.length - 1)];
-      } while (likedComments.has(comment.id));
-      likedComments.add(comment.id);
-      await prisma.comment.update({
-        where: { id: comment.id },
-        data: { likedBy: { connect: { id: user.id } } },
+    // 85% chance a user follows the super user
+    if (Math.random() < 0.85) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          following: { connect: { id: superUser.id } },
+        },
       });
     }
-  }
 
-  // 7. Each user follows 23-34 other users
-  for (const user of users) {
-    const following = new Set();
-    const numFollows = getRandomInt(23, 34);
-    while (following.size < numFollows) {
-      const other = users[getRandomInt(0, users.length - 1)];
-      if (other.id !== user.id && !following.has(other.id)) {
-        following.add(other.id);
+    // Each user also follows 10-20 random other users
+    const numToFollow = getRandomInt(10, 20);
+    const followedUsers = new Set();
+
+    for (let i = 0; i < numToFollow; i++) {
+      const potentialFollow = users[getRandomInt(0, users.length - 1)];
+
+      // Don't follow yourself or the same person twice
+      if (
+        potentialFollow.id !== user.id &&
+        !followedUsers.has(potentialFollow.id)
+      ) {
+        followedUsers.add(potentialFollow.id);
         await prisma.user.update({
           where: { id: user.id },
-          data: { following: { connect: { id: other.id } } },
+          data: {
+            following: { connect: { id: potentialFollow.id } },
+          },
         });
       }
     }
   }
 
-  // 8. Each user sends friend requests
-  for (const user of users) {
-    const sent = new Set();
-    const numRequests = getRandomInt(10, 20);
-    while (sent.size < numRequests) {
-      const other = users[getRandomInt(0, users.length - 1)];
-      if (other.id !== user.id && !sent.has(other.id)) {
-        sent.add(other.id);
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { friendRequestsSent: { connect: { id: other.id } } },
-        });
-      }
-    }
-  }
+  // Super user follows back 30-40% of their followers
+  const superUserFollowers = await prisma.user.findUnique({
+    where: { id: superUser.id },
+    include: { followers: true },
+  });
 
-  // 9. Each user accepts 66% of their friend requests received
-  for (const user of users) {
-    const received = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: { friendRequestsReceived: true },
+  const numToFollowBack = getRandomInt(
+    Math.floor(superUserFollowers.followers.length * 0.3),
+    Math.floor(superUserFollowers.followers.length * 0.4)
+  );
+
+  const shuffledFollowers = [...superUserFollowers.followers].sort(
+    () => 0.5 - Math.random()
+  );
+
+  for (let i = 0; i < numToFollowBack; i++) {
+    await prisma.user.update({
+      where: { id: superUser.id },
+      data: {
+        following: { connect: { id: shuffledFollowers[i].id } },
+      },
     });
-    if (received && received.friendRequestsReceived.length > 0) {
-      const toAccept = received.friendRequestsReceived.slice(
-        0,
-        Math.floor(received.friendRequestsReceived.length * 0.66)
-      );
-      for (const requester of toAccept) {
+  }
+
+  // 7. Create friend requests and friendships
+  console.log("Creating friend requests and friendships...");
+
+  // 70% of users send friend requests to the super user
+  const friendRequestUsers = [];
+  for (const user of users) {
+    if (Math.random() < 0.7) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          friendRequestsSent: { connect: { id: superUser.id } },
+        },
+      });
+      friendRequestUsers.push(user);
+    }
+  }
+
+  // Super user accepts 40-60% of friend requests
+  const numToAccept = getRandomInt(
+    Math.floor(friendRequestUsers.length * 0.4),
+    Math.floor(friendRequestUsers.length * 0.6)
+  );
+
+  const shuffledRequests = [...friendRequestUsers].sort(
+    () => 0.5 - Math.random()
+  );
+
+  for (let i = 0; i < numToAccept; i++) {
+    // Remove friend request
+    await prisma.user.update({
+      where: { id: shuffledRequests[i].id },
+      data: {
+        friendRequestsSent: { disconnect: { id: superUser.id } },
+      },
+    });
+
+    // Create mutual friendship
+    await prisma.user.update({
+      where: { id: superUser.id },
+      data: {
+        friends: { connect: { id: shuffledRequests[i].id } },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: shuffledRequests[i].id },
+      data: {
+        friends: { connect: { id: superUser.id } },
+      },
+    });
+  }
+
+  // Regular users also send friend requests to each other
+  for (const user of users) {
+    // Each user sends 5-10 friend requests
+    const numRequests = getRandomInt(5, 10);
+    const requestedUsers = new Set();
+
+    for (let i = 0; i < numRequests; i++) {
+      const potentialFriend = users[getRandomInt(0, users.length - 1)];
+
+      // Don't request yourself, super user (handled separately), or duplicate requests
+      if (
+        potentialFriend.id !== user.id &&
+        potentialFriend.id !== superUser.id &&
+        !requestedUsers.has(potentialFriend.id)
+      ) {
+        requestedUsers.add(potentialFriend.id);
         await prisma.user.update({
           where: { id: user.id },
-          data: { friends: { connect: { id: requester.id } } },
+          data: {
+            friendRequestsSent: { connect: { id: potentialFriend.id } },
+          },
         });
+
+        // 60% chance the request gets accepted
+        if (Math.random() < 0.6) {
+          // Remove friend request
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              friendRequestsSent: { disconnect: { id: potentialFriend.id } },
+            },
+          });
+
+          // Create mutual friendship
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              friends: { connect: { id: potentialFriend.id } },
+            },
+          });
+
+          await prisma.user.update({
+            where: { id: potentialFriend.id },
+            data: {
+              friends: { connect: { id: user.id } },
+            },
+          });
+        }
       }
     }
   }
 
-  // 10. Each user updates their profile bio (directly on User model)
+  console.log("Seeding complete with super user and social connections!");
+
+  // Finally, set a special longer bio for the super user
+  await prisma.user.update({
+    where: { id: superUser.id },
+    data: {
+      bio: generateSuperUserBio(),
+    },
+  });
+
+  // Regular user bios
   for (const user of users) {
     await prisma.user.update({
       where: { id: user.id },
@@ -452,7 +647,7 @@ async function main() {
     });
   }
 
-  console.log("Seeding complete!");
+  console.log("Seeding complete with super user!");
 }
 
 main()

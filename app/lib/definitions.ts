@@ -87,7 +87,6 @@ export type User = {
 export type Post = {
   id: string;
   content?: string | null;
-  published: boolean;
   author?: User | null;
   authorId?: string | null;
   likes?: User[];

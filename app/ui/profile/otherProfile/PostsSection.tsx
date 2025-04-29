@@ -14,7 +14,10 @@ export default function PostsSection({
   initialCursor: string | null;
 }) {
   const fetchMore = async (cursor: string | null) => {
-    const { posts, nextCursor } = await fetchPaginatedPosts(userId, cursor);
+    const { posts, nextCursor } = await fetchPaginatedPosts(
+      userId,
+      cursor ?? undefined
+    );
     return { items: posts, nextCursor };
   };
 
@@ -30,19 +33,19 @@ export default function PostsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-[400px] overflow-y-auto pr-2">
       {posts.map((post) => (
-        <div key={post.id} className="p-4 border rounded-lg">
-          <p className="font-medium">{post.author?.name}</p>
-          <p className="mt-2">{post.content}</p>
+        <div key={post?.id} className="p-4 border rounded-lg">
+          <p className="font-medium">{post?.author?.name}</p>
+          <p className="mt-2">{post?.content}</p>
           <p className="text-sm text-gray-500 mt-2">
-            {new Date(post.createdAt).toLocaleDateString()}
+            {post?.createdAt && new Date(post.createdAt).toLocaleDateString()}
           </p>
         </div>
       ))}
 
-      {/* Observer element - when visible, more content will load */}
-      <div ref={observerTarget} className="h-10" />
+      {/* Only show observer when there's more content to load */}
+      {hasMore && <div ref={observerTarget} className="h-10" />}
 
       {loading && (
         <div className="flex justify-center py-4">

@@ -15,7 +15,7 @@ export default async function ProfilePage({ params }: PageParams) {
   const userData = fetched as User;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto p-6 overflow-auto">
+    <div className="space-y-8 max-w-4xl mx-auto p-6 overflow-auto flex w-full">
       <OtherProfile userData={userData} />
     </div>
   );

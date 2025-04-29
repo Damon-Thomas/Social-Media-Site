@@ -15,7 +15,7 @@ export default function OtherProfile({ userData }: { userData: User }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className=" flex justify-start items-start gap-4 md:gap-8 h-full w-full">
       <PersInfo userData={userData} />
     </div>
   );

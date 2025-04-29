@@ -5,20 +5,16 @@ import { decrypt } from "@/app/lib/session.server";
 import { cache } from "react";
 
 export const verifySession = cache(async () => {
-  console.log("Verifying session...");
   try {
     const cookie = (await cookies()).get("session")?.value;
     if (!cookie) {
-      console.log("No session cookie found.");
       return null;
     }
 
     const session = await decrypt(cookie);
     if (!session) {
-      console.log("Session decryption failed.", session);
       return null;
     }
-    console.log("Session decrypted successfully:", session);
 
     if (!session?.userId) return null;
 
@@ -27,7 +23,6 @@ export const verifySession = cache(async () => {
       where: { id: session.userId.toString() },
       select: { id: true },
     });
-    console.log("User found in DB:", user);
 
     // If user doesn't exist in DB, return null
     if (!user) {

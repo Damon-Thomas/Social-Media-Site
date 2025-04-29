@@ -5,6 +5,8 @@ import { fetchPaginatedComments } from "@/app/actions/fetch";
 import type { Comment } from "@/app/lib/definitions";
 import Link from "next/link";
 
+const ITEMS_PER_PAGE = 5;
+
 export default function CommentsSection({
   userId,
   initialComments = [],
@@ -17,9 +19,29 @@ export default function CommentsSection({
   const fetchMore = async (cursor: string | null) => {
     const { comments, nextCursor } = await fetchPaginatedComments(
       userId,
-      cursor
+      cursor ?? undefined,
+      ITEMS_PER_PAGE
     );
-    return { items: comments, nextCursor };
+
+    // Map properly to match Comment type
+    const mappedComments = comments.map((comment) => {
+      if (!comment) return null;
+
+      return {
+        id: comment.id,
+        content: comment.content,
+        // author: comment.author || undefined,
+        authorId: comment.authorId || undefined,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        postId: comment.postId || undefined,
+        parentId: comment.parentId || undefined,
+        likedBy: [],
+        replies: [],
+      };
+    }) as Comment[];
+
+    return { items: mappedComments, nextCursor };
   };
 
   const {
@@ -33,26 +55,27 @@ export default function CommentsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-[400px] overflow-y-auto pr-2">
       {comments.map((comment) => (
-        <div key={comment.id} className="p-4 border rounded-lg">
+        <div key={comment?.id} className="p-4 border rounded-lg">
           <Link
-            href={`/dashboard/posts/${comment.post?.id}`}
+            href={`/dashboard/posts/${comment?.post?.id}`}
             className="text-blue-600 hover:underline"
           >
             <p className="text-sm font-medium">
-              On post: {comment.post?.content?.substring(0, 50)}...
+              On post: {comment?.post?.content?.substring(0, 50)}...
             </p>
           </Link>
 
-          <p className="mt-2">{comment.content}</p>
+          <p className="mt-2">{comment?.content}</p>
 
           <p className="text-sm text-gray-500 mt-2">
-            {new Date(comment.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
+            {comment?.createdAt &&
+              new Date(comment.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
           </p>
         </div>
       ))}

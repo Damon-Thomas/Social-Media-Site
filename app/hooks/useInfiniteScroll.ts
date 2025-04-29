@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 export function useInfiniteScroll<T>(
-  initialItems: T[],
+  initialItems: (T | null)[],
   initialCursor: string | null,
   fetchMore: (
     cursor: string | null
-  ) => Promise<{ items: T[]; nextCursor: string | null }>
+  ) => Promise<{ items: (T | null)[]; nextCursor: string | null }>
 ) {
-  const [items, setItems] = useState<T[]>(initialItems);
+  const [items, setItems] = useState<(T | null)[]>(initialItems);
   const [cursor, setCursor] = useState<string | null>(initialCursor);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(!!initialCursor);
@@ -53,6 +53,12 @@ export function useInfiniteScroll<T>(
       }
     };
   }, [hasMore, loading, loadMore]);
+
+  useEffect(() => {
+    console.log("Observer target updated:", observerTarget.current);
+    console.log("Has more:", hasMore);
+    console.log("Loading:", loading);
+  }, [hasMore, loading, observerTarget]);
 
   return { items, loading, hasMore, observerTarget };
 }

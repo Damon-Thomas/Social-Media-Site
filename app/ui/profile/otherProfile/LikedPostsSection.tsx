@@ -14,12 +14,24 @@ export default function LikedPostsSection({
   initialPosts: Post[];
   initialCursor: string | null;
 }) {
+  const ITEMS_PER_PAGE = 5;
+
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedLikedPosts(
       userId,
-      cursor
+      cursor ?? undefined,
+      ITEMS_PER_PAGE
     );
-    return { items: posts, nextCursor };
+
+    // Map properly to match Post type
+    const mappedPosts = posts.map((post) => {
+      if (!post) return null;
+
+      // No need to transform fields - just return the post as is
+      return post;
+    }) as Post[];
+
+    return { items: mappedPosts, nextCursor };
   };
 
   const {
@@ -35,22 +47,23 @@ export default function LikedPostsSection({
   return (
     <div className="space-y-4">
       {likedPosts.map((post) => (
-        <div key={post.id} className="p-4 border rounded-lg">
+        <div key={post?.id} className="p-4 border rounded-lg">
           <Link
-            href={`/dashboard/posts/${post.id}`}
+            href={`/dashboard/posts/${post?.id}`}
             className="block hover:bg-gray-50 transition-colors"
           >
             <div className="flex justify-between items-start">
-              <p className="font-medium">By: {post.author?.name}</p>
+              <p className="font-medium">By: {post?.author?.name}</p>
               <span className="text-red-500">❤</span>
             </div>
-            <p className="mt-2">{post.content}</p>
+            <p className="mt-2">{post?.content}</p>
             <p className="text-sm text-gray-500 mt-2">
-              {new Date(post.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
+              {post?.createdAt &&
+                new Date(post.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
             </p>
           </Link>
         </div>

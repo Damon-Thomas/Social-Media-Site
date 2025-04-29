@@ -2,7 +2,6 @@ import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import BioText from "./BioText";
 import CardWrapper from "../CardWrapper";
-import SectionWrapper from "../SectionWrapper";
 
 export default function PersInfo({
   userData,
@@ -14,7 +13,6 @@ export default function PersInfo({
   if (!userData) {
     return;
   }
-  console.log("User data", userData.posts, userData.comments);
   return (
     <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-start h-full w-full grow">
       <div className="flex flex-col gap-4 md:gap-8 justify-start h-full w-full grow">

@@ -83,17 +83,14 @@ type AuthState =
     }
   | undefined;
 
-export async function serverAction(formData: FormData) {
-  const session = await verifySession();
-  console.log("session", session, formData);
-}
+// export async function serverAction(formData: FormData) {
+//   const session = await verifySession();
+// }
 
 export async function authenticate(state: AuthState, payload: FormData) {
-  console.log("authenticate called with state:", state, "payload:", payload);
   // 1. Check for OAuth login first
   const oauthProvider = payload.get("oauthProvider");
   const oauthCode = payload.get("oauthCode");
-  console.log("OAuth provider:", oauthProvider, "OAuth code:", oauthCode);
   if (oauthProvider && oauthCode) {
     // --- OAUTH HANDLING ---
     let oauthEmail: string | undefined;
@@ -112,13 +109,11 @@ export async function authenticate(state: AuthState, payload: FormData) {
       oauthEmail = data.email || undefined;
       oauthName = data.name || undefined;
       profileImage = data.picture || null;
-      console.log(profileImage);
     }
 
     if (oauthProvider === "github") {
       const octokit = new Octokit();
       // Exchange code for access token
-      console.log("GitHub OAuth: exchanging code", oauthCode);
       const res = await fetch(
         `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${oauthCode}`,
         {
@@ -127,7 +122,6 @@ export async function authenticate(state: AuthState, payload: FormData) {
         }
       );
       const data = await res.json();
-      console.log("GitHub token exchange response:", data);
       const { access_token } = data;
       if (!access_token) {
         return { errors: { login: "GitHub OAuth failed." } };
@@ -154,42 +148,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
       oauthEmail = email || undefined;
       oauthName = user.name || user.login || undefined;
       profileImage = user.avatar_url || null;
-      console.log(
-        "GitHub user data:",
-        user,
-        "oauthEmail",
-        oauthEmail,
-        "oauthName",
-        oauthName,
-        "profileImage",
-        profileImage,
-        "avatar_url",
-        user.avatar_url
-      );
     }
-    console.log("OAuth login data:", {
-      oauthProvider,
-      oauthCode,
-      oauthEmail,
-      oauthName,
-      profileImage,
-    });
+
     if (!oauthEmail) {
-      console.error("OAuth login failed: no email found.", {
-        oauthProvider,
-        oauthCode,
-        oauthEmail,
-        oauthName,
-      });
       return { errors: { login: "OAuth login failed: no email found." } };
     }
-    console.log("OAuth login successful:", {
-      oauthProvider,
-      oauthCode,
-      oauthEmail,
-      oauthName,
-      profileImage,
-    });
+
     // Find or create user
     let user = await prisma.user.findUnique({ where: { email: oauthEmail } });
     if (!user) {
@@ -202,9 +166,7 @@ export async function authenticate(state: AuthState, payload: FormData) {
         },
       });
     }
-    console.log("User found or created:", user);
     await createSession(user.id);
-    console.log("Session created for user:", user.id);
     redirect("/dashboard");
     return;
   }

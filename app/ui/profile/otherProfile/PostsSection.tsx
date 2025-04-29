@@ -4,6 +4,8 @@ import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
 
+const ITEMS_PER_PAGE = 5;
+
 export default function PostsSection({
   userId,
   initialPosts = [],
@@ -14,9 +16,11 @@ export default function PostsSection({
   initialCursor: string | null;
 }) {
   const fetchMore = async (cursor: string | null) => {
+    console.log("Fetching more posts with cursor:", cursor);
     const { posts, nextCursor } = await fetchPaginatedPosts(
       userId,
-      cursor ?? undefined
+      cursor ?? undefined,
+      ITEMS_PER_PAGE
     );
     return { items: posts, nextCursor };
   };
@@ -31,7 +35,6 @@ export default function PostsSection({
   if (posts.length === 0 && !loading) {
     return <div className="text-center py-4">No posts found</div>;
   }
-
   return (
     <div className="space-y-4 h-[400px] overflow-y-auto pr-2">
       {posts.map((post) => (

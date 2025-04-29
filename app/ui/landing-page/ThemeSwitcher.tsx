@@ -14,10 +14,6 @@ export default function ThemeSwitcher() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    console.log("ThemeSwitcher mounted. Current theme:", theme);
-  }, [theme]);
-
   const handleThemeChange = () => {
     setIsSpinning(true);
     setTheme(theme === "dark" ? "light" : "dark");

@@ -24,7 +24,6 @@ export default function UserProfile() {
         // Step 2: Use fetchUserById to get complete user data
         if (userInfo?.id) {
           const fullUserData = await fetchUserById(userInfo.id);
-          console.log("Current user data:", fullUserData);
           setUserData(fullUserData as User);
         }
       } catch (error) {

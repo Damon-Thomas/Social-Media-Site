@@ -5,7 +5,6 @@ import { decrypt, deleteSession } from "@/app/lib/session.server";
 import prisma from "@/app/lib/prisma"; // Ensure you have your Prisma client imported
 
 export async function GET() {
-  console.log("GETETTEERRR");
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("session")?.value;
 
@@ -31,10 +30,7 @@ export async function GET() {
     const user = await prisma.user.findUnique({
       where: { id: session.userId.toString() },
     });
-    console.log("User found in DB:", user);
     if (!user) {
-      console.log("User not found in database");
-
       await deleteSession();
       // Respond with 401 Unauthorized for missing user to clear session and redirect
       return NextResponse.json(

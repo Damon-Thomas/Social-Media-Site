@@ -89,7 +89,7 @@ export type Post = {
   content?: string | null;
   author?: User | null;
   authorId?: string | null;
-  likes?: User[];
+  likedBy?: User[]; // Was "likes?: User[]"
   comments?: Comment[];
   createdAt: Date;
   updatedAt: Date;
@@ -103,7 +103,7 @@ export type Comment = {
   authorId?: string | null;
   post?: Post | null;
   postId?: string | null;
-  likes?: User[];
+  likedBy?: User[]; // Was "likes?: User[]"
   replies?: Comment[];
   parent?: Comment | null;
   parentId?: string | null;

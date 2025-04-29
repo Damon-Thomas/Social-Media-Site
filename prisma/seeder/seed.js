@@ -464,7 +464,6 @@ async function main() {
   }
 
   // 6. Create following relationships (80-90% of users follow the super user)
-  console.log("Creating following relationships...");
   for (const user of users) {
     // 85% chance a user follows the super user
     if (Math.random() < 0.85) {
@@ -524,7 +523,6 @@ async function main() {
   }
 
   // 7. Create friend requests and friendships
-  console.log("Creating friend requests and friendships...");
 
   // 70% of users send friend requests to the super user
   const friendRequestUsers = [];
@@ -627,7 +625,7 @@ async function main() {
     }
   }
 
-  console.log("Seeding complete with super user and social connections!");
+  console.log("Seeding complete with super user!");
 
   // Finally, set a special longer bio for the super user
   await prisma.user.update({
@@ -646,8 +644,6 @@ async function main() {
       },
     });
   }
-
-  console.log("Seeding complete with super user!");
 }
 
 main()

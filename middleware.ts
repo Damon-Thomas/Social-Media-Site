@@ -10,14 +10,11 @@ export default async function middleware(req: NextRequest) {
 
   // Skip authentication for POST requests to root path
   if (path === "/" && req.method === "POST") {
-    console.log("Skipping middleware for authentication action");
     return NextResponse.next();
   }
 
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
-
-  console.log("Middleware triggered for path:", path);
 
   // Read cookie from request
   const cookie = req.cookies.get("session")?.value;
@@ -27,7 +24,6 @@ export default async function middleware(req: NextRequest) {
     try {
       const session = await decrypt(cookie);
       isAuthenticated = !!session?.userId;
-      console.log("Session found with userId:", session?.userId);
       const validateUser = await fetch(
         `${req.nextUrl.origin}/api/auth/validCookie`,
         {
@@ -38,11 +34,7 @@ export default async function middleware(req: NextRequest) {
           },
         }
       );
-      console.log("Validate user response, status:", validateUser.status);
       if (validateUser.status === 401) {
-        console.log(
-          "Session is invalid, clearing cookie and redirecting to home"
-        );
         // Clear invalid session cookie and redirect to home
         const clearRes = NextResponse.redirect(new URL("/", req.nextUrl));
         clearRes.cookies.set({
@@ -54,8 +46,6 @@ export default async function middleware(req: NextRequest) {
         return clearRes;
       }
     } catch (e) {
-      console.error("Invalid session:", e);
-
       // Clear invalid cookies
       const response = NextResponse.next();
       response.cookies.set({

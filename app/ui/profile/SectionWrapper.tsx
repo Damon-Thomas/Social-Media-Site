@@ -7,7 +7,6 @@ export default function SectionWrapper({
   children: ReactNode;
   content?: Array<unknown>;
 }) {
-  console.log(content);
   if (!content.length) {
     return (
       <div className="grow p-2 flex flex-col gap-2 md:gap-4 md:p-4 border-1 border-[var(--borderc] rounded-lg overflow-hidden">

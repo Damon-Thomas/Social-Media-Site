@@ -4,6 +4,7 @@ import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import ProfileSelectors from "./ProfileSelectors";
 import ProfileInfo from "./ProfileInfo";
 import CombinedLikedSection from "../CombinedLikedSection";
+import { useEffect } from "react";
 
 // Define the type for the active tab
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
@@ -41,6 +42,15 @@ export default function ProfileRemote({
   activeTab,
   setActiveTab,
 }: ProfileRemoteProps) {
+  useEffect(() => {
+    const scrollContainer = document.getElementById(
+      "dashboard-scroll-container"
+    );
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [activeTab]);
+
   return (
     <>
       <ProfileSelectors

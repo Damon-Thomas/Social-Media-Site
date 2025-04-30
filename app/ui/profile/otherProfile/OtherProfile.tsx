@@ -55,7 +55,7 @@ export default function OtherProfile({
   }
 
   return (
-    <div className="grid grid-cols-[1fr] gap-6 w-full">
+    <div className="grid grid-cols-[1fr] gap-6 w-full ">
       <div className="flex flex-col min-w-0">
         <PersInfo userData={userData} />
         <ProfileRemote

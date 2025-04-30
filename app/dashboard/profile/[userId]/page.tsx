@@ -1,6 +1,6 @@
 "use client"; // Add "use client" because we need useState and useEffect
 
-import { useState, useEffect } from "react"; // Import hooks
+import { useState, useEffect, useRef } from "react"; // Import hooks and useRef
 import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
 import {
   fetchUserById,
@@ -68,6 +68,11 @@ export default function ProfilePageClient({ params }: PageParams) {
   > | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveProfileTab>("activity"); // Default to 'posts'
+  const sidebarRef = useRef<HTMLDivElement>(null); // Ref for the sidebar
+
+  const NAVIGATOR_HEIGHT_PX = 64; // Height of the Navigator component
+  const SIDEBAR_TOP_OFFSET_PX = 20; // Your original top-5 offset
+  const initialTop = NAVIGATOR_HEIGHT_PX + SIDEBAR_TOP_OFFSET_PX;
 
   useEffect(() => {
     // Fetch initial data on the client
@@ -81,17 +86,6 @@ export default function ProfilePageClient({ params }: PageParams) {
         setLoading(false); // Handle error state appropriately
       });
   }, [userId]);
-
-  // Effect to scroll to top when activeTab changes
-  useEffect(() => {
-    // Only scroll if not the initial load (or handle initial load differently if needed)
-    const scrollContainer = document.getElementById(
-      "dashboard-scroll-container"
-    );
-    if (scrollContainer) {
-      scrollContainer.scrollTo({ top: 0, behavior: "smooth" }); // Use 'auto' for instant scroll
-    }
-  }, [activeTab]); // Dependency array includes activeTab
 
   if (loading) {
     return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
@@ -117,28 +111,33 @@ export default function ProfilePageClient({ params }: PageParams) {
   } = initialData;
 
   return (
-    <div className="max-w-5xl relative flex justify-end p-2 md:pr-64 w-full scroll-auto">
-      <OtherProfile
-        userData={userData}
-        initialActivity={initialActivity}
-        activityCursor={activityCursor}
-        initialPosts={initialPosts}
-        postsCursor={postsCursor}
-        initialComments={initialComments}
-        commentsCursor={commentsCursor}
-        initialLikedPosts={initialLikedPosts}
-        likedPostsCursor={likedPostsCursor}
-        initialLikedComments={initialLikedComments}
-        likedCommentsCursor={likedCommentsCursor}
-        // Pass state and setter down
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-      {/* Right Column - This entire div sticks */}
+    // Adjust parent layout: Use flex, items-start, gap-6. Remove justify-end and large right padding.
+    <div className="max-w-5xl flex items-start gap-6 p-2 w-full">
+      {/* Main Profile Content Area - Takes available space */}
+      {/* Added max-width constraint to prevent overlap on medium screens */}
+      <div className="flex-grow min-w-0 max-w-full md:max-w-[calc(100%-16rem-1.5rem)]">
+        <OtherProfile
+          userData={userData}
+          initialActivity={initialActivity}
+          activityCursor={activityCursor}
+          initialPosts={initialPosts}
+          postsCursor={postsCursor}
+          initialComments={initialComments}
+          commentsCursor={commentsCursor}
+          initialLikedPosts={initialLikedPosts}
+          likedPostsCursor={likedPostsCursor}
+          initialLikedComments={initialLikedComments}
+          likedCommentsCursor={likedCommentsCursor}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+      </div>
+      {/* Right Sidebar - Use sticky positioning */}
       <div
-        className={`absolute right-2 top-5 sideContent max-w-2xs hidden md:block`}
+        ref={sidebarRef}
+        className={`sideContent w-64 max-w-xs hidden md:block sticky top-0 self-start z-10`}
+        // style={{ top: `${initialTop}px` }}
       >
-        {/* Content within the sticky right column */}
         <div className="space-y-6">
           <Goats />
           <Goats />
@@ -153,8 +152,5 @@ export default function ProfilePageClient({ params }: PageParams) {
 // Keep the original async function signature for Next.js data fetching patterns if needed,
 // but render the client component.
 export async function ProfilePage({ params }: PageParams) {
-  // You might still pre-fetch some data here if desired,
-  // but the state management happens in the client component.
-  // For simplicity now, we just render the client component directly.
   return <ProfilePageClient params={params} />;
 }

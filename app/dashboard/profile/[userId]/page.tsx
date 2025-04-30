@@ -1,73 +1,123 @@
+"use client"; // Add "use client" because we need useState and useEffect
+
+import { useState, useEffect } from "react"; // Import hooks
+import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
 import {
   fetchUserById,
+  fetchPaginatedActivity,
   fetchPaginatedPosts,
   fetchPaginatedComments,
   fetchPaginatedLikedPosts,
   fetchPaginatedLikedComments,
-  fetchPaginatedActivity,
 } from "@/app/actions/fetch";
-import { notFound } from "next/navigation";
-import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
-import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
+import type {
+  Post,
+  Comment,
+  ActivityItem,
+  User, // Assuming User type is defined here or imported
+} from "@/app/lib/definitions";
+import Goats from "@/app/ui/dashboard/Goats";
 
-type PageParams = {
-  params: Promise<{ userId: string }>;
-};
+interface PageParams {
+  params: { userId: string };
+}
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
-export default async function ProfilePage({ params }: PageParams) {
-  const { userId } = await params;
-  const fetched = await fetchUserById(userId);
-  if (!fetched) notFound();
-  const userData = fetched as User;
+// Define a type for the active tab/section
+type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
-  // Get initial data for each section with cursor
-  const activityResponse = await fetchPaginatedActivity(
-    userId,
-    undefined,
-    ITEMS_PER_PAGE * 2
-  );
-  const postsResponse = await fetchPaginatedPosts(
-    userId,
-    undefined,
-    ITEMS_PER_PAGE
-  );
-  const commentsResponse = await fetchPaginatedComments(
-    userId,
-    undefined,
-    ITEMS_PER_PAGE
-  );
-  const likedPostsResponse = await fetchPaginatedLikedPosts(
-    userId,
-    undefined,
-    ITEMS_PER_PAGE
-  );
-  const likedCommentsResponse = await fetchPaginatedLikedComments(
-    userId,
-    undefined,
-    ITEMS_PER_PAGE
-  );
+// Fetch data on the server side (keep this part)
+async function getData(userId: string) {
+  const [
+    userData,
+    activityResponse,
+    postsResponse,
+    commentsResponse,
+    likedPostsResponse,
+    likedCommentsResponse,
+  ] = await Promise.all([
+    fetchUserById(userId),
+    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
+  ]);
 
-  // Apply proper type assertions
-  const initialActivity = (activityResponse.activities || []) as ActivityItem[];
-  const activityCursor = activityResponse.nextCursor;
+  return {
+    userData,
+    initialActivity: (activityResponse.activities || []) as ActivityItem[],
+    activityCursor: activityResponse.nextCursor,
+    initialPosts: (postsResponse.posts || []) as Post[],
+    postsCursor: postsResponse.nextCursor,
+    initialComments: (commentsResponse.comments || []) as Comment[],
+    commentsCursor: commentsResponse.nextCursor,
+    initialLikedPosts: (likedPostsResponse.posts || []) as Post[],
+    likedPostsCursor: likedPostsResponse.nextCursor,
+    initialLikedComments: (likedCommentsResponse.comments || []) as Comment[],
+    likedCommentsCursor: likedCommentsResponse.nextCursor,
+  };
+}
 
-  const initialPosts = (postsResponse.posts || []) as Post[];
-  const postsCursor = postsResponse.nextCursor;
+// Client component to handle state and effects
+export default function ProfilePageClient({ params }: PageParams) {
+  const userId = params.userId;
+  const [initialData, setInitialData] = useState<Awaited<
+    ReturnType<typeof getData>
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<ActiveProfileTab>("activity"); // Default to 'posts'
 
-  const initialComments = (commentsResponse.comments || []) as Comment[];
-  const commentsCursor = commentsResponse.nextCursor;
+  useEffect(() => {
+    // Fetch initial data on the client
+    getData(userId)
+      .then((data) => {
+        setInitialData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch profile data:", error);
+        setLoading(false); // Handle error state appropriately
+      });
+  }, [userId]);
 
-  const initialLikedPosts = (likedPostsResponse.posts || []) as Post[];
-  const likedPostsCursor = likedPostsResponse.nextCursor;
+  // Effect to scroll to top when activeTab changes
+  useEffect(() => {
+    // Only scroll if not the initial load (or handle initial load differently if needed)
+    const scrollContainer = document.getElementById(
+      "dashboard-scroll-container"
+    );
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: "smooth" }); // Use 'auto' for instant scroll
+    }
+  }, [activeTab]); // Dependency array includes activeTab
 
-  const initialLikedComments = (likedCommentsResponse.comments ||
-    []) as Comment[];
-  const likedCommentsCursor = likedCommentsResponse.nextCursor;
+  if (loading) {
+    return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
+  }
+
+  if (!initialData?.userData) {
+    return <div className="p-6 text-center">User not found.</div>;
+  }
+
+  // Destructure data after loading and checking for user
+  const {
+    userData,
+    initialActivity,
+    activityCursor,
+    initialPosts,
+    postsCursor,
+    initialComments,
+    commentsCursor,
+    initialLikedPosts,
+    likedPostsCursor,
+    initialLikedComments,
+    likedCommentsCursor,
+  } = initialData;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto p-6 overflow-hidden flex flex-col w-full h-full">
+    <div className="max-w-5xl relative flex justify-end p-2 md:pr-64 w-full scroll-auto">
       <OtherProfile
         userData={userData}
         initialActivity={initialActivity}
@@ -80,7 +130,31 @@ export default async function ProfilePage({ params }: PageParams) {
         likedPostsCursor={likedPostsCursor}
         initialLikedComments={initialLikedComments}
         likedCommentsCursor={likedCommentsCursor}
+        // Pass state and setter down
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
+      {/* Right Column - This entire div sticks */}
+      <div
+        className={`absolute right-2 top-5 sideContent max-w-2xs hidden md:block`}
+      >
+        {/* Content within the sticky right column */}
+        <div className="space-y-6">
+          <Goats />
+          <Goats />
+          <Goats />
+          {/* ... other sticky content ... */}
+        </div>
+      </div>
     </div>
   );
+}
+
+// Keep the original async function signature for Next.js data fetching patterns if needed,
+// but render the client component.
+export async function ProfilePage({ params }: PageParams) {
+  // You might still pre-fetch some data here if desired,
+  // but the state management happens in the client component.
+  // For simplicity now, we just render the client component directly.
+  return <ProfilePageClient params={params} />;
 }

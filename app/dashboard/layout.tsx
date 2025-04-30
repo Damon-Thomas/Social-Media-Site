@@ -9,10 +9,15 @@ export default function DashboardLayout({
 }) {
   return (
     <div
-      className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] overflow-y-aut`}
+      className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)]`}
     >
       <Navigator />
-      <div className="grow overflow-y-auto">{children}</div>
+      <div
+        id="dashboard-scroll-container" // Add this ID
+        className="grow overflow-y-auto flex justify-center"
+      >
+        {children}
+      </div>
     </div>
   );
 }

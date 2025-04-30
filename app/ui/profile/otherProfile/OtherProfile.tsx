@@ -2,12 +2,11 @@
 
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import PersInfo from "./PersInfo";
-import PostsSection from "./PostsSection";
-import CommentsSection from "./CommentsSection";
-import LikedPostsSection from "./LikedPostsSection";
-import LikedCommentsSection from "./LikedCommentsSection";
-import { useEffect, useRef } from "react";
 import ProfileRemote from "../ProfileRemote/ProfileRemote";
+import Goats from "../../dashboard/Goats";
+
+// Use the same type as ProfileRemote's activeTab state
+type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 export interface OtherProfileProps {
   userData: User;
@@ -21,6 +20,9 @@ export interface OtherProfileProps {
   likedPostsCursor?: string | null;
   initialLikedComments?: Comment[];
   likedCommentsCursor?: string | null;
+  // Add props for lifted state
+  activeTab: ActiveProfileTab;
+  setActiveTab: (tab: ActiveProfileTab) => void;
 }
 
 export default function OtherProfile({
@@ -35,22 +37,11 @@ export default function OtherProfile({
   likedPostsCursor = null,
   initialLikedComments = [],
   likedCommentsCursor = null,
+  // Destructure new props
+  activeTab,
+  setActiveTab,
 }: OtherProfileProps) {
-  const firstChildRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (firstChildRef.current) {
-        firstChildRef.current.scrollTop = document.documentElement.scrollTop;
-      }
-    };
-
-    document.addEventListener("scroll", handleScroll);
-
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const NAVIGATOR_HEIGHT = 64;
 
   if (!userData) {
     return (
@@ -64,45 +55,26 @@ export default function OtherProfile({
   }
 
   return (
-    <div className="grid grid-cols-[1fr] overflow-hidden md:grid-cols-[1fr_300px] gap-6 w-full h-full">
-      {/* First column: stretch & scroll */}
-      <div className="flex flex-col grow overflow-hidden">
+    <div className="grid grid-cols-[1fr] gap-6 w-full">
+      <div className="flex flex-col min-w-0">
         <PersInfo userData={userData} />
-        <div className="flex-1 overflow-auto">
-          <ProfileRemote
-            userData={userData}
-            initialActivity={initialActivity}
-            activityCursor={activityCursor}
-            initialPosts={initialPosts}
-            postsCursor={postsCursor}
-            initialComments={initialComments}
-            commentsCursor={commentsCursor}
-            initialLikedPosts={initialLikedPosts}
-            likedPostsCursor={likedPostsCursor}
-            initialLikedComments={initialLikedComments}
-            likedCommentsCursor={likedCommentsCursor}
-          />
-        </div>
-      </div>
-
-      {/* Second column: Liked Posts & Comments */}
-      <div className="flex flex-col gap-2 h-full flex-shrink-0 overflow-hidden">
-        <div className="h-1/2 overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Liked Posts</h2>
-          <LikedPostsSection
-            userId={userData.id}
-            initialPosts={initialLikedPosts}
-            initialCursor={likedPostsCursor}
-          />
-        </div>
-        <div className="h-1/2 overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Liked Comments</h2>
-          <LikedCommentsSection
-            userId={userData.id}
-            initialComments={initialLikedComments}
-            initialCursor={likedCommentsCursor}
-          />
-        </div>
+        <ProfileRemote
+          userData={userData}
+          initialActivity={initialActivity}
+          activityCursor={activityCursor}
+          initialPosts={initialPosts}
+          postsCursor={postsCursor}
+          initialComments={initialComments}
+          commentsCursor={commentsCursor}
+          initialLikedPosts={initialLikedPosts}
+          likedPostsCursor={likedPostsCursor}
+          initialLikedComments={initialLikedComments}
+          likedCommentsCursor={likedCommentsCursor}
+          navigatorHeight={NAVIGATOR_HEIGHT}
+          // Pass down the lifted state and setter
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
     </div>
   );

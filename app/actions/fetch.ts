@@ -2,6 +2,7 @@
 
 import prisma from "../lib/prisma";
 import { Prisma } from "../../generated/prisma";
+import type { ActivityItem } from "@/app/lib/definitions";
 
 export async function mostPopular(mobile: boolean) {
   const take = mobile ? 3 : 5;
@@ -147,4 +148,98 @@ export async function fetchPaginatedLikedComments(
       : null;
 
   return { comments: likedComments, nextCursor };
+}
+
+export async function fetchPaginatedActivity(
+  userId: string,
+  cursor?: string, // last‐seen ActivityItem.id
+  limit: number = 10
+): Promise<{ activities: ActivityItem[]; nextCursor: string | null }> {
+  // 1) fetch all four lists with the same shape your other sections use
+  const [posts, comments, likedPosts, likedComments] = await Promise.all([
+    prisma.post.findMany({
+      where: { authorId: userId },
+      select: {
+        id: true,
+        createdAt: true,
+        content: true,
+        authorId: true,
+        author: true,
+        likedBy: true, // now includes array of users who liked
+        comments: true, // now includes array of comments
+      },
+    }),
+    prisma.comment.findMany({
+      where: { authorId: userId },
+      select: {
+        id: true,
+        createdAt: true,
+        content: true,
+        authorId: true,
+        author: true,
+        postId: true,
+        likedBy: true, // now includes array of users who liked
+      },
+    }),
+    prisma.post.findMany({
+      where: { likedBy: { some: { id: userId } } },
+      select: {
+        id: true,
+        createdAt: true,
+        content: true,
+        authorId: true,
+        author: true,
+        likedBy: true,
+        comments: true,
+      },
+    }),
+    prisma.comment.findMany({
+      where: { likedBy: { some: { id: userId } } },
+      select: {
+        id: true,
+        createdAt: true,
+        content: true,
+        authorId: true,
+        author: true,
+        postId: true,
+        likedBy: true,
+      },
+    }),
+  ]);
+
+  // 2) normalize into ActivityItem[]
+  const all: ActivityItem[] = [
+    ...posts.map((p) => ({
+      id: `post:${p.id}`,
+      type: "post",
+      createdAt: p.createdAt,
+      payload: p,
+    })),
+    ...comments.map((c) => ({
+      id: `comment:${c.id}`,
+      type: "comment",
+      createdAt: c.createdAt,
+      payload: c,
+    })),
+    ...likedPosts.map((p) => ({
+      id: `likedPost:${p.id}`,
+      type: "likedPost",
+      createdAt: p.createdAt,
+      payload: p,
+    })),
+    ...likedComments.map((c) => ({
+      id: `likedComment:${c.id}`,
+      type: "likedComment",
+      createdAt: c.createdAt,
+      payload: c,
+    })),
+  ];
+
+  // 3) sort by date desc and page‐through
+  all.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const start = cursor ? all.findIndex((x) => x.id === cursor) + 1 : 0;
+  const page = all.slice(start, start + limit);
+  const nextCursor = page.length === limit ? page[page.length - 1].id : null;
+
+  return { activities: page, nextCursor };
 }

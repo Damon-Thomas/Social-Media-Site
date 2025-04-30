@@ -137,3 +137,10 @@ export type Notification = {
   createdAt: Date;
   updatedAt: Date;
 } | null;
+
+export type ActivityItem = {
+  id: string;
+  type: "post" | "comment" | "likedPost" | "likedComment";
+  createdAt: Date;
+  payload: Post | Comment;
+};

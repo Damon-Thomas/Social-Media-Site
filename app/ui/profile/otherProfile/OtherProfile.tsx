@@ -1,15 +1,18 @@
 "use client";
 
-import type { User, Post, Comment } from "@/app/lib/definitions";
+import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import PersInfo from "./PersInfo";
 import PostsSection from "./PostsSection";
 import CommentsSection from "./CommentsSection";
 import LikedPostsSection from "./LikedPostsSection";
 import LikedCommentsSection from "./LikedCommentsSection";
 import { useEffect, useRef } from "react";
+import ProfileRemote from "../ProfileRemote/ProfileRemote";
 
-interface OtherProfileProps {
+export interface OtherProfileProps {
   userData: User;
+  initialActivity?: ActivityItem[];
+  activityCursor?: string | null;
   initialPosts?: Post[];
   postsCursor?: string | null;
   initialComments?: Comment[];
@@ -22,6 +25,8 @@ interface OtherProfileProps {
 
 export default function OtherProfile({
   userData,
+  initialActivity = [],
+  activityCursor = null,
   initialPosts = [],
   postsCursor = null,
   initialComments = [],
@@ -60,28 +65,25 @@ export default function OtherProfile({
 
   return (
     <div className="grid grid-cols-[1fr] md:grid-cols-[1fr_300px] overflow-hidden gap-6 w-full h-full">
-      {/* First child: Takes up remaining space */}
-      <div className="flex flex-col gap-4 overflow-auto" ref={firstChildRef}>
+      {/* First child: feed and tabs */}
+      <div className="flex flex-col">
         <PersInfo userData={userData} />
-        <div className="flex-1">
-          <h2 className="text-xl font-bold mb-4">Posts</h2>
-          <PostsSection
-            userId={userData.id}
-            initialPosts={initialPosts}
-            initialCursor={postsCursor}
-          />
-        </div>
-        <div className="flex-1">
-          <h2 className="text-xl font-bold mb-4">Comments</h2>
-          <CommentsSection
-            userId={userData.id}
-            initialComments={initialComments}
-            initialCursor={commentsCursor}
-          />
-        </div>
+        <ProfileRemote
+          userData={userData}
+          initialActivity={initialActivity}
+          activityCursor={activityCursor}
+          initialPosts={initialPosts}
+          postsCursor={postsCursor}
+          initialComments={initialComments}
+          commentsCursor={commentsCursor}
+          initialLikedPosts={initialLikedPosts}
+          likedPostsCursor={likedPostsCursor}
+          initialLikedComments={initialLikedComments}
+          likedCommentsCursor={likedCommentsCursor}
+        />
       </div>
 
-      {/* Second child: Fixed height for Liked Posts and Liked Comments */}
+      {/* Second child: Liked Posts & Comments */}
       <div className="flex flex-col gap-2 h-full flex-shrink-0 overflow-hidden">
         <div className="h-1/2 overflow-y-auto">
           <h2 className="text-xl font-bold mb-4">Liked Posts</h2>

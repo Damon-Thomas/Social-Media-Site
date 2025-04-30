@@ -4,9 +4,10 @@ import {
   fetchPaginatedComments,
   fetchPaginatedLikedPosts,
   fetchPaginatedLikedComments,
+  fetchPaginatedActivity,
 } from "@/app/actions/fetch";
 import { notFound } from "next/navigation";
-import type { User, Post, Comment } from "@/app/lib/definitions";
+import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
 
 type PageParams = {
@@ -22,6 +23,11 @@ export default async function ProfilePage({ params }: PageParams) {
   const userData = fetched as User;
 
   // Get initial data for each section with cursor
+  const activityResponse = await fetchPaginatedActivity(
+    userId,
+    undefined,
+    ITEMS_PER_PAGE * 2
+  );
   const postsResponse = await fetchPaginatedPosts(
     userId,
     undefined,
@@ -44,6 +50,9 @@ export default async function ProfilePage({ params }: PageParams) {
   );
 
   // Apply proper type assertions
+  const initialActivity = (activityResponse.activities || []) as ActivityItem[];
+  const activityCursor = activityResponse.nextCursor;
+
   const initialPosts = (postsResponse.posts || []) as Post[];
   const postsCursor = postsResponse.nextCursor;
 
@@ -61,6 +70,8 @@ export default async function ProfilePage({ params }: PageParams) {
     <div className="space-y-8 max-w-6xl mx-auto p-6 overflow-hidden flex flex-col w-full h-full">
       <OtherProfile
         userData={userData}
+        initialActivity={initialActivity}
+        activityCursor={activityCursor}
         initialPosts={initialPosts}
         postsCursor={postsCursor}
         initialComments={initialComments}

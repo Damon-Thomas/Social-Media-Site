@@ -58,7 +58,7 @@ export default async function ProfilePage({ params }: PageParams) {
   const likedCommentsCursor = likedCommentsResponse.nextCursor;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto p-6 overflow-auto flex flex-col w-full">
+    <div className="space-y-8 max-w-6xl mx-auto p-6 overflow-hidden flex flex-col w-full h-full">
       <OtherProfile
         userData={userData}
         initialPosts={initialPosts}

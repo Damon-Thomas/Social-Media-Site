@@ -45,7 +45,7 @@ export default function LikedPostsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-auto grow">
       {likedPosts.map((post) => (
         <div key={post?.id} className="p-4 border rounded-lg">
           <Link

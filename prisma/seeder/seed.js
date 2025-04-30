@@ -266,8 +266,7 @@ function generateSuperUserBio() {
   When I'm not coding or traveling, I enjoy ${hobbies}. I'm passionate about mentoring junior developers and regularly speak at industry conferences about emerging technologies and career growth.
   
   I publish weekly articles on modern development practices and maintain several popular open-source projects with over 10k stars on GitHub. Let's connect if you're interested in collaboration or just want to chat about ${faker.hacker.noun()} or ${faker.hacker.noun()}!
-  
-  ${faker.lorem.paragraphs(2)}`;
+  `;
 }
 
 async function main() {

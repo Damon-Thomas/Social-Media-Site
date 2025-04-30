@@ -64,26 +64,28 @@ export default function OtherProfile({
   }
 
   return (
-    <div className="grid grid-cols-[1fr] md:grid-cols-[1fr_300px] overflow-hidden gap-6 w-full h-full">
-      {/* First child: feed and tabs */}
-      <div className="flex flex-col">
+    <div className="grid grid-cols-[1fr] overflow-hidden md:grid-cols-[1fr_300px] gap-6 w-full h-full">
+      {/* First column: stretch & scroll */}
+      <div className="flex flex-col grow overflow-hidden">
         <PersInfo userData={userData} />
-        <ProfileRemote
-          userData={userData}
-          initialActivity={initialActivity}
-          activityCursor={activityCursor}
-          initialPosts={initialPosts}
-          postsCursor={postsCursor}
-          initialComments={initialComments}
-          commentsCursor={commentsCursor}
-          initialLikedPosts={initialLikedPosts}
-          likedPostsCursor={likedPostsCursor}
-          initialLikedComments={initialLikedComments}
-          likedCommentsCursor={likedCommentsCursor}
-        />
+        <div className="flex-1 overflow-auto">
+          <ProfileRemote
+            userData={userData}
+            initialActivity={initialActivity}
+            activityCursor={activityCursor}
+            initialPosts={initialPosts}
+            postsCursor={postsCursor}
+            initialComments={initialComments}
+            commentsCursor={commentsCursor}
+            initialLikedPosts={initialLikedPosts}
+            likedPostsCursor={likedPostsCursor}
+            initialLikedComments={initialLikedComments}
+            likedCommentsCursor={likedCommentsCursor}
+          />
+        </div>
       </div>
 
-      {/* Second child: Liked Posts & Comments */}
+      {/* Second column: Liked Posts & Comments */}
       <div className="flex flex-col gap-2 h-full flex-shrink-0 overflow-hidden">
         <div className="h-1/2 overflow-y-auto">
           <h2 className="text-xl font-bold mb-4">Liked Posts</h2>

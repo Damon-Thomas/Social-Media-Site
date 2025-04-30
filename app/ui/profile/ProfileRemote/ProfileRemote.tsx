@@ -23,7 +23,7 @@ export default function ProfileRemote({
   >("posts");
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="flex flex-col h-full w-full flex-1">
       <ProfileSelectors activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {activeTab === "activity" && (

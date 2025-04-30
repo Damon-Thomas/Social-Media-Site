@@ -54,7 +54,7 @@ export default function LikedCommentsSection({
   }
 
   return (
-    <div className="space-y-4 h-[400px] overflow-y-auto pr-2">
+    <div className="space-y-4 grow overflow-y-auto pr-2">
       {likedComments.map((comment) => (
         <div key={comment?.id} className="p-4 border rounded-lg">
           <div className="flex justify-between items-start">

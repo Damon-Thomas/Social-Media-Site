@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { OtherProfileProps } from "../otherProfile/OtherProfile";
 import ProfileSelectors from "./ProfileSelectors";
 import ProfileInfo from "./ProfileInfo";
+import CombinedLikedSection from "../CombinedLikedSection";
 
 export default function ProfileRemote({
   userData,
@@ -19,7 +20,7 @@ export default function ProfileRemote({
   likedCommentsCursor = null,
 }: OtherProfileProps) {
   const [activeTab, setActiveTab] = useState<
-    "activity" | "posts" | "comments" | "likedPosts" | "likedComments"
+    "activity" | "posts" | "comments" | "liked"
   >("posts");
 
   return (
@@ -50,20 +51,13 @@ export default function ProfileRemote({
           cursor={commentsCursor}
         />
       )}
-      {activeTab === "likedPosts" && (
-        <ProfileInfo
-          type="likedPosts"
-          userData={userData}
-          initialContent={initialLikedPosts}
-          cursor={likedPostsCursor}
-        />
-      )}
-      {activeTab === "likedComments" && (
-        <ProfileInfo
-          type="likedComments"
-          userData={userData}
-          initialContent={initialLikedComments}
-          cursor={likedCommentsCursor}
+      {activeTab === "liked" && (
+        <CombinedLikedSection
+          userId={userData.id}
+          initialLikedPosts={initialLikedPosts}
+          initialLikedComments={initialLikedComments}
+          likedPostsCursor={likedPostsCursor}
+          likedCommentsCursor={likedCommentsCursor}
         />
       )}
     </div>

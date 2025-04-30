@@ -244,7 +244,7 @@ function generateRealisticBio() {
   return bio;
 }
 
-// Add this function to generate a longer, more detailed bio for the super user
+// Modify the generateSuperUserBio function to limit bio to 500 characters
 function generateSuperUserBio() {
   const profession = faker.person.jobTitle();
   const mainCompany = faker.company.name();
@@ -253,20 +253,23 @@ function generateSuperUserBio() {
     .fill()
     .map(() => faker.hacker.noun())
     .join(", ");
-  const hobbies = Array(4)
-    .fill()
-    .map(() => faker.word.words(2))
-    .join(", ");
+  // const hobbies = Array(4)
+  //   .fill()
+  //   .map(() => faker.word.words(2))
+  //   .join(", ");
   const countries = getRandomInt(15, 30);
 
-  return `Senior ${profession} at ${mainCompany} with over 15 years of experience in the industry. Previously led teams at ${previousCompany} where I developed expertise in ${techSkills}. 
+  let bio = `Senior ${profession} at ${mainCompany} with over 15 years of experience in the industry. Previously led teams at ${previousCompany} where I developed expertise in ${techSkills}. 
   
-  I've traveled to ${countries} countries across 6 continents, documenting my experiences through writing and photography. 
-  
-  When I'm not coding or traveling, I enjoy ${hobbies}. I'm passionate about mentoring junior developers and regularly speak at industry conferences about emerging technologies and career growth.
-  
-  I publish weekly articles on modern development practices and maintain several popular open-source projects with over 10k stars on GitHub. Let's connect if you're interested in collaboration or just want to chat about ${faker.hacker.noun()} or ${faker.hacker.noun()}!
-  `;
+  I've traveled to ${countries} countries across 6 continents, documenting my experiences through writing and photography. I'm passionate about mentoring junior developers and regularly speak at industry conferences about emerging technologies and career growth.`;
+
+  //  I publish weekly articles on modern development practices and maintain several popular open-source projects with over 10k stars on GitHub. Let's connect if you're interested in collaboration or just want to chat about ${faker.hacker.noun()} or ${faker.hacker.noun()}!`;
+
+  // Enforce bio length to be at most 500 characters
+  if (bio.length > 500) {
+    bio = bio.slice(0, 497) + "...";
+  }
+  return bio;
 }
 
 async function main() {
@@ -275,7 +278,7 @@ async function main() {
     firstName: "Super",
     lastName: "User",
     fullName: "Super User",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
     email: "super.user@example.com",
     password: "superuser",
   };
@@ -457,6 +460,46 @@ async function main() {
       likedPosts.add(post.id);
       await prisma.post.update({
         where: { id: post.id },
+        data: { likedBy: { connect: { id: user.id } } },
+      });
+    }
+  }
+
+  // 5B. Super user likes some posts from others
+  const nonSuperUserPosts = posts.filter(
+    (post) => post.authorId !== superUser.id
+  );
+  const numLikesForSuperUser = getRandomInt(
+    Math.floor(nonSuperUserPosts.length * 0.3),
+    Math.floor(nonSuperUserPosts.length * 0.5)
+  );
+  const superUserLiked = new Set();
+  for (let i = 0; i < numLikesForSuperUser; i++) {
+    let post;
+    do {
+      post = nonSuperUserPosts[getRandomInt(0, nonSuperUserPosts.length - 1)];
+    } while (superUserLiked.has(post.id));
+    superUserLiked.add(post.id);
+    await prisma.post.update({
+      where: { id: post.id },
+      data: { likedBy: { connect: { id: superUser.id } } },
+    });
+  }
+
+  // 5C. Everyone likes some comments
+  const allUsers = [...users, superUser];
+  for (const user of allUsers) {
+    // Each user likes between 3 and 7 comments
+    const numCommentsToLike = getRandomInt(3, 7);
+    const likedComments = new Set();
+    for (let j = 0; j < numCommentsToLike; j++) {
+      let comment;
+      do {
+        comment = comments[getRandomInt(0, comments.length - 1)];
+      } while (likedComments.has(comment.id) || comment.authorId === user.id);
+      likedComments.add(comment.id);
+      await prisma.comment.update({
+        where: { id: comment.id },
         data: { likedBy: { connect: { id: user.id } } },
       });
     }

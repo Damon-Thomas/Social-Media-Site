@@ -2,7 +2,7 @@
 
 import type { Dispatch, SetStateAction } from "react";
 
-type Tab = "activity" | "posts" | "comments" | "likedPosts" | "likedComments";
+export type Tab = "activity" | "posts" | "comments" | "liked";
 
 interface ProfileSelectorsProps {
   activeTab: Tab;
@@ -13,13 +13,7 @@ export default function ProfileSelectors({
   activeTab,
   setActiveTab,
 }: ProfileSelectorsProps) {
-  const tabs: Tab[] = [
-    "activity",
-    "posts",
-    "comments",
-    "likedPosts",
-    "likedComments",
-  ];
+  const tabs: Tab[] = ["activity", "posts", "comments", "liked"];
 
   return (
     <div className="flex space-x-4 mb-4">

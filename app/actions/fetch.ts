@@ -3,6 +3,7 @@
 import prisma from "../lib/prisma";
 import { Prisma } from "../../generated/prisma";
 import type { ActivityItem } from "@/app/lib/definitions";
+import type { Post, Comment } from "@/app/lib/definitions";
 
 export async function mostPopular(mobile: boolean) {
   const take = mobile ? 3 : 5;
@@ -242,4 +243,73 @@ export async function fetchPaginatedActivity(
   const nextCursor = page.length === limit ? page[page.length - 1].id : null;
 
   return { activities: page, nextCursor };
+}
+
+export async function fetchPaginatedLikedActivity(
+  userId: string,
+  postsCursor: string | null,
+  commentsCursor: string | null,
+  limit: number = 10
+): Promise<{
+  items: (
+    | { type: "likedPost"; payload: Post; createdAt: Date }
+    | { type: "likedComment"; payload: Comment; createdAt: Date }
+  )[];
+  nextCursors: {
+    likedPostsCursor: string | null;
+    likedCommentsCursor: string | null;
+  };
+}> {
+  // Fetch liked posts and liked comments concurrently:
+  const [postsRes, commentsRes] = await Promise.all([
+    (async () => {
+      const posts = await prisma.post.findMany({
+        where: { likedBy: { some: { id: userId } } },
+        take: limit,
+        skip: postsCursor ? 1 : 0,
+        cursor: postsCursor ? { id: postsCursor } : undefined,
+        orderBy: { createdAt: "desc" },
+        include: { author: true, comments: true },
+      });
+      const nextCursor =
+        posts.length === limit ? posts[posts.length - 1].id : null;
+      return { posts, nextCursor };
+    })(),
+    (async () => {
+      const comments = await prisma.comment.findMany({
+        where: { likedBy: { some: { id: userId } } },
+        take: limit,
+        skip: commentsCursor ? 1 : 0,
+        cursor: commentsCursor ? { id: commentsCursor } : undefined,
+        orderBy: { createdAt: "desc" },
+        include: { author: true, post: true },
+      });
+      const nextCursor =
+        comments.length === limit ? comments[comments.length - 1].id : null;
+      return { comments, nextCursor };
+    })(),
+  ]);
+
+  const combined = [
+    ...postsRes.posts.map((p) => ({
+      type: "likedPost" as const,
+      payload: p,
+      createdAt: p.createdAt,
+    })),
+    ...commentsRes.comments.map((c) => ({
+      type: "likedComment" as const,
+      payload: c,
+      createdAt: c.createdAt,
+    })),
+  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  const items = combined.slice(0, limit);
+
+  return {
+    items,
+    nextCursors: {
+      likedPostsCursor: postsRes.nextCursor,
+      likedCommentsCursor: commentsRes.nextCursor,
+    },
+  };
 }

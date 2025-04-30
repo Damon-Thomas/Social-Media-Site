@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 import ThemeHydrationGuard from "./ui/ThemeHydrationGuard";
 import DebugTheme from "./ui/DebugTheme";
+import Head from "./head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,13 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>{String(metadata.title ?? "Zuno")}</title>
-        <meta
-          name="description"
-          content={String(metadata.description || "A social media website.")}
-        />
-      </head>
+      <Head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >

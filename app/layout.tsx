@@ -8,6 +8,7 @@ import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 import ThemeHydrationGuard from "./ui/ThemeHydrationGuard";
 import DebugTheme from "./ui/DebugTheme";
 import Head from "./head";
+import { UserProvider } from "./context/UserContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,18 +31,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <ThemeHydrationGuard theme="light">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={false}
-            value={{ light: "light", dark: "dark" }}
-          >
-            <DebugTheme />
-            <ThemeSwitcher />
-            <main className="transition-colors duration-300">{children}</main>
-          </ThemeProvider>
-        </ThemeHydrationGuard>
+        <UserProvider>
+          <ThemeHydrationGuard theme="light">
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              value={{ light: "light", dark: "dark" }}
+            >
+              <DebugTheme />
+              <ThemeSwitcher />
+              <main className="transition-colors duration-300">{children}</main>
+            </ThemeProvider>
+          </ThemeHydrationGuard>
+        </UserProvider>
       </body>
     </html>
   );

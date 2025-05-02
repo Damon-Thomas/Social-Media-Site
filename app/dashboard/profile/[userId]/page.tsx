@@ -60,7 +60,7 @@ async function getData(userId: string) {
 }
 
 // Client component to handle state and effects
-export default function ProfilePageClient() {
+export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
   const [initialData, setInitialData] = useState<Awaited<
     ReturnType<typeof getData>
@@ -69,9 +69,9 @@ export default function ProfilePageClient() {
   const [activeTab, setActiveTab] = useState<ActiveProfileTab>("activity"); // Default to 'posts'
   const sidebarRef = useRef<HTMLDivElement>(null); // Ref for the sidebar
 
-  const NAVIGATOR_HEIGHT_PX = 64; // Height of the Navigator component
-  const SIDEBAR_TOP_OFFSET_PX = 20; // Your original top-5 offset
-  const initialTop = NAVIGATOR_HEIGHT_PX + SIDEBAR_TOP_OFFSET_PX;
+  // const NAVIGATOR_HEIGHT_PX = 64; // Height of the Navigator component
+  // const SIDEBAR_TOP_OFFSET_PX = 20; // Your original top-5 offset
+  // const initialTop = NAVIGATOR_HEIGHT_PX + SIDEBAR_TOP_OFFSET_PX;
 
   useEffect(() => {
     // Fetch initial data on the client
@@ -114,7 +114,7 @@ export default function ProfilePageClient() {
     <div className="max-w-5xl flex items-start gap-6 p-2 w-full">
       {/* Main Profile Content Area - Takes available space */}
       {/* Added max-width constraint to prevent overlap on medium screens */}
-      <div className="flex-grow min-w-0 max-w-full md:max-w-[calc(100%-16rem-1.5rem)]">
+      <div className="flex-1 min-w-0 max-w-full ">
         <OtherProfile
           userData={userData}
           initialActivity={initialActivity}
@@ -134,10 +134,10 @@ export default function ProfilePageClient() {
       {/* Right Sidebar - Use sticky positioning */}
       <div
         ref={sidebarRef}
-        className={`sideContent w-64 max-w-xs hidden md:block sticky top-0 self-start z-10`}
+        className={`sideContent md:w-64 lg:w-72 hidden md:block sticky top-0 self-start z-10`}
         // style={{ top: `${initialTop}px` }}
       >
-        <div className="space-y-6">
+        <div className="space-y-6 flex flex-col grow w-full">
           <Goats />
           <Noobs />
 
@@ -146,10 +146,4 @@ export default function ProfilePageClient() {
       </div>
     </div>
   );
-}
-
-// Keep the original async function signature for Next.js data fetching patterns if needed,
-// but render the client component.
-export async function ProfilePage({ params }: PageParams) {
-  return <ProfilePageClient />;
 }

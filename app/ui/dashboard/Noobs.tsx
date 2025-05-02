@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getNewUsers } from "@/app/actions/fetch";
 import { User } from "@/app/lib/definitions";
-import SideItem from "../sidbar/SideItem";
+import SideItem from "../sidebar/SideItem";
 
 export default function Noobs() {
   const [newUsers, setNewUsers] = useState<User[]>([]);
@@ -27,11 +27,11 @@ export default function Noobs() {
   }
 
   return (
-    <div>
-      <h1>New Users</h1>
+    <div className="border-b-1 border-b-[var(--dmono)] pb-4">
+      <h1 className="text-2xl font-bold">New Users</h1>
       <ul>
         {newUsers.map((user: User) => (
-          <SideItem key={user?.id} userData={user} />
+          <SideItem key={user?.id} selectedData={user} />
         ))}
       </ul>
     </div>

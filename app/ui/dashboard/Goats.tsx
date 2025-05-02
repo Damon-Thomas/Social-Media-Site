@@ -51,7 +51,7 @@ export default function Goats() {
   }, [isMobile]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="border-b-1 border-b-[var(--dmono)] pb-4">
       <h1 className="text-2xl font-bold mb-4">Most Popular Users</h1>
 
       {loading ? (

@@ -1,47 +1,13 @@
 "use client";
 
-import BioText from "../otherProfile/BioText";
-import { useEffect, useState } from "react";
-import { fetchUserById } from "@/app/actions/fetch";
-import type { User } from "@/app/lib/definitions";
+import { useCurrentUser } from "@/app/context/UserContext";
 import Image from "next/image";
+import BioText from "../otherProfile/BioText";
 
 export default function UserProfile() {
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const userData = useCurrentUser();
 
-  useEffect(() => {
-    async function loadUserData() {
-      try {
-        // Step 1: Get the current user's basic info
-        const response = await fetch("/api/me");
-        if (!response.ok) {
-          throw new Error("Failed to fetch user info");
-        }
-
-        const userInfo = await response.json();
-
-        // Step 2: Use fetchUserById to get complete user data
-        if (userInfo?.id) {
-          const fullUserData = await fetchUserById(userInfo.id);
-          setUserData(fullUserData as User);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-      setLoading(false);
-    }
-
-    loadUserData();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!userData) {
-    return <div>Unable to load user profile</div>;
-  }
+  if (!userData) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
@@ -55,8 +21,6 @@ export default function UserProfile() {
       />
       <p className="mt-2 text-gray-600">This is the user profile page.</p>
       <BioText>{userData.bio}</BioText>
-
-      {/* You can now access other fields too */}
       <div className="mt-4">
         <p>Posts: {userData.posts?.length || 0}</p>
         <p>Followers: {userData.followers?.length || 0}</p>

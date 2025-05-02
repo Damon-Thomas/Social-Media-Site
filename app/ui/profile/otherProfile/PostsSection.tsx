@@ -38,7 +38,7 @@ export default function PostsSection({
   return (
     <div className="space-y-4 grow overflow-y-auto pr-2">
       {posts.map((post) => (
-        <div key={post?.id} className="p-4 border rounded-lg">
+        <div key={`getPosts${post?.id}`} className="p-4 border rounded-lg">
           <p className="font-medium">{post?.author?.name}</p>
           <p className="mt-2">{post?.content}</p>
           <p className="text-sm text-gray-500 mt-2">

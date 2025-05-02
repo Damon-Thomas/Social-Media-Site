@@ -6,6 +6,7 @@ const publicRoutes = ["/"];
 // const homeRoute = "/";
 
 export default async function middleware(req: NextRequest) {
+  console.log("Middleware triggered");
   const path = req.nextUrl.pathname;
 
   // Skip authentication for POST requests to root path

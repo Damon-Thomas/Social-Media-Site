@@ -2,21 +2,40 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@/app/lib/definitions";
 
-const UserContext = createContext<User | null>(null);
+const UserContext = createContext<{
+  user: User | null;
+  refreshUser: () => void;
+} | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+  const refreshUser = async () => {
+    const res = await fetch("/api/me");
+    const data = await res.json();
+    console.log("has followers?", data?.followers);
+    if (res.ok) {
+      setUser(await data);
+    }
+  };
+
   useEffect(() => {
-    fetch("/api/me")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setUser(data))
-      .catch(() => setUser(null));
+    refreshUser();
   }, []);
 
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, refreshUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export function useCurrentUser() {
-  return useContext(UserContext);
+  const ctx = useContext(UserContext);
+  return ctx?.user;
+}
+
+export function useRefreshUser() {
+  const ctx = useContext(UserContext);
+  return ctx?.refreshUser;
 }

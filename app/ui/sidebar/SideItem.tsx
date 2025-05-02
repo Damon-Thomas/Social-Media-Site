@@ -1,20 +1,46 @@
 import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import Link from "next/link";
-import { useCurrentUser } from "@/app/context/UserContext";
+import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
+import { followUser, unfollowUser } from "@/app/actions/fetch";
 
 export default function SideItem({ selectedData }: { selectedData: User }) {
+  console.log("selectedData", selectedData);
   const userData = useCurrentUser();
+  const refreshUser = useRefreshUser();
   if (!selectedData) {
     return null;
   }
 
   function isFollowing() {
-    if (!userData) return false;
+    if (!userData || !Array.isArray(userData.following)) return false;
+    return userData.following.some((user) => user?.id === selectedData?.id);
+  }
+
+  async function follow() {
+    console.log("follow");
+    if (!userData || !selectedData) return;
     const isFollowing = userData?.following?.some(
       (user) => user?.id === selectedData?.id
     );
-    return isFollowing;
+    let result;
+    if (isFollowing) {
+      // unfollow
+      console.log("unfollowUser");
+      result = await unfollowUser(userData.id, selectedData.id);
+    } else {
+      // follow
+      console.log("followUser");
+      result = await followUser(userData.id, selectedData.id);
+    }
+    if (refreshUser) refreshUser(); // <--- Only call if defined
+    console.log("followed", selectedData.name, result);
+  }
+
+  async function followHandler(event: React.MouseEvent) {
+    console.log("followHandler");
+    event.preventDefault();
+    follow();
   }
 
   const isCurrentUser = userData?.id === selectedData.id;
@@ -43,7 +69,10 @@ export default function SideItem({ selectedData }: { selectedData: User }) {
         </p>
       </div>
       {/* </Link> */}
-      <button className="bg-[var(--dmono)] text-[var(--rdmono)] px-4 py-2 rounded whitespace-nowrap">
+      <button
+        onClick={followHandler}
+        className="bg-[var(--dmono)] text-[var(--rdmono)] px-4 py-2 rounded whitespace-nowrap"
+      >
         {isFollowing() ? "Following" : "Follow"}
       </button>
     </Link>

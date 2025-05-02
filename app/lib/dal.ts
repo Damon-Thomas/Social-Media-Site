@@ -53,6 +53,12 @@ export const getUser = cache(async () => {
         image: true,
         createdAt: true,
         updatedAt: true,
+        following: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

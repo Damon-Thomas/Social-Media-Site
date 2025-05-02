@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { mostPopular } from "@/app/actions/fetch";
 import Image from "next/image";
 import Link from "next/link";
+import SideItem from "../sidebar/SideItem";
 
 export default function Goats() {
   const [popularUsers, setPopularUsers] = useState<
@@ -59,27 +60,7 @@ export default function Goats() {
       ) : popularUsers.length > 0 ? (
         <div className="space-y-4">
           {popularUsers.map((user) => (
-            <Link
-              href={`/dashboard/profile/${user.id}`}
-              key={user.id}
-              className="p-4 border rounded-lg flex items-center"
-            >
-              {user.image && (
-                <Image
-                  src={user.image}
-                  alt={user.name || "User"}
-                  width={40}
-                  height={40}
-                  className="rounded-full mr-4"
-                />
-              )}
-              <div>
-                <p className="font-medium">{user.name || "Anonymous"}</p>
-                <p className="text-sm text-gray-500">
-                  {user._count?.followers || 0} followers
-                </p>
-              </div>
-            </Link>
+            <SideItem key={user.id} selectedData={user} />
           ))}
         </div>
       ) : (

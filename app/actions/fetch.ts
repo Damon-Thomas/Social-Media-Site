@@ -13,11 +13,7 @@ export async function mostPopular(mobile: boolean) {
         _count: "desc",
       },
     } as Prisma.UserOrderByWithRelationInput,
-    include: {
-      _count: {
-        select: { followers: true },
-      },
-    },
+
     take: take,
   });
 
@@ -344,6 +340,30 @@ export async function followUser(userId: string, followId: string) {
   } catch (error) {
     console.error("Error following user:", error);
     throw new Error("Failed to follow user");
+  }
+  return true;
+}
+export async function unfollowUser(userId: string, unfollowId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        following: {
+          disconnect: { id: unfollowId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: unfollowId },
+      data: {
+        followers: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    throw new Error("Failed to unfollow user");
   }
   return true;
 }

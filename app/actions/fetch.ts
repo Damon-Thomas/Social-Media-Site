@@ -24,6 +24,15 @@ export async function mostPopular(mobile: boolean) {
   return popularUsers;
 }
 
+export async function getNewUsers() {
+  const newUsers = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+
+  return newUsers;
+}
+
 export async function fetchUserById(id: string) {
   const user = await prisma.user.findUnique({
     where: { id },
@@ -312,4 +321,29 @@ export async function fetchPaginatedLikedActivity(
       likedCommentsCursor: commentsRes.nextCursor,
     },
   };
+}
+
+export async function followUser(userId: string, followId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        following: {
+          connect: { id: followId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: followId },
+      data: {
+        followers: {
+          connect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw new Error("Failed to follow user");
+  }
+  return true;
 }

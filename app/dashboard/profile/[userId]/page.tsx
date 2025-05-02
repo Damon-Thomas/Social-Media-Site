@@ -1,6 +1,7 @@
 "use client"; // Add "use client" because we need useState and useEffect
 
 import { useState, useEffect, useRef } from "react"; // Import hooks and useRef
+import React from "react"; // Import React
 import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
 import {
   fetchUserById,
@@ -17,10 +18,8 @@ import type {
   User, // Assuming User type is defined here or imported
 } from "@/app/lib/definitions";
 import Goats from "@/app/ui/dashboard/Goats";
-
-interface PageParams {
-  params: { userId: string };
-}
+import Noobs from "@/app/ui/dashboard/Noobs";
+import { useParams } from "next/navigation";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -61,8 +60,8 @@ async function getData(userId: string) {
 }
 
 // Client component to handle state and effects
-export default function ProfilePageClient({ params }: PageParams) {
-  const userId = params.userId;
+export default function ProfilePageClient() {
+  const { userId } = useParams<{ userId: string }>();
   const [initialData, setInitialData] = useState<Awaited<
     ReturnType<typeof getData>
   > | null>(null);
@@ -140,9 +139,9 @@ export default function ProfilePageClient({ params }: PageParams) {
       >
         <div className="space-y-6">
           <Goats />
+          <Noobs />
+
           <Goats />
-          <Goats />
-          {/* ... other sticky content ... */}
         </div>
       </div>
     </div>
@@ -152,5 +151,5 @@ export default function ProfilePageClient({ params }: PageParams) {
 // Keep the original async function signature for Next.js data fetching patterns if needed,
 // but render the client component.
 export async function ProfilePage({ params }: PageParams) {
-  return <ProfilePageClient params={params} />;
+  return <ProfilePageClient />;
 }

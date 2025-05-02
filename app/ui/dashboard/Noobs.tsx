@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
 import { getNewUsers } from "@/app/actions/fetch";
-import { User } from "@/app/lib/definitions";
-import SideItem from "../sidebar/SideItem";
+import { SimpleUser } from "@/app/lib/definitions";
+import SideWrapper from "../sidebar/SideWrapper";
 
 export default function Noobs() {
-  const [newUsers, setNewUsers] = useState<User[]>([]);
+  const [newUsers, setNewUsers] = useState<SimpleUser[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNewUsers = async () => {
-      try {
-        const users = await getNewUsers();
-        setNewUsers(users);
-      } catch (error) {
-        console.error("Error fetching new users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const refreshPopularUsers = async () => {
+    setLoading(true);
+    const users = await getNewUsers();
+    setNewUsers(users);
+    setLoading(false);
+  };
 
-    fetchNewUsers();
+  useEffect(() => {
+    refreshPopularUsers();
   }, []);
 
   if (loading) {
@@ -27,13 +23,9 @@ export default function Noobs() {
   }
 
   return (
-    <div className="border-b-1 border-b-[var(--dmono)] pb-4">
-      <h1 className="text-2xl font-bold">New Users</h1>
-      <ul>
-        {newUsers.map((user: User) => (
-          <SideItem key={user?.id} selectedData={user} />
-        ))}
-      </ul>
-    </div>
+    <SideWrapper userArray={newUsers} refreshList={refreshPopularUsers}>
+      {" "}
+      New Users
+    </SideWrapper>
   );
 }

@@ -13,7 +13,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = async () => {
     const res = await fetch("/api/me");
     const data = await res.json();
-    console.log("has followers?", data?.followers);
     if (res.ok) {
       setUser(await data);
     }

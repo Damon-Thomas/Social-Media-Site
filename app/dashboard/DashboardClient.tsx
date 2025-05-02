@@ -5,10 +5,11 @@ import { useTheme } from "next-themes";
 import defaultProfileDark from "@public/defaultProfileDark.svg";
 import defaultProfileLight from "@public/defaultProfileLight.svg";
 import PostCreator from "../ui/posts/PostCreater";
-import type { User } from "../lib/definitions";
+import type { SimpleUser } from "../lib/definitions";
 import Goats from "../ui/dashboard/Goats";
+import Noobs from "../ui/dashboard/Noobs";
 
-export default function DashboardClient({ user }: { user: User }) {
+export default function DashboardClient({ user }: { user: SimpleUser }) {
   const { theme } = useTheme();
 
   // Determine the default profile image based on the theme
@@ -27,6 +28,7 @@ export default function DashboardClient({ user }: { user: User }) {
         </div>
         <div className="sideContent w-fit max-w-xs">
           <Goats />
+          <Noobs />
         </div>
       </div>
     </div>

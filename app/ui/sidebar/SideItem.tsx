@@ -1,11 +1,16 @@
-import { User } from "@/app/lib/definitions";
+import { SimpleUser } from "@/app/lib/definitions";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { followUser, unfollowUser } from "@/app/actions/fetch";
 
-export default function SideItem({ selectedData }: { selectedData: User }) {
-  console.log("selectedData", selectedData);
+export default function SideItem({
+  selectedData,
+  refreshList, // <-- add this prop
+}: {
+  selectedData: SimpleUser;
+  refreshList?: () => void;
+}) {
   const userData = useCurrentUser();
   const refreshUser = useRefreshUser();
   if (!selectedData) {
@@ -18,33 +23,36 @@ export default function SideItem({ selectedData }: { selectedData: User }) {
   }
 
   async function follow() {
-    console.log("follow");
     if (!userData || !selectedData) return;
     const isFollowing = userData?.following?.some(
       (user) => user?.id === selectedData?.id
     );
-    let result;
-    if (isFollowing) {
-      // unfollow
-      console.log("unfollowUser");
-      result = await unfollowUser(userData.id, selectedData.id);
-    } else {
-      // follow
-      console.log("followUser");
-      result = await followUser(userData.id, selectedData.id);
+    try {
+      if (isFollowing) {
+        // unfollow
+
+        await unfollowUser(userData.id, selectedData.id);
+      } else {
+        // follow
+        await followUser(userData.id, selectedData.id);
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing user:", error);
+      throw new Error("Failed to follow/unfollow user");
     }
+
     if (refreshUser) refreshUser(); // <--- Only call if defined
-    console.log("followed", selectedData.name, result);
+    if (refreshList) refreshList(); // <-- refresh sidebar list
   }
 
   async function followHandler(event: React.MouseEvent) {
-    console.log("followHandler");
     event.preventDefault();
     follow();
   }
 
   const isCurrentUser = userData?.id === selectedData.id;
   if (isCurrentUser) {
+    console.log("isCurrentUser", selectedData.name);
     return null; // Don't render the current user's profile
   }
 
@@ -65,13 +73,17 @@ export default function SideItem({ selectedData }: { selectedData: User }) {
       <div className="flex flex-col flex-1 min-w-0">
         <h3 className="font-semibold truncate">{selectedData?.name}</h3>
         <p className="text-sm text-gray-500">
-          Followers {selectedData?.followers?.length ?? 0}
+          Followers {selectedData?._count?.followers ?? 0}
         </p>
       </div>
       {/* </Link> */}
       <button
         onClick={followHandler}
-        className="bg-[var(--dmono)] text-[var(--rdmono)] px-4 py-2 rounded whitespace-nowrap"
+        className={`${
+          !isFollowing()
+            ? "bg-[var(--dmono)] text-[var(--rdmono)] border-[var(--rdmono)]"
+            : ""
+        }  border-1 w-24 px-4 py-2 rounded whitespace-nowrap`}
       >
         {isFollowing() ? "Following" : "Follow"}
       </button>

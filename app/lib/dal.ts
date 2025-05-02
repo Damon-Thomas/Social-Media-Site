@@ -70,3 +70,44 @@ export const getUser = cache(async () => {
     return null;
   }
 });
+
+export const getUserFull = cache(async () => {
+  const session = await verifySession();
+  if (!session) return null;
+
+  try {
+    const data = await prisma.user.findUnique({
+      where: {
+        id: session.userId.toString(),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        bio: true,
+        createdAt: true,
+        updatedAt: true,
+        profileId: true,
+        friendRequestsReceived: true,
+        friendRequestsSent: true,
+        friends: true,
+        friendsOfUser: true,
+        followers: true,
+        following: true,
+        receivedNotifications: true,
+        createdNotifications: true,
+        likedPosts: true,
+        likedComments: true,
+        posts: true,
+        comments: true,
+        // password: false,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.log("Failed to fetch user", error);
+    return null;
+  }
+});

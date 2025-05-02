@@ -1,20 +1,26 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { Prisma } from "../../generated/prisma";
 import type { ActivityItem } from "@/app/lib/definitions";
 import type { Post, Comment } from "@/app/lib/definitions";
 
-export async function mostPopular(mobile: boolean) {
-  const take = mobile ? 3 : 5;
+export async function mostPopular() {
+  const take = 5;
   const popularUsers = await prisma.user.findMany({
     orderBy: {
       followers: {
         _count: "desc",
       },
-    } as Prisma.UserOrderByWithRelationInput,
-
+    },
     take: take,
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      _count: {
+        select: { followers: true },
+      },
+    },
   });
 
   return popularUsers;
@@ -24,6 +30,14 @@ export async function getNewUsers() {
   const newUsers = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 5,
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      _count: {
+        select: { followers: true },
+      },
+    },
   });
 
   return newUsers;

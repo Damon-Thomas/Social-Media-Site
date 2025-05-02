@@ -84,6 +84,15 @@ export type User = {
   likedComments?: Comment[];
 } | null;
 
+export type SimpleUser = {
+  id: string;
+  name: string | null;
+  image?: string | null;
+  _count?: {
+    followers: number;
+  };
+};
+
 export type Post = {
   id: string;
   content?: string | null;

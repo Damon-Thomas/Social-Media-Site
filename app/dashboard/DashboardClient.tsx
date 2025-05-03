@@ -9,7 +9,7 @@ import type { SimpleUser } from "../lib/definitions";
 import Goats from "../ui/dashboard/Goats";
 import Noobs from "../ui/dashboard/Noobs";
 import PostSelector from "../ui/dashboard/posts/PostSelector";
-import PostContent from "../ui/dashboard/posts/PostCentent";
+import PostContent from "../ui/dashboard/posts/PostContent";
 
 export default function DashboardClient({ user }: { user: SimpleUser }) {
   const { theme } = useTheme();
@@ -22,8 +22,8 @@ export default function DashboardClient({ user }: { user: SimpleUser }) {
   const profileImage = user?.image || defaultProfile;
 
   return (
-    <div className="flex grow w-full h-full justify-center ">
-      <div className="max-w-6xl flex gap-4 md:gap-8 h-full w-full">
+    <div className="flex grow w-full h-full justify-center">
+      <div className="max-w-6xl flex gap-2 md:gap-4 h-full w-full">
         <div className="grow flex flex-col h-full border-x-1 border-x-[var(--borderc)]">
           <PostSelector
             selectedFeed={selectedFeed}

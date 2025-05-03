@@ -387,3 +387,90 @@ export async function unfollowUser(userId: string, unfollowId: string) {
   }
   return true;
 }
+
+export async function getGlobalFeedPosts(
+  cursor?: string,
+  limit: number = 15
+): Promise<{ posts: Post[]; nextCursor: string | null }> {
+  const posts = await prisma.post.findMany({
+    take: limit,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      content: true,
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      likedBy: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      comments: {
+        select: {
+          id: true,
+          content: true,
+          authorId: true,
+          postId: true,
+          createdAt: true,
+          updatedAt: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          likedBy: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          replies: {
+            select: {
+              id: true,
+              content: true,
+              authorId: true,
+              postId: true,
+              createdAt: true,
+              updatedAt: true,
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              likedBy: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              replies: true, // If you want to go deeper, you can nest again, but beware of infinite recursion!
+              parentId: true,
+            },
+          },
+          parentId: true,
+        },
+      },
+    },
+  });
+
+  const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
+  return { posts, nextCursor };
+}

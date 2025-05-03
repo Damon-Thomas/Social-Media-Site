@@ -98,7 +98,7 @@ export type Post = {
   content?: string | null;
   author?: User | null;
   authorId?: string | null;
-  likedBy?: User[]; // Was "likes?: User[]"
+  likedBy?: User[];
   comments?: Comment[];
   createdAt: Date;
   updatedAt: Date;
@@ -152,4 +152,45 @@ export type ActivityItem = {
   type: "post" | "comment" | "likedPost" | "likedComment";
   createdAt: Date;
   payload: Post | Comment;
-};
+} | null;
+
+export type EssentialUser = {
+  id: string;
+  name: string | null;
+  image?: string | null;
+} | null;
+
+export type EssentialPost = {
+  id: string;
+  content?: string | null;
+  author?: EssentialUser | null;
+  authorId?: string | null;
+  likedBy?: EssentialUser[];
+  comments?: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+} | null;
+
+export type EssentialComment = {
+  id: string;
+  content?: string | null;
+  author?: EssentialUser | null;
+  authorId?: string | null;
+  postId?: string | null;
+  likedBy?: EssentialUser[]; // Was "likes?: User[]"
+  replies?: EssentialComment[];
+  parentId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+} | null;
+
+export type PostFeed = {
+  id: string;
+  content?: string | null;
+  author?: EssentialUser | null;
+  authorId?: string | null;
+  likedBy?: EssentialUser[];
+  comments?: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+} | null;

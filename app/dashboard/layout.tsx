@@ -13,8 +13,8 @@ export default function DashboardLayout({
     >
       <Navigator />
       <div
-        id="dashboard-scroll-container" // Add this ID
-        className="grow  flex justify-center overflow-y-auto"
+        id="dashboard-scroll-container"
+        className="grow flex justify-center overflow-y-auto h-full"
       >
         {children}
       </div>

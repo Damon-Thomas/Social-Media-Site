@@ -1,8 +1,18 @@
+import { useEffect, useState } from "react";
+
 export default function PostContent({
   selectedFeed,
 }: {
   selectedFeed: string;
 }) {
+  const [feedData, setFeedData] = useState(null);
+
+  useEffect(() => {
+    // This is a placeholder for any side effects you might want to run
+    // when the selected feed changes.
+    console.log(`Selected feed changed to: ${selectedFeed}`);
+  }, [selectedFeed]);
+
   return (
     <div className="flex flex-col gap-4 ">
       {selectedFeed === "global" ? (

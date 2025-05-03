@@ -9,7 +9,7 @@ export default function SideWrapper({
   userArray: SimpleUser[];
 }) {
   return (
-    <div className="border-b-1 border-b-[var(--dmono)] py-4">
+    <div className="border-1 border-[var(--borderc)] rounded p-2 my-2 md:my-4">
       <h1 className="text-2xl font-bold">{children}</h1>
       <ul className="h-80">
         {userArray.map((user: SimpleUser) => (

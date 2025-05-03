@@ -1,10 +1,13 @@
-import { useState } from "react";
 import Button from "../../core/Button";
 import SelectorHighlight from "./SelectorHighlight";
 
-export default function PostSelector() {
-  const [selectedFeed, setSelectedFeed] = useState("global");
-
+export default function PostSelector({
+  selectedFeed,
+  setSelectedFeed,
+}: {
+  selectedFeed: string;
+  setSelectedFeed: (feed: string) => void;
+}) {
   function globalFeed() {
     setSelectedFeed("global");
     console.log("Global feed");
@@ -14,7 +17,7 @@ export default function PostSelector() {
     console.log("Following feed");
   }
   return (
-    <div className="flex justify-around items-center w-full h-14 border-b-1 border-[var(--borderc)]">
+    <div className="sticky top-0 z-10 bg-[var(--rdmono-70)] backdrop-blur-sm flex justify-around items-center w-full h-14 border-b-1 border-[var(--borderc)]">
       <div
         className={`flex flex-col grow items-center justify-center cursor-pointer transition-colors h-full hover:bg-[var(--gtint)]
           `}

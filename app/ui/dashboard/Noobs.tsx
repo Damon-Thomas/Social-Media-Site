@@ -2,30 +2,31 @@ import { useEffect, useState } from "react";
 import { getNewUsers } from "@/app/actions/fetch";
 import { SimpleUser } from "@/app/lib/definitions";
 import SideWrapper from "../sidebar/SideWrapper";
+import { useCurrentUser } from "@/app/context/UserContext";
+import SideSectionSkeleton from "../skeleton/sidebar/SideSkeleton";
 
 export default function Noobs() {
   const [newUsers, setNewUsers] = useState<SimpleUser[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const refreshPopularUsers = async () => {
-    setLoading(true);
-    const users = await getNewUsers();
-    setNewUsers(users);
-    setLoading(false);
-  };
+  const user = useCurrentUser();
 
   useEffect(() => {
-    refreshPopularUsers();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    async function fetchNewUsers() {
+      setLoading(true);
+      const users = await getNewUsers(user?.id);
+      setNewUsers(users);
+      setLoading(false);
+    }
+    fetchNewUsers();
+  }, [user?.id]);
 
   return (
-    <SideWrapper userArray={newUsers} refreshList={refreshPopularUsers}>
-      {" "}
-      New Users
-    </SideWrapper>
+    <>
+      {loading ? (
+        <SideSectionSkeleton section="New Users" />
+      ) : (
+        <SideWrapper userArray={newUsers}>New Users</SideWrapper>
+      )}
+    </>
   );
 }

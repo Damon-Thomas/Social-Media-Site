@@ -4,9 +4,12 @@ import prisma from "../lib/prisma";
 import type { ActivityItem } from "@/app/lib/definitions";
 import type { Post, Comment } from "@/app/lib/definitions";
 
-export async function mostPopular() {
+export async function mostPopular(currentUserId?: string) {
   const take = 5;
   const popularUsers = await prisma.user.findMany({
+    where: {
+      id: { not: currentUserId }, // Exclude current user
+    },
     orderBy: {
       followers: {
         _count: "desc",
@@ -26,8 +29,11 @@ export async function mostPopular() {
   return popularUsers;
 }
 
-export async function getNewUsers() {
+export async function getNewUsers(currentUserId?: string) {
   const newUsers = await prisma.user.findMany({
+    where: {
+      id: { not: currentUserId }, // Exclude current user
+    },
     orderBy: { createdAt: "desc" },
     take: 5,
     select: {

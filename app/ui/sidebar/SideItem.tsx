@@ -3,16 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { followUser, unfollowUser } from "@/app/actions/fetch";
+import { useTheme } from "next-themes";
 
 export default function SideItem({
   selectedData,
-  refreshList, // <-- add this prop
-}: {
+}: // refreshList, // <-- add this prop
+{
   selectedData: SimpleUser;
-  refreshList?: () => void;
+  // refreshList?: () => void;
 }) {
   const userData = useCurrentUser();
   const refreshUser = useRefreshUser();
+  const { theme } = useTheme();
   if (!selectedData) {
     return null;
   }
@@ -29,20 +31,21 @@ export default function SideItem({
     );
     try {
       if (isFollowing) {
-        // unfollow
-
         await unfollowUser(userData.id, selectedData.id);
+        // Optimistically decrement
+        if (selectedData._count) selectedData._count.followers--;
       } else {
-        // follow
         await followUser(userData.id, selectedData.id);
+        // Optimistically increment
+        if (selectedData._count) selectedData._count.followers++;
       }
     } catch (error) {
       console.error("Error following/unfollowing user:", error);
       throw new Error("Failed to follow/unfollow user");
     }
 
-    if (refreshUser) refreshUser(); // <--- Only call if defined
-    if (refreshList) refreshList(); // <-- refresh sidebar list
+    if (refreshUser) refreshUser();
+    // Optionally skip refreshList for faster UI
   }
 
   async function followHandler(event: React.MouseEvent) {
@@ -64,7 +67,12 @@ export default function SideItem({
       className="flex items-center gap-2 h-16"
     >
       <Image
-        src={selectedData?.image || "/defaultProfileLight.svg"}
+        src={
+          selectedData?.image ||
+          (theme === "light"
+            ? "/defaultProfileLight.svg"
+            : "/defaultProfileDark.svg")
+        }
         alt={selectedData?.name || "User"}
         className="w-10 h-10 rounded-full object-cover bg-gray-200"
         width={40}

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { mostPopular } from "@/app/actions/fetch";
 import SideWrapper from "../sidebar/SideWrapper";
+import SideSectionSkeleton from "../skeleton/sidebar/SideSkeleton";
+import { useCurrentUser } from "@/app/context/UserContext";
 
 export default function Goats() {
   const [popularUsers, setPopularUsers] = useState<
@@ -14,26 +16,24 @@ export default function Goats() {
     }[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const refreshPopularUsers = async () => {
-    setLoading(true);
-    const users = await mostPopular();
-    setPopularUsers(users);
-    setLoading(false);
-  };
+  const user = useCurrentUser();
 
   useEffect(() => {
-    refreshPopularUsers();
-  }, []);
+    async function fetchPopularUsers() {
+      setLoading(true);
+      const users = await mostPopular(user?.id);
+      setPopularUsers(users);
+      setLoading(false);
+    }
+    fetchPopularUsers();
+  }, [user?.id]);
 
   return (
     <>
       {loading ? (
-        <p>Loading popular users...</p>
+        <SideSectionSkeleton section="Goats" />
       ) : (
-        <SideWrapper userArray={popularUsers} refreshList={refreshPopularUsers}>
-          {" "}
-          Top Users{" "}
-        </SideWrapper>
+        <SideWrapper userArray={popularUsers}>Top Users</SideWrapper>
       )}
     </>
   );

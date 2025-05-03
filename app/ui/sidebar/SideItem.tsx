@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { followUser, unfollowUser } from "@/app/actions/fetch";
 import { useTheme } from "next-themes";
+import Button from "../core/Button";
 
 export default function SideItem({
   selectedData,
@@ -60,7 +61,6 @@ export default function SideItem({
   }
 
   return (
-    // <li className="flex items-center gap-2 h-16">
     <Link
       href={`/dashboard/profile/${selectedData.id}`}
       key={selectedData.id}
@@ -84,18 +84,13 @@ export default function SideItem({
           Followers {selectedData?._count?.followers ?? 0}
         </p>
       </div>
-      {/* </Link> */}
-      <button
+
+      <Button
         onClick={followHandler}
-        className={`${
-          !isFollowing()
-            ? "bg-[var(--dmono)] text-[var(--rdmono)] border-[var(--rdmono)]"
-            : ""
-        }  border-1 w-24 px-4 py-2 rounded whitespace-nowrap`}
+        style={!isFollowing() ? "default" : "bordered"}
       >
         {isFollowing() ? "Following" : "Follow"}
-      </button>
+      </Button>
     </Link>
-    // </li>
   );
 }

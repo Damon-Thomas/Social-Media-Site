@@ -4,10 +4,11 @@ import React from "react";
 import { useTheme } from "next-themes";
 import defaultProfileDark from "@public/defaultProfileDark.svg";
 import defaultProfileLight from "@public/defaultProfileLight.svg";
-import PostCreator from "../ui/posts/PostCreater";
+import PostCreator from "../ui/dashboard/posts/PostCreater";
 import type { SimpleUser } from "../lib/definitions";
 import Goats from "../ui/dashboard/Goats";
 import Noobs from "../ui/dashboard/Noobs";
+import PostSelector from "../ui/dashboard/posts/PostSelector";
 
 export default function DashboardClient({ user }: { user: SimpleUser }) {
   const { theme } = useTheme();
@@ -20,13 +21,13 @@ export default function DashboardClient({ user }: { user: SimpleUser }) {
   const profileImage = user?.image || defaultProfile;
 
   return (
-    <div className=" flex w-full h-full justify-center ">
-      <div className="min-w-6xl flex gap-4 md:gap-8 h-full">
-        <div className="mainContent grow  pt-4 px-4 flex flex-col h-full border-r-1 border-x-[var(--borderc)]">
-          <h1 className="text-2xl font-bold mb-4">Welcome, {user?.name}!</h1>
+    <div className="flex grow w-full h-full justify-center ">
+      <div className="max-w-6xl flex gap-4 md:gap-8 h-full w-full">
+        <div className="grow flex flex-col h-full border-x-1 border-x-[var(--borderc)]">
+          <PostSelector />
           <PostCreator image={profileImage} />
         </div>
-        <div className="sideContent w-fit max-w-xs">
+        <div className="w-fit max-w-xs mr-2 md:mr-4 md:block hidden">
           <Goats />
           <Noobs />
         </div>

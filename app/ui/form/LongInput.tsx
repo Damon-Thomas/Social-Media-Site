@@ -3,14 +3,14 @@
 import { useRef, useEffect } from "react";
 
 export default function LongInput({
-  label,
+  label = null,
   id,
   placeholder,
   value,
   onChange,
   className = "",
 }: Readonly<{
-  label: string;
+  label?: string | null;
   id: string;
   placeholder?: string;
   value?: string;
@@ -42,10 +42,12 @@ export default function LongInput({
   };
 
   return (
-    <div className="relative flex flex-col gap-1 w-full">
-      <label htmlFor={id} className="block text-sm">
-        {label}
-      </label>
+    <div className="flex flex-col justify-center items-center gap-1 w-full h-full">
+      {label && (
+        <label htmlFor={id} className="block text-sm">
+          {label}
+        </label>
+      )}
       <textarea
         ref={textareaRef}
         id={id}

@@ -165,10 +165,12 @@ export type EssentialPost = {
   content?: string | null;
   author?: EssentialUser | null;
   authorId?: string | null;
-  likedBy?: EssentialUser[];
-  comments?: Comment[];
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    comments: number;
+    likedBy: number;
+  };
 } | null;
 
 export type EssentialComment = {

@@ -1,11 +1,11 @@
 import {
-  getFollowingActivities,
+  getFollowingPosts,
   getGlobalFeedPosts,
 } from "@/app/actions/postActions";
 import { useEffect, useState } from "react";
-import { ActivityItem, EssentialPost } from "@/app/lib/definitions";
-import Image from "next/image";
-import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
+import { EssentialPost } from "@/app/lib/definitions";
+import { useCurrentUser } from "@/app/context/UserContext";
+import Post from "@/app/ui/dashboard/posts/Post";
 
 export default function PostContent({
   selectedFeed,
@@ -14,6 +14,7 @@ export default function PostContent({
 }) {
   const [posts, setPosts] = useState<EssentialPost[]>([]);
   const [loading, setLoading] = useState(false);
+  const user = useCurrentUser(); // This gets the current user from context
 
   useEffect(() => {
     // This prevents infinite loop and fetches data when feed selection changes
@@ -26,15 +27,12 @@ export default function PostContent({
           setPosts(response.posts);
         } else {
           // Get following activities
-          const response = await getFollowingActivities("userId");
+          const response = await getFollowingPosts(user?.id);
           // Ensure we're handling the correct data structure from getFollowingActivities
           // Assuming it returns a similar structure with posts property
-          if (response && response.activities) {
+          if (response) {
             // Map activities to posts if needed
-            const activityPosts = response.activities
-              .filter((item: ActivityItem) => item?.type === "post")
-              .map((item: ActivityItem) => item?.payload);
-            setPosts(activityPosts);
+            setPosts(response.posts);
           }
         }
       } catch (error) {
@@ -45,10 +43,10 @@ export default function PostContent({
     };
 
     fetchFeedData();
-  }, [selectedFeed]); // Only refetch when selectedFeed changes
+  }, [selectedFeed, user]); // Only refetch when selectedFeed changes
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <div className="flex gap-4 items-start pt-4 px-4">
         <h1 className="text-[var(--dmono)]">
           {selectedFeed === "global" ? "Global Feed" : "Following Feed"}
@@ -62,27 +60,7 @@ export default function PostContent({
             </div>
           ) : posts && posts.length > 0 ? (
             posts.map((post) => (
-              <div
-                key={post?.id}
-                className="flex flex-col gap-2 border-b-1 border-[var(--borderc)] py-2"
-              >
-                <div className="flex items-center gap-2">
-                  {post?.author?.image && (
-                    <Image
-                      src={post.author.image}
-                      alt="Profile"
-                      className="w-10 h-10 rounded-full"
-                      width={40}
-                      height={40}
-                    />
-                  )}
-                  <span className="font-medium">{post?.author?.name}</span>
-                </div>
-                <p className="text-lg">{post?.content}</p>
-                <p className="text-sm text-gray-500">
-                  {post?.createdAt && formatRelativeTime(post.createdAt, true)}
-                </p>
-              </div>
+              <Post key={`${post?.authorId}${post?.id}`} post={post} />
             ))
           ) : (
             <div className="text-center py-4">No posts to display</div>

@@ -219,3 +219,17 @@ export async function likePost(
     throw new Error("Failed to toggle post like");
   }
 }
+
+export async function doesUserLikePost(userId: string, postId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      likedPosts: {
+        where: { id: postId },
+        select: { id: true },
+      },
+    },
+  });
+
+  return (user?.likedPosts ?? []).length > 0;
+}

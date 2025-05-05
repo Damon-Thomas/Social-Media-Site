@@ -1,3 +1,5 @@
+"use client";
+
 import type { EssentialPost } from "@/app/lib/definitions";
 import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
 import { useTheme } from "next-themes";
@@ -6,45 +8,43 @@ import Link from "next/link";
 import flame from "@/public/flame.svg";
 import commentText from "@/public/comment.svg";
 import ThemedIcon from "@/app/ui/core/ThemedIcon";
-import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
-import { likePost } from "@/app/actions/postActions";
+import { useCurrentUser } from "@/app/context/UserContext";
+import { doesUserLikePost, likePost } from "@/app/actions/postActions";
 import { useEffect, useState } from "react";
 
 export default function Post({ post }: { post: EssentialPost }) {
   const { theme } = useTheme();
   const iconSize = 20;
   const userData = useCurrentUser();
-  const refreshUser = useRefreshUser(); // Get the existing refresh function
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(false); // Default to false instead of null
   const [likeCount, setLikeCount] = useState(post?._count?.likedBy || 0);
+  const [iconLoading, setIconLoading] = useState(true); // Create a loading state specifically for the icon
 
   async function likePostHandler() {
     const willBeLiked = !liked;
     const res = await likePost(post?.id, userData?.id);
-
     if (res) {
       // Update local state immediately for UI feedback
       setLiked(willBeLiked);
       setLikeCount((prevCount) =>
         willBeLiked ? prevCount + 1 : prevCount - 1
       );
-
-      // Refresh user data to update the likedPosts array in context
-      if (refreshUser) refreshUser();
-
-      console.log("Post liked successfully");
-    } else {
-      console.error("Failed to like the post");
     }
   }
 
   // This will update when userData changes due to the refreshUser() call
   useEffect(() => {
-    if (userData?.likedPosts?.some((likedP) => likedP?.id === post?.id)) {
-      setLiked(true);
-    } else {
-      setLiked(false);
+    async function checkIfLiked() {
+      setIconLoading(true);
+      if (userData && post) {
+        const isLiked = await doesUserLikePost(userData.id, post.id);
+        setLiked(isLiked);
+      } else {
+        setLiked(false);
+      }
+      setIconLoading(false);
     }
+    checkIfLiked();
   }, [post, userData]);
 
   useEffect(() => {
@@ -82,14 +82,19 @@ export default function Post({ post }: { post: EssentialPost }) {
         <p className="">{post?.content}</p>
         <div className="flex items-center gap-4 mt-0.5">
           <div className="flex items-center gap-1">
-            <ThemedIcon
-              count={likeCount}
-              src={flame.src}
-              alt="Likes"
-              size={iconSize}
-              liked={liked}
-              onClick={likePostHandler}
-            />
+            {iconLoading ? (
+              <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
+            ) : (
+              <ThemedIcon
+                count={likeCount}
+                src={flame.src}
+                alt="Likes"
+                size={iconSize}
+                liked={liked}
+                onClick={likePostHandler}
+                noTransition={true} // Disable transitions for initial render
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-1">

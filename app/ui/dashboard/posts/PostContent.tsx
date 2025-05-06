@@ -46,7 +46,9 @@ export default function PostContent({
   }, [selectedFeed, user]); // Only refetch when selectedFeed changes
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pt-12">
+      {" "}
+      {/* Added padding-top to prevent overlap */}
       <div className="flex gap-4 items-start pt-4 px-4">
         <h1 className="text-[var(--dmono)]">
           {selectedFeed === "global" ? "Global Feed" : "Following Feed"}

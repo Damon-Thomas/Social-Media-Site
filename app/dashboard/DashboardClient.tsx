@@ -24,7 +24,7 @@ export default function DashboardClient({ user }: { user: SimpleUser }) {
   return (
     <div className="flex grow w-full h-full justify-center">
       <div className="max-w-6xl flex gap-2 md:gap-4 h-full w-full">
-        <div className="grow flex flex-col h-full border-x-1 border-x-[var(--borderc)]">
+        <div className="grow flex flex-col h-fit border-x-1 border-x-[var(--borderc)]">
           <PostSelector
             selectedFeed={selectedFeed}
             setSelectedFeed={setSelectedFeed}

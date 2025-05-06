@@ -11,12 +11,7 @@ import {
   fetchPaginatedLikedPosts,
   fetchPaginatedLikedComments,
 } from "@/app/actions/fetch";
-import type {
-  Post,
-  Comment,
-  ActivityItem,
-  User, // Assuming User type is defined here or imported
-} from "@/app/lib/definitions";
+import type { Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import Goats from "@/app/ui/dashboard/Goats";
 import Noobs from "@/app/ui/dashboard/Noobs";
 import { useParams } from "next/navigation";

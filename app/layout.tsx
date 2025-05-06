@@ -1,6 +1,5 @@
 "use client";
 
-import { metadata } from "./lib/metadata";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";

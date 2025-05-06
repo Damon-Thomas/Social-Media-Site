@@ -1,5 +1,4 @@
 "use server";
-import { verifySession } from "@/app/lib/dal";
 import { z } from "zod";
 import prisma from "./prisma";
 import { redirect } from "next/navigation";

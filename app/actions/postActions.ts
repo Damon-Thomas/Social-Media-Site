@@ -1,6 +1,9 @@
 "use server";
 
-import { EssentialPost } from "../lib/definitions";
+import {
+  EssentialPost,
+  GetFollowingActivitiesResult,
+} from "../lib/definitions";
 import prisma from "../lib/prisma";
 
 export async function getGlobalFeedPosts(
@@ -42,8 +45,7 @@ export async function getFollowingActivities(
   userId: string | undefined,
   cursor?: string,
   limit: number = 15
-  // ): Promise<{ activities: ActivityItem[]; nextCursor: string | null }> {
-): any {
+): Promise<GetFollowingActivitiesResult> {
   if (!userId) {
     throw new Error("User ID is required");
   }
@@ -110,11 +112,46 @@ export async function getFollowingActivities(
     },
   });
 
-  console.log(user);
+  // Map to match the expected types
+  if (!user) return null;
+  return {
+    following: user.following.map((f) => ({
+      id: f.id,
+      posts: f.posts
+        .filter((p) => p && p.authorId && p.author) // filter out nulls
+        .map((p) => ({
+          id: p.id,
+          content: p.content,
+          authorId: p.authorId as string,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          author: {
+            id: p.author!.id,
+            name: p.author!.name,
+            image: p.author!.image,
+          },
+          _count: p._count,
+        })),
+      comments: f.comments
+        .filter((c) => c && c.authorId && c.author)
+        .map((c) => ({
+          id: c.id,
+          content: c.content,
+          authorId: c.authorId as string,
+          postId: c.postId as string,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+          parentId: c.parentId as string,
+          author: {
+            id: c.author!.id,
+            name: c.author!.name,
+            image: c.author!.image,
+          },
+          _count: c._count,
+        })),
+    })),
+  };
 }
-
-//   return { activities: paginatedActivities, nextCursor };
-// }
 
 export async function getFollowingPosts(
   userId: string | undefined,

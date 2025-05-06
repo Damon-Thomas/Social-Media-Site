@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import type { ActivityItem } from "@/app/lib/definitions";
+import type { Activity } from "@/app/lib/definitions";
 import type { Post, Comment } from "@/app/lib/definitions";
 
 export async function mostPopular(currentUserId?: string) {
@@ -62,11 +62,127 @@ export async function fetchUserById(id: string) {
       bio: true,
       posts: {
         orderBy: { createdAt: "desc" },
-        include: { comments: { include: { author: true } } },
+        include: {
+          comments: {
+            include: {
+              author: true,
+            },
+          },
+        },
       },
       comments: {
         orderBy: { createdAt: "desc" },
-        include: { post: { select: { id: true, content: true } } },
+        include: {
+          post: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              updatedAt: true,
+              authorId: true,
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  password: true,
+                  bio: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  image: true,
+                  profileId: true,
+                },
+              },
+              comments: {
+                select: {
+                  id: true,
+                  content: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  authorId: true,
+                  postId: true,
+                  parentId: true,
+                  author: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                      password: true,
+                      bio: true,
+                      createdAt: true,
+                      updatedAt: true,
+                      image: true,
+                      profileId: true,
+                    },
+                  },
+                  likedBy: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                      password: true,
+                      bio: true,
+                      createdAt: true,
+                      updatedAt: true,
+                      image: true,
+                      profileId: true,
+                    },
+                  },
+                  replies: {
+                    select: {
+                      id: true,
+                      content: true,
+                      createdAt: true,
+                      updatedAt: true,
+                      authorId: true,
+                      postId: true,
+                      parentId: true,
+                      author: {
+                        select: {
+                          id: true,
+                          name: true,
+                          email: true,
+                          password: true,
+                          bio: true,
+                          createdAt: true,
+                          updatedAt: true,
+                          image: true,
+                          profileId: true,
+                        },
+                      },
+                      likedBy: {
+                        select: {
+                          id: true,
+                          name: true,
+                          email: true,
+                          password: true,
+                          bio: true,
+                          createdAt: true,
+                          updatedAt: true,
+                          image: true,
+                          profileId: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              likedBy: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  password: true,
+                  bio: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  image: true,
+                  profileId: true,
+                },
+              },
+            },
+          },
+        },
       },
       followers: true,
       following: true,
@@ -180,7 +296,7 @@ export async function fetchPaginatedActivity(
   userId: string,
   cursor?: string, // last‐seen ActivityItem.id
   limit: number = 10
-): Promise<{ activities: ActivityItem[]; nextCursor: string | null }> {
+): Promise<{ activities: Activity[]; nextCursor: string | null }> {
   // 1) fetch all four lists with the same shape your other sections use
   const [posts, comments, likedPosts, likedComments] = await Promise.all([
     prisma.post.findMany({
@@ -190,9 +306,19 @@ export async function fetchPaginatedActivity(
         createdAt: true,
         content: true,
         authorId: true,
-        author: true,
-        likedBy: true, // now includes array of users who liked
-        comments: true, // now includes array of comments
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likedBy: true,
+          },
+        },
       },
     }),
     prisma.comment.findMany({
@@ -202,9 +328,14 @@ export async function fetchPaginatedActivity(
         createdAt: true,
         content: true,
         authorId: true,
-        author: true,
         postId: true,
-        likedBy: true, // now includes array of users who liked
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
       },
     }),
     prisma.post.findMany({
@@ -214,9 +345,19 @@ export async function fetchPaginatedActivity(
         createdAt: true,
         content: true,
         authorId: true,
-        author: true,
-        likedBy: true,
-        comments: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likedBy: true,
+          },
+        },
       },
     }),
     prisma.comment.findMany({
@@ -226,48 +367,89 @@ export async function fetchPaginatedActivity(
         createdAt: true,
         content: true,
         authorId: true,
-        author: true,
         postId: true,
-        likedBy: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
       },
     }),
   ]);
 
-  // 2) normalize into ActivityItem[]
-  const all: ActivityItem[] = [
+  // 2) normalize into Activity[]
+  const all: Activity[] = [
     ...posts.map((p) => ({
       id: `post:${p.id}`,
-      type: "post",
+      type: "post" as const,
       createdAt: p.createdAt,
-      payload: p,
+      payload: {
+        id: p.id,
+        content: p.content,
+        authorId: p.authorId,
+        createdAt: p.createdAt,
+        updatedAt: p.createdAt, // Assuming updatedAt is same as createdAt for simplicity
+        author: p.author,
+        _count: p._count,
+      },
     })),
     ...comments.map((c) => ({
       id: `comment:${c.id}`,
-      type: "comment",
+      type: "comment" as const,
       createdAt: c.createdAt,
-      payload: c,
+      payload: {
+        id: c.id,
+        content: c.content,
+        authorId: c.authorId,
+        postId: c.postId,
+        createdAt: c.createdAt,
+        updatedAt: c.createdAt, // Assuming updatedAt is same as createdAt for simplicity
+        author: c.author,
+      },
     })),
     ...likedPosts.map((p) => ({
       id: `likedPost:${p.id}`,
-      type: "likedPost",
+      type: "likedPost" as const,
       createdAt: p.createdAt,
-      payload: p,
+      payload: {
+        id: p.id,
+        content: p.content,
+        authorId: p.authorId,
+        createdAt: p.createdAt,
+        updatedAt: p.createdAt, // Assuming updatedAt is same as createdAt for simplicity
+        author: p.author,
+        _count: p._count,
+      },
     })),
     ...likedComments.map((c) => ({
       id: `likedComment:${c.id}`,
-      type: "likedComment",
+      type: "likedComment" as const,
       createdAt: c.createdAt,
-      payload: c,
+      payload: {
+        id: c.id,
+        content: c.content,
+        authorId: c.authorId,
+        postId: c.postId,
+        createdAt: c.createdAt,
+        updatedAt: c.createdAt, // Assuming updatedAt is same as createdAt for simplicity
+        author: c.author,
+      },
     })),
   ];
 
   // 3) sort by date desc and page‐through
-  all.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  const start = cursor ? all.findIndex((x) => x.id === cursor) + 1 : 0;
+  all.sort(
+    (a, b) =>
+      (b?.createdAt ? b.createdAt.getTime() : 0) -
+      (a?.createdAt ? a.createdAt.getTime() : 0)
+  );
+  const start = cursor ? all.findIndex((x) => x?.id === cursor) + 1 : 0;
   const page = all.slice(start, start + limit);
-  const nextCursor = page.length === limit ? page[page.length - 1].id : null;
+  const nextCursor = page.length === limit ? page[page.length - 1]?.id : null;
 
-  return { activities: page, nextCursor };
+  return { activities: page, nextCursor: nextCursor ?? null };
 }
 
 export async function fetchPaginatedLikedActivity(

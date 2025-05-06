@@ -2,13 +2,7 @@ import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import BioText from "./BioText";
 
-export default function PersInfo({
-  userData,
-  children,
-}: {
-  userData: User;
-  children?: React.ReactNode;
-}) {
+export default function PersInfo({ userData }: { userData: User }) {
   if (!userData) {
     return;
   }

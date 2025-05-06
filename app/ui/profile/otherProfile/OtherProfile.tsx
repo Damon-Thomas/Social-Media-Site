@@ -1,9 +1,9 @@
 "use client";
 
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import PersInfo from "./PersInfo";
 import ProfileRemote from "../ProfileRemote/ProfileRemote";
-import Goats from "../../dashboard/Goats";
 
 // Use the same type as ProfileRemote's activeTab state
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
@@ -20,9 +20,8 @@ export interface OtherProfileProps {
   likedPostsCursor?: string | null;
   initialLikedComments?: Comment[];
   likedCommentsCursor?: string | null;
-  // Add props for lifted state
   activeTab: ActiveProfileTab;
-  setActiveTab: (tab: ActiveProfileTab) => void;
+  setActiveTab: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
 }
 
 export default function OtherProfile({
@@ -37,7 +36,6 @@ export default function OtherProfile({
   likedPostsCursor = null,
   initialLikedComments = [],
   likedCommentsCursor = null,
-  // Destructure new props
   activeTab,
   setActiveTab,
 }: OtherProfileProps) {
@@ -71,7 +69,6 @@ export default function OtherProfile({
           initialLikedComments={initialLikedComments}
           likedCommentsCursor={likedCommentsCursor}
           navigatorHeight={NAVIGATOR_HEIGHT}
-          // Pass down the lifted state and setter
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />

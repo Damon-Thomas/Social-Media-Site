@@ -1,6 +1,7 @@
 "use client";
 
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ProfileSelectors from "./ProfileSelectors";
 import ProfileInfo from "./ProfileInfo";
 import CombinedLikedSection from "../CombinedLikedSection";
@@ -10,7 +11,7 @@ import { useEffect } from "react";
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 interface ProfileRemoteProps {
-  userData: User;
+  userData: User | null;
   initialActivity?: ActivityItem[];
   activityCursor?: string | null;
   initialPosts?: Post[];
@@ -23,7 +24,7 @@ interface ProfileRemoteProps {
   likedCommentsCursor?: string | null;
   navigatorHeight: number;
   activeTab: ActiveProfileTab;
-  setActiveTab: (tab: ActiveProfileTab) => void;
+  setActiveTab: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
 }
 
 export default function ProfileRemote({
@@ -38,7 +39,6 @@ export default function ProfileRemote({
   likedPostsCursor = null,
   initialLikedComments = [],
   likedCommentsCursor = null,
-  navigatorHeight,
   activeTab,
   setActiveTab,
 }: ProfileRemoteProps) {
@@ -50,6 +50,10 @@ export default function ProfileRemote({
       scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [activeTab]);
+
+  if (!userData) {
+    return null; // or a fallback UI
+  }
 
   return (
     <>

@@ -1,14 +1,14 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { type Comment } from "../lib/definitions";
+import { CommentUnested } from "../lib/definitions";
 
 // Function to fetch paginated top-level comments for a post
 export async function getPostComments(
   postId: string,
   cursor?: string,
   limit: number = 10
-): Promise<{ comments: Comment[]; nextCursor: string | null }> {
+): Promise<{ comments: CommentUnested[]; nextCursor: string | null }> {
   const comments = await prisma.comment.findMany({
     where: {
       postId,
@@ -29,7 +29,11 @@ export async function getPostComments(
         select: {
           id: true,
           name: true,
+          email: true,
           image: true,
+          createdAt: true,
+          updatedAt: true,
+          bio: true,
         },
       },
       likedBy: {
@@ -57,7 +61,11 @@ export async function getPostComments(
             select: {
               id: true,
               name: true,
+              email: true,
               image: true,
+              createdAt: true,
+              updatedAt: true,
+              bio: true,
             },
           },
           likedBy: {
@@ -85,7 +93,7 @@ export async function getCommentReplies(
   commentId: string,
   cursor?: string,
   limit: number = 10
-): Promise<{ replies: Comment[]; nextCursor: string | null }> {
+): Promise<{ replies: CommentUnested[]; nextCursor: string | null }> {
   const replies = await prisma.comment.findMany({
     where: { parentId: commentId },
     take: limit,
@@ -104,7 +112,11 @@ export async function getCommentReplies(
         select: {
           id: true,
           name: true,
+          email: true,
           image: true,
+          createdAt: true,
+          updatedAt: true,
+          bio: true,
         },
       },
       likedBy: {

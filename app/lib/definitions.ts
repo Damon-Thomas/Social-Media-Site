@@ -121,6 +121,19 @@ export type Comment = {
   Notification?: Notification[];
 } | null;
 
+export type CommentUnested = {
+  id: string;
+  content?: string | null;
+  author?: User | null;
+  authorId?: string | null;
+  postId?: string | null;
+  likedBy?: EssentialUser[]; // Was "likes?: User[]"
+  replies?: CommentUnested[];
+  parentId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Profile = {
   id: string;
   bio?: string | null;
@@ -151,7 +164,14 @@ export type ActivityItem = {
   id: string;
   type: "post" | "comment" | "likedPost" | "likedComment";
   createdAt: Date;
-  payload: Post | Comment;
+  payload: EssentialPost | EssentialComment;
+} | null;
+
+export type Activity = {
+  id: string;
+  type: "post" | "comment" | "likedPost" | "likedComment";
+  createdAt: Date;
+  payload: EssentialPost | EssentialComment;
 } | null;
 
 export type EssentialUser = {
@@ -195,4 +215,46 @@ export type PostFeed = {
   comments?: Comment[];
   createdAt: Date;
   updatedAt: Date;
+} | null;
+
+type FollowingActivity = {
+  id: string;
+  posts: {
+    id: string;
+    content: string | null;
+    authorId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    author: {
+      id: string;
+      name: string | null;
+      image: string | null;
+    };
+    _count: {
+      comments: number;
+      likedBy: number;
+    };
+  }[];
+  comments: {
+    id: string;
+    content: string | null;
+    authorId: string;
+    postId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    parentId: string;
+    author: {
+      id: string;
+      name: string | null;
+      image: string | null;
+    };
+    _count: {
+      replies: number;
+      likedBy: number;
+    };
+  }[];
+};
+
+export type GetFollowingActivitiesResult = {
+  following: FollowingActivity[];
 } | null;

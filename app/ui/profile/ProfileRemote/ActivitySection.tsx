@@ -22,6 +22,7 @@ export default function ActivitySection({
       cursor ?? undefined,
       ITEMS_PER_PAGE
     );
+
     return { items: activities, nextCursor };
   };
 

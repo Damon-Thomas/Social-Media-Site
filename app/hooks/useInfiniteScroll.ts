@@ -55,6 +55,12 @@ export function useInfiniteScroll<T>(
   }, [hasMore, loading, loadMore]);
 
   useEffect(() => {
+    setItems(initialItems);
+    setCursor(initialCursor);
+    setHasMore(!!initialCursor);
+  }, [initialItems, initialCursor]);
+
+  useEffect(() => {
     console.log("Observer target updated:", observerTarget.current);
     console.log("Has more:", hasMore);
     console.log("Loading:", loading);

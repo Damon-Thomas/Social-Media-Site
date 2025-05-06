@@ -32,8 +32,17 @@ body {
   --rmono: #f0f0f0;
   --dmono: #0a0a0a;
   --rdmono: #ffffff;
+  --dmono-90: #0a0a0ae6; /* 90% opacity */
+  --doverlay: #0a0a0ae6;
+  --rdmono-90: #ffffffe6; /* 90% opacity */
   --dmono-70: #0a0a0ab3; /* 70% opacity */
   --rdmono-70: #ffffffb3; /* 70% opacity */
+  --dmono-50: #0a0a0a80; /* 50% opacity */
+  --rdmono-50: #ffffff80; /* 50% opacity */
+  --dmono-30: #0a0a0a4d; /* 30% opacity */
+  --rdmono-30: #ffffff4d; /* 30% opacity */
+  --dmono-10: #0a0a0a1a; /* 10% opacity */
+  --rdmono-10: #ffffff1a; /* 10% opacity */
   --opdmono: #0a0a0a50;
   --oprdmono: #ffffff50;
   --tcolor: #0a0a0a;
@@ -60,8 +69,16 @@ body {
   --rmono: #171717;
   --dmono: #ffffff;
   --rdmono: #0a0a0a;
+  --dmono-90: #ffffffe6; /* 90% opacity */
+  --rdmono-90: #0a0a0ae6; /* 90% opacity */
   --dmono-70: #ffffffb3; /* 70% opacity */
   --rdmono-70: #0a0a0ab3; /* 70% opacity */
+  --dmono-50: #ffffff80; /* 50% opacity */
+  --rdmono-50: #0a0a0a80; /* 50% opacity */
+  --dmono-30: #ffffff4d; /* 30% opacity */
+  --rdmono-30: #0a0a0a4d; /* 30% opacity */
+  --dmono-10: #ffffff1a; /* 10% opacity */
+  --rdmono-10: #0a0a0a1a; /* 10% opacity */
   --gtint: #232323;
   --opdmono: #36363650;
   --oprdmono: #0a0a0a50;

@@ -7,6 +7,7 @@ export default function LongInput({
   id,
   placeholder,
   value,
+  name = id,
   onChange,
   className = "",
 }: Readonly<{
@@ -14,6 +15,7 @@ export default function LongInput({
   id: string;
   placeholder?: string;
   value?: string;
+  name?: string;
   onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   className?: string;
 }>) {
@@ -51,7 +53,7 @@ export default function LongInput({
       <textarea
         ref={textareaRef}
         id={id}
-        name={id}
+        name={name}
         placeholder={placeholder}
         value={value}
         onChange={handleInput}

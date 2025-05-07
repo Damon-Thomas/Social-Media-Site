@@ -73,13 +73,16 @@ export default function Post({ post }: { post: EssentialPost }) {
       </div>
 
       <div className="flex flex-col flex-grow min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <span className="font-extrabold">{post?.author?.name}</span>
-          <p className="text-sm text-[var(--dull)] ">
-            {post?.createdAt && formatRelativeTime(post.createdAt, true)}
-          </p>
-        </div>
-        <p className="">{post?.content}</p>
+        <Link href={`dashboard/posts/${post?.id}`}>
+          {" "}
+          <div className="flex items-start justify-between gap-2">
+            <span className="font-extrabold">{post?.author?.name}</span>
+            <p className="text-sm text-[var(--dull)] ">
+              {post?.createdAt && formatRelativeTime(post.createdAt, true)}
+            </p>
+          </div>
+          <p className="">{post?.content}</p>
+        </Link>
         <div className="flex items-center gap-4 mt-0.5">
           <div className="flex items-center gap-1">
             {iconLoading ? (

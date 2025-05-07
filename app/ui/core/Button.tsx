@@ -5,6 +5,7 @@ export default function Button({
   style = "default",
   size = "medium",
   className = "",
+  disabled = false,
 }: {
   children: React.ReactNode;
   onClick?: (
@@ -14,6 +15,7 @@ export default function Button({
   style?: "default" | "bordered" | "text" | "primary";
   size?: "small" | "medium" | "large" | "fit";
   className?: string;
+  disabled?: boolean;
 }) {
   const buttonStyles = {
     default:
@@ -38,6 +40,7 @@ export default function Button({
       }
       onClick={onClick}
       type={type}
+      disabled={disabled}
     >
       {children}
     </button>

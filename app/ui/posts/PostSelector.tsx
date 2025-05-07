@@ -16,7 +16,7 @@ export default function PostSelector({
   }
 
   return (
-    <div className="sticky top-0 z-10 bg-[var(--rdmono-70)] backdrop-blur-sm flex justify-around items-center w-full border-b-1 border-[var(--borderc)]">
+    <div className="sticky top-0 z-10 bg-[var(--rdmono-70)] backdrop-blur-sm flex justify-around items-center w-full border-b-1 border-l-1 border-[var(--borderc)]">
       <div
         className="flex flex-col h-14 grow items-center cursor-pointer transition-colors hover:bg-[var(--gtint)]"
         onClick={globalFeed}

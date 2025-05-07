@@ -1,11 +1,98 @@
 "use server";
 
-import next from "next";
 import {
   EssentialPost,
   // GetFollowingActivitiesResult,
 } from "../lib/definitions";
 import prisma from "../lib/prisma";
+import { z } from "zod";
+import DOMPurify from "isomorphic-dompurify";
+
+const PostFormSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Post content must not be empty")
+    .max(1000, "Post content must be less than 1000 characters"),
+});
+
+type FormState =
+  | {
+      errors?: {
+        content?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
+
+export async function createPost({
+  state,
+  payload,
+  userId,
+}: {
+  state: FormState;
+  payload: FormData;
+  userId: string | undefined;
+}): Promise<FormState> {
+  // Sanitize the content
+  const content = payload.get("content");
+  if (!content) {
+    return {
+      errors: {
+        content: ["Post content is required"],
+      },
+      message: "Post content is required",
+    };
+  }
+
+  const sanitizedContent = DOMPurify.sanitize(content.toString());
+
+  try {
+    // Validate the sanitized content
+    const parsedContent = PostFormSchema.parse({ content: sanitizedContent });
+
+    // Create the post in the database
+    const post = await prisma.post.create({
+      data: {
+        content: parsedContent.content,
+      },
+    });
+
+    // Update the user's posts
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        posts: {
+          connect: { id: post.id },
+        },
+      },
+    });
+
+    return undefined; // No errors
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const fieldErrors: Record<string, string[]> = {};
+      error.errors.forEach((err) => {
+        const field = err.path[0] as string;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = [];
+        }
+        fieldErrors[field].push(err.message);
+      });
+      return {
+        errors: fieldErrors,
+        message: "Validation errors occurred",
+      };
+    } else {
+      console.error("Error creating post:", error);
+      return {
+        errors: {
+          content: ["An error occurred while creating the post"],
+        },
+        message: "An error occurred while creating the post",
+      };
+    }
+  }
+}
 
 export async function getGlobalFeedPosts(
   cursor?: string,

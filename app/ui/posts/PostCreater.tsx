@@ -1,8 +1,8 @@
 import React from "react";
 import Image from "next/image";
-import ErrorMessage from "../../form/ErrorMessage";
-import LongInput from "../../form/LongInput";
-import Button from "../../core/Button";
+import ErrorMessage from "@/app/ui/form/ErrorMessage";
+import LongInput from "@/app/ui/form/LongInput";
+import Button from "@/app/ui/core/Button";
 
 type PostCreatorProps = {
   image: string;

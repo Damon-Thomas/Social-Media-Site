@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { followUser, unfollowUser } from "@/app/actions/fetch";
 import { useTheme } from "next-themes";
-import Button from "../core/Button";
+import Button from "@/app/ui/core/Button";
 
 export default function SideItem({
   selectedData,

@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { useTheme } from "next-themes";
 import defaultProfileDark from "@public/defaultProfileDark.svg";
 import defaultProfileLight from "@public/defaultProfileLight.svg";
-import PostCreator from "../ui/dashboard/posts/PostCreater";
+import PostCreator from "../ui/posts/PostCreater";
 import type { SimpleUser } from "../lib/definitions";
 import Goats from "../ui/dashboard/Goats";
 import Noobs from "../ui/dashboard/Noobs";
-import PostSelector from "../ui/dashboard/posts/PostSelector";
-import PostContent from "../ui/dashboard/posts/PostContent";
+import PostSelector from "../ui/posts/PostSelector";
+import PostContent from "../ui/posts/PostContent";
 
 export default function DashboardClient({ user }: { user: SimpleUser }) {
   const { theme } = useTheme();

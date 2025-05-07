@@ -1,4 +1,4 @@
-import Button from "../../core/Button";
+import Button from "@/app/ui/core/Button";
 import SelectorHighlight from "./SelectorHighlight";
 
 export default function PostSelector({

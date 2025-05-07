@@ -5,7 +5,7 @@ import {
 import { useEffect, useState } from "react";
 import { EssentialPost } from "@/app/lib/definitions";
 import { useCurrentUser } from "@/app/context/UserContext";
-import Post from "@/app/ui/dashboard/posts/Post";
+import Post from "@/app/ui/posts/Post";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 
 export default function PostContent({

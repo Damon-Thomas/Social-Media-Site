@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
-import ThemeHydrationGuard from "./ui/ThemeHydrationGuard";
-import DebugTheme from "./ui/DebugTheme";
+import ThemeHydrationGuard from "./ui/tools/ThemeHydrationGuard";
+import DebugTheme from "./ui/tools/DebugTheme";
 import Head from "./head";
 import { UserProvider } from "./context/UserContext";
 

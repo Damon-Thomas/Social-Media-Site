@@ -94,6 +94,71 @@ export async function createPost({
   }
 }
 
+export async function getfullPost(postId: string) {
+  return await prisma.post.findUnique({
+    where: { id: postId },
+    select: {
+      id: true,
+      content: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      comments: {
+        select: {
+          id: true,
+          content: true,
+          authorId: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+          _count: {
+            select: {
+              likedBy: true,
+              replies: true,
+            },
+          },
+          replies: {
+            select: {
+              id: true,
+              content: true,
+              authorId: true,
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              createdAt: true,
+              updatedAt: true,
+              _count: {
+                select: {
+                  likedBy: true,
+                  replies: true,
+                },
+              },
+            },
+          },
+        },
+      },
+
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+}
+
 export async function getGlobalFeedPosts(
   cursor?: string,
   limit: number = 15

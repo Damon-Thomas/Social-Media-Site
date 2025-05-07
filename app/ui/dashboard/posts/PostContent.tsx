@@ -13,8 +13,6 @@ export default function PostContent({
 }: {
   selectedFeed: string;
 }) {
-  // const [posts, setPosts] = useState<EssentialPost[]>([]);
-  // const [loading, setLoading] = useState(false);
   const user = useCurrentUser(); // This gets the current user from context
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const [initialPosts, setInitialPosts] = useState<EssentialPost[]>([]);
@@ -70,6 +68,15 @@ export default function PostContent({
     observerTarget,
   } = useInfiniteScroll(initialPosts, initialCursor, fetchMore);
 
+  // Filter out duplicate posts based on their IDs
+  const uniquePosts = new Map();
+  posts.forEach((post) => {
+    if (post?.id) {
+      uniquePosts.set(post.id, post);
+    }
+  });
+  const filteredPosts = Array.from(uniquePosts.values());
+
   return (
     <div className="flex flex-col gap-2 ">
       <div className="flex gap-4 items-start pt-4 px-4">
@@ -80,10 +87,10 @@ export default function PostContent({
       <div className="flex gap-4 w-full no-wrap my-2 pt-2 border-t-1 border-[var(--borderc)] min-h-full h-fit px-4">
         <div className="flex flex-col gap-4 w-full">
           {initialDataLoaded ? (
-            posts && posts.length > 0 ? (
+            filteredPosts && filteredPosts.length > 0 ? (
               <>
-                {posts.map((post) => (
-                  <Post key={`${selectedFeed}${post?.id}`} post={post} />
+                {filteredPosts.map((post) => (
+                  <Post key={`post-${selectedFeed}-${post?.id}`} post={post} />
                 ))}
                 {loading && (
                   <div className="flex justify-center py-4">

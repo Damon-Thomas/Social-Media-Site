@@ -47,7 +47,10 @@ export default function LikedPostsSection({
   return (
     <div className="space-y-4 overflow-auto grow">
       {likedPosts.map((post) => (
-        <div key={`likedpost${post?.id}`} className="p-4 border rounded-lg">
+        <div
+          key={`likedpost-post-${post?.id}`}
+          className="p-4 border rounded-lg"
+        >
           <Link
             href={`/dashboard/posts/${post?.id}`}
             className="block hover:bg-gray-50 transition-colors"

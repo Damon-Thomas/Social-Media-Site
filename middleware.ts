@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/app/lib/session.server";
+import cache from "@/app/lib/cache";
 
 const protectedRoutes = ["/dashboard"];
 const publicRoutes = ["/"];
 // const homeRoute = "/";
 
 export default async function middleware(req: NextRequest) {
-  console.log("Middleware triggered");
   const path = req.nextUrl.pathname;
 
   // Skip authentication for POST requests to root path
@@ -22,40 +22,49 @@ export default async function middleware(req: NextRequest) {
   let isAuthenticated = false;
 
   if (cookie) {
-    try {
-      const session = await decrypt(cookie);
+    if (cache.has(cookie)) {
+      console.log("Cache hit for session");
+      const session = cache.get(cookie);
       isAuthenticated = !!session?.userId;
-      const validateUser = await fetch(
-        `${req.nextUrl.origin}/api/auth/validCookie`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: `session=${cookie}`,
-          },
+    } else {
+      try {
+        console.log("Cache miss for session");
+        const session = await decrypt(cookie);
+        isAuthenticated = !!session?.userId;
+        // Cache the session for 5 minutes (300 seconds)
+        cache.set(cookie, session, 300);
+        const validateUser = await fetch(
+          `${req.nextUrl.origin}/api/auth/validCookie`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: `session=${cookie}`,
+            },
+          }
+        );
+        if (validateUser.status === 401) {
+          // Clear invalid session cookie and redirect to home
+          const clearRes = NextResponse.redirect(new URL("/", req.nextUrl));
+          clearRes.cookies.set({
+            name: "session",
+            value: "",
+            expires: new Date(0),
+            path: "/",
+          });
+          return clearRes;
         }
-      );
-      if (validateUser.status === 401) {
-        // Clear invalid session cookie and redirect to home
-        const clearRes = NextResponse.redirect(new URL("/", req.nextUrl));
-        clearRes.cookies.set({
+      } catch (e) {
+        // Clear invalid cookies
+        const response = NextResponse.next();
+        response.cookies.set({
           name: "session",
           value: "",
           expires: new Date(0),
           path: "/",
         });
-        return clearRes;
+        return response;
       }
-    } catch (e) {
-      // Clear invalid cookies
-      const response = NextResponse.next();
-      response.cookies.set({
-        name: "session",
-        value: "",
-        expires: new Date(0),
-        path: "/",
-      });
-      return response;
     }
   }
 

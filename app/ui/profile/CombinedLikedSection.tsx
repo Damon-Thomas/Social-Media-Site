@@ -87,7 +87,10 @@ export default function CombinedLikedSection({
         if (item?.type === "likedPost") {
           const p = item.payload;
           return (
-            <Link key={`likedPost-${p?.id}`} href={`/dashboard/posts/${p?.id}`}>
+            <Link
+              key={`likedPost-${userId}-${p?.id}`}
+              href={`/dashboard/posts/${p?.id}`}
+            >
               <div className="p-4 border rounded-lg hover:bg-gray-50">
                 <p className="font-medium">
                   Liked post: {p?.content?.slice(0, 50)}…
@@ -100,7 +103,7 @@ export default function CombinedLikedSection({
           const c = item?.payload;
           return (
             <Link
-              key={`likedComment-${c?.id}`}
+              key={`likedComment-${userId}-${c?.id}`}
               href={`/dashboard/posts/${c?.postId}`}
             >
               <div className="p-4 border rounded-lg hover:bg-gray-50">

@@ -1,8 +1,9 @@
 "use server";
 
+import next from "next";
 import {
   EssentialPost,
-  GetFollowingActivitiesResult,
+  // GetFollowingActivitiesResult,
 } from "../lib/definitions";
 import prisma from "../lib/prisma";
 
@@ -41,117 +42,59 @@ export async function getGlobalFeedPosts(
   return { posts, nextCursor };
 }
 
-export async function getFollowingActivities(
-  userId: string | undefined,
-  cursor?: string,
-  limit: number = 15
-): Promise<GetFollowingActivitiesResult> {
-  if (!userId) {
-    throw new Error("User ID is required");
-  }
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      following: {
-        select: {
-          id: true,
-          posts: {
-            take: limit,
-            skip: cursor ? 1 : 0,
-            cursor: cursor ? { id: cursor } : undefined,
-            orderBy: { createdAt: "desc" },
-            select: {
-              id: true,
-              content: true,
-              authorId: true,
-              createdAt: true,
-              updatedAt: true,
-              author: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true,
-                },
-              },
-              _count: {
-                select: {
-                  comments: true,
-                  likedBy: true,
-                },
-              },
-            },
-          },
-          comments: {
-            take: limit,
-            orderBy: { createdAt: "desc" },
-            select: {
-              id: true,
-              content: true,
-              authorId: true,
-              postId: true,
-              createdAt: true,
-              updatedAt: true,
-              parentId: true,
-              author: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true,
-                },
-              },
-              _count: {
-                select: {
-                  replies: true,
-                  likedBy: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+// export async function getFollowingActivities(
+//   userId: string | undefined,
+//   cursor?: string,
+//   limit: number = 15
+// ): Promise<GetFollowingActivitiesResult> {
+//   if (!userId) {
+//     throw new Error("User ID is required");
+//   }
+//   const user = await prisma.user.findUnique({
+//     where: { id: userId },
+//     setIsModalHidden
+//   });
 
-  // Map to match the expected types
-  if (!user) return null;
-  return {
-    following: user.following.map((f) => ({
-      id: f.id,
-      posts: f.posts
-        .filter((p) => p && p.authorId && p.author) // filter out nulls
-        .map((p) => ({
-          id: p.id,
-          content: p.content,
-          authorId: p.authorId as string,
-          createdAt: p.createdAt,
-          updatedAt: p.updatedAt,
-          author: {
-            id: p.author!.id,
-            name: p.author!.name,
-            image: p.author!.image,
-          },
-          _count: p._count,
-        })),
-      comments: f.comments
-        .filter((c) => c && c.authorId && c.author)
-        .map((c) => ({
-          id: c.id,
-          content: c.content,
-          authorId: c.authorId as string,
-          postId: c.postId as string,
-          createdAt: c.createdAt,
-          updatedAt: c.updatedAt,
-          parentId: c.parentId as string,
-          author: {
-            id: c.author!.id,
-            name: c.author!.name,
-            image: c.author!.image,
-          },
-          _count: c._count,
-        })),
-    })),
-  };
-}
+//   // Map to match the expected types
+//   if (!user) return null;
+//   return {
+//     following: user.following.map((f) => ({
+//       id: f.id,
+//       posts: f.posts
+//         .filter((p) => p && p.authorId && p.author) // filter out nulls
+//         .map((p) => ({
+//           id: p.id,
+//           content: p.content,
+//           authorId: p.authorId as string,
+//           createdAt: p.createdAt,
+//           updatedAt: p.updatedAt,
+//           author: {
+//             id: p.author!.id,
+//             name: p.author!.name,
+//             image: p.author!.image,
+//           },
+//           _count: p._count,
+//         })),
+//       comments: f.comments
+//         .filter((c) => c && c.authorId && c.author)
+//         .map((c) => ({
+//           id: c.id,
+//           content: c.content,
+//           authorId: c.authorId as string,
+//           postId: c.postId as string,
+//           createdAt: c.createdAt,
+//           updatedAt: c.updatedAt,
+//           parentId: c.parentId as string,
+//           author: {
+//             id: c.author!.id,
+//             name: c.author!.name,
+//             image: c.author!.image,
+//           },
+//           _count: c._count,
+//         })),
+//     })),
+//   };
+// }
 
 export async function getFollowingPosts(
   userId: string | undefined,
@@ -175,8 +118,21 @@ export async function getFollowingPosts(
               id: true,
               content: true,
               authorId: true,
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
               createdAt: true,
               updatedAt: true,
+              _count: {
+                select: {
+                  comments: true,
+                  likedBy: true,
+                },
+              },
             },
           },
         },
@@ -185,6 +141,7 @@ export async function getFollowingPosts(
   });
   const posts = user?.following.flatMap((f) => f.posts) || [];
   const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
+  console.log(posts, "posts", nextCursor, "nextCursor");
   return { posts, nextCursor };
 }
 

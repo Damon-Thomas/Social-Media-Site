@@ -151,7 +151,19 @@ export async function getfullPost(postId: string) {
           },
         },
       },
-
+      likedBy: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          likedBy: true,
+        },
+      },
       authorId: true,
       createdAt: true,
       updatedAt: true,

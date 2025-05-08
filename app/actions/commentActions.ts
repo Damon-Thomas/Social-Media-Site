@@ -2,6 +2,24 @@
 
 import prisma from "../lib/prisma";
 import { CommentUnested } from "../lib/definitions";
+import { z } from "zod";
+import DOMPurify from "isomorphic-dompurify";
+
+const CommentFormSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Comment content must not be empty")
+    .max(500, "Comment content must be less than 500 characters"),
+});
+
+type FormState =
+  | {
+      errors?: {
+        content?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
 
 // Function to fetch paginated top-level comments for a post
 export async function getPostComments(
@@ -135,4 +153,102 @@ export async function getCommentReplies(
   const nextCursor =
     replies.length === limit ? replies[replies.length - 1].id : null;
   return { replies, nextCursor };
+}
+
+export async function createComment({
+  state,
+  payload,
+  userId,
+}: {
+  state: FormState;
+  payload: FormData;
+  userId: string | undefined;
+}): Promise<FormState> {
+  // Sanitize the content
+  const content = payload.get("content");
+  if (!content) {
+    return {
+      errors: {
+        content: ["Comment content is required"],
+      },
+      message: "Comment content is required",
+    };
+  }
+
+  const sanitizedContent = DOMPurify.sanitize(content.toString());
+
+  try {
+    // Validate the sanitized content
+    const parsedContent = CommentFormSchema.parse({
+      content: sanitizedContent,
+    });
+
+    // Create the comment in the database
+    const comment = await prisma.comment.create({
+      data: {
+        content: parsedContent.content,
+      },
+    });
+
+    // If a postId is provided, associate the comment with the post
+    const postId = payload.get("postId")?.toString();
+    if (postId) {
+      await prisma.comment.update({
+        where: { id: comment.id },
+        data: {
+          postId: postId,
+        },
+      });
+    }
+
+    // Update the user's comments
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        comments: {
+          connect: { id: comment.id },
+        },
+      },
+    });
+
+    // If a parentId is provided, update the parent comment
+    if (payload.get("parentId")) {
+      const parentId = payload.get("parentId")?.toString();
+      if (parentId) {
+        await prisma.comment.update({
+          where: { id: parentId },
+          data: {
+            replies: {
+              connect: { id: comment.id },
+            },
+          },
+        });
+      }
+    }
+
+    return undefined; // No errors
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const fieldErrors: Record<string, string[]> = {};
+      error.errors.forEach((err) => {
+        const field = err.path[0] as string;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = [];
+        }
+        fieldErrors[field].push(err.message);
+      });
+      return {
+        errors: fieldErrors,
+        message: "Validation errors occurred",
+      };
+    } else {
+      console.error("Error creating comment:", error);
+      return {
+        errors: {
+          content: ["An error occurred while creating the comment"],
+        },
+        message: "An error occurred while creating the comment",
+      };
+    }
+  }
 }

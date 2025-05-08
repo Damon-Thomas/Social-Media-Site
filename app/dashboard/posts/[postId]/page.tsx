@@ -2,6 +2,7 @@
 
 import { getfullPost } from "@/app/actions/postActions";
 import { Post } from "@/app/lib/definitions";
+import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
@@ -34,6 +35,7 @@ export default function PostPage({
     <div className="max-w-3xl w-full mx-auto py-6">
       <PostOnly post={post} />
       <div className="">
+        <CommentCreator setPost={setPost} postId={postId} />
         <h3 className="text-xl font-bold mb-4">Comments</h3>
         {post?.comments?.length ? (
           post.comments.map((comment) => (

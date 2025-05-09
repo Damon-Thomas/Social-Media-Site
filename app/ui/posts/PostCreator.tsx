@@ -5,17 +5,13 @@ import LongInput from "@/app/ui/form/LongInput";
 import Button from "@/app/ui/core/Button";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { createPost } from "@/app/actions/postActions";
-import { useTheme } from "next-themes";
 import { EssentialUser } from "@/app/lib/definitions";
-import defaultProfileDark from "@public/defaultProfileDark.svg";
-import defaultProfileLight from "@public/defaultProfileLight.svg";
+
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export default function PostCreator({ user }: { user: EssentialUser }) {
   const currentUser = useCurrentUser();
-  const { theme } = useTheme();
-
-  const defaultProfile =
-    theme === "dark" ? defaultProfileDark.src : defaultProfileLight.src;
+  const defaultProfile = useDefaultProfileImage();
 
   // Wrapper function to match the expected signature of useActionState
   const createPostWrapper = async (

@@ -1,33 +1,26 @@
 import { likePost } from "@/app/actions/postActions";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { Post } from "@/app/lib/definitions";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
+import formatDate from "@/app/utils/formatDate";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function PostOnly({ post }: { post: Post | null }) {
+export default function PostOnly({
+  post,
+  className = "",
+}: {
+  post: Post | null;
+  className?: string;
+}) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const user = useCurrentUser(); // Get the current user
-  console.log(post?.likedBy, "likedBy");
+  const defaultProfile = useDefaultProfileImage();
   // Format the date
-  const formattedDate = post?.createdAt
-    ? (() => {
-        const date = new Date(post.createdAt);
-        const time = new Intl.DateTimeFormat("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        }).format(date);
-        const datePart = new Intl.DateTimeFormat("en-US", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(date);
-        return `${time} · ${datePart}`;
-      })()
-    : "Unknown Date";
+  const formattedDate = formatDate(post?.createdAt);
 
   useEffect(() => {
     if (user) {
@@ -62,14 +55,14 @@ export default function PostOnly({ post }: { post: Post | null }) {
   }
 
   return (
-    <div className="max-w-3xl flex flex-col mx-auto ">
+    <div className={`max-w-3xl flex flex-col w-full mx-auto ${className}`}>
       <div className="flex">
         <Link
           href={`/dashboard/profile/${post?.author?.id}`}
           className="flex mb-4"
         >
           <Image
-            src={post?.author?.image || "/default-profile.png"}
+            src={post?.author?.image || defaultProfile}
             alt="User profile picture"
             width={40}
             height={40}
@@ -84,7 +77,7 @@ export default function PostOnly({ post }: { post: Post | null }) {
 
       <p className=" mb-4">{post?.content || "Post content here."}</p>
 
-      <div className="flex items-center justify-between gap-4 border-y-1 border-[var(--dull)] w-full my-4 h-10">
+      <div className="flex items-center justify-between gap-4 border-y-1 border-[var(--dull)] w-full mt-2 h-10">
         <p className="flex text-[var(--dull)]">{formattedDate}</p>
         <div className="flex gap-8">
           <div

@@ -1,6 +1,8 @@
 import { createComment } from "@/app/actions/commentActions";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { Post, Comment } from "@/app/lib/definitions";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
+import Image from "next/image";
 
 import { useActionState } from "react";
 
@@ -14,7 +16,7 @@ export default function CommentCreator({
   parentId?: string; // Optional parentId for nested comments
 }) {
   const user = useCurrentUser(); // Get the current user from context
-
+  const defaultProfile = useDefaultProfileImage();
   const createCommentWrapper = async (
     state: { errors?: { content?: string[] }; message?: string } | undefined,
     payload: FormData
@@ -76,22 +78,29 @@ export default function CommentCreator({
   return (
     <form
       action={action}
-      className="flex items-center gap-2 p-4 border-b border-b-[var(--borderc)]"
+      className="flex items-center gap-2 py-2 border-b border-b-[var(--borderc)]"
     >
+      <Image
+        src={user?.image || defaultProfile} // Use a default image if user image is not available
+        alt="User profile picture"
+        width={40}
+        height={40}
+        className="rounded-full flex-shrink-0 h-10 w-10"
+      />
       <input
         type="text"
         id="comment"
         name="content" // Ensure the input has a name for FormData
         placeholder="Write a comment..."
-        className="flex-grow p-2 border rounded-md"
+        className="flex-grow p-2 rounded-md"
         disabled={pending}
       />
       <button
         type="submit"
-        className="px-4 py-2 text-white bg-blue-500 rounded-md"
+        className="px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md"
         disabled={pending}
       >
-        {pending ? "Posting..." : "Post"}
+        {pending ? "Sending..." : "Send"}
       </button>
     </form>
   );

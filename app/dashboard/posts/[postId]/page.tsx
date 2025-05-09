@@ -5,7 +5,6 @@ import { Post } from "@/app/lib/definitions";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import CommentModal from "@/app/ui/posts/comments/CommentModal";
-import CreateCommentModal from "@/app/ui/posts/comments/CommentModal";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
 import { use } from "react";
@@ -38,10 +37,10 @@ export default function PostPage({
   return (
     <div className="max-w-3xl h-full w-full mx-auto py-4 border-x-1 border-x-[var(--borderc)]">
       <div className="flex flex-col w-full h-full overflow-hidden px-2 md:px-4">
-        <PostOnly post={post} />
+        <PostOnly post={post} setHidden={setModalHidden} />
 
         <CommentCreator setPost={setPost} postId={postId} />
-        <h3 className="text-xl font-bold mb-4">Comments</h3>
+        <h3 className="text-xl font-bold my-4">Comments</h3>
         <div className="overflow-auto">
           {post?.comments?.length ? (
             post.comments.map((comment) => (

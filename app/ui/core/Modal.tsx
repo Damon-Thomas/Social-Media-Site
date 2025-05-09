@@ -11,7 +11,7 @@ export default function Modal({
 }) {
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300  ${
         hidden ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       role="dialog"
@@ -26,7 +26,7 @@ export default function Modal({
       />
 
       {/* Modal content */}
-      <div className="relative bg-[var(--dmono)] text-[var(--rdmono)] rounded-lg shadow-lg p-6 z-10 w-full max-w-lg">
+      <div className="relative bg-[var(--dmono)] text-[var(--rdmono)] rounded-lg shadow-lg p-10 z-10 w-full max-w-xl m-4">
         {/* Close button */}
         {setHidden && (
           <button

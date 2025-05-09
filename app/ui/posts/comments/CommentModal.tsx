@@ -13,11 +13,20 @@ export default function CommentModal({
   hidden: boolean;
   setHidden: React.Dispatch<React.SetStateAction<boolean>>;
   setPost?: React.Dispatch<React.SetStateAction<Post | null>>;
-  parentId?: string | null; // Optional parentId for nested comments
+  parentId?: string | undefined; // Optional parentId for nested comments
 }) {
+  const handleCloseModal = () => setHidden(true); // Wrap setHidden in a function
+
   return (
-    <Modal hidden={hidden} setHidden={setHidden}>
-      <CommentCreator postId={postId} setPost={setPost} parentId={parentId} />
+    <Modal hidden={hidden} setHidden={handleCloseModal}>
+      {" "}
+      {/* Pass the wrapper function */}
+      <CommentCreator
+        setHidden={setHidden}
+        postId={postId}
+        setPost={setPost}
+        parentId={parentId}
+      />
     </Modal>
   );
 }

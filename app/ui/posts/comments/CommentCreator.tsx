@@ -5,18 +5,24 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 
 import { useActionState } from "react";
+import LongInput from "../../form/LongInput";
+import { useRef } from "react";
 
 export default function CommentCreator({
   postId,
   setPost,
   parentId,
+  setHidden,
 }: {
   postId: string;
   setPost?: React.Dispatch<React.SetStateAction<Post | null>>;
   parentId?: string; // Optional parentId for nested comments
+  setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
 }) {
   const user = useCurrentUser(); // Get the current user from context
   const defaultProfile = useDefaultProfileImage();
+  const formRef = useRef<HTMLFormElement>(null); // Add a ref to the form
+
   const createCommentWrapper = async (
     state: { errors?: { content?: string[] }; message?: string } | undefined,
     payload: FormData
@@ -64,6 +70,20 @@ export default function CommentCreator({
           comments: [newComment, ...(prevPost.comments || [])], // Add the new comment at the beginning
         } as Post; // Explicitly cast to Post to resolve type error
       });
+
+      // Reset the form and textarea height
+      if (formRef.current) {
+        formRef.current.reset();
+        const textarea = formRef.current.querySelector("textarea");
+        if (textarea) {
+          textarea.style.height = "auto";
+        }
+      }
+
+      // Close the modal after successfully submitting a comment
+      if (setHidden) {
+        setTimeout(() => setHidden(true), 0); // Use a timeout to ensure state updates properly
+      }
     }
 
     return result;
@@ -77,8 +97,9 @@ export default function CommentCreator({
 
   return (
     <form
+      ref={formRef} // Attach the form ref
       action={action}
-      className="flex items-center gap-2 py-2 border-b border-b-[var(--borderc)]"
+      className="flex items-start gap-2 py-2 border-b border-b-[var(--borderc)]"
     >
       <Image
         src={user?.image || defaultProfile} // Use a default image if user image is not available
@@ -87,17 +108,17 @@ export default function CommentCreator({
         height={40}
         className="rounded-full flex-shrink-0 h-10 w-10"
       />
-      <input
-        type="text"
+      <LongInput
+        label=""
         id="comment"
-        name="content" // Ensure the input has a name for FormData
-        placeholder="Write a comment..."
+        name="content" // Name attribute for form submission
+        placeholder="Share your thoughts..."
         className="flex-grow p-2 rounded-md"
         disabled={pending}
       />
       <button
         type="submit"
-        className="px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md"
+        className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md"
         disabled={pending}
       >
         {pending ? "Sending..." : "Send"}

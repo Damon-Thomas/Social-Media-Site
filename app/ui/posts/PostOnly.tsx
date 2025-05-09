@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
 export default function PostOnly({
   post,
   className = "",
+  setHidden,
 }: {
   post: Post | null;
   className?: string;
+  setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -51,6 +53,14 @@ export default function PostOnly({
       setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
     } catch (error) {
       console.error("Error liking post:", error);
+    }
+  }
+
+  function commentHandler() {
+    // Handle comment action here
+    console.log("Comment button clicked");
+    if (setHidden) {
+      setHidden(false);
     }
   }
 
@@ -102,7 +112,10 @@ export default function PostOnly({
             </svg>
             <p className="">{likeCount}</p>
           </div>
-          <div className="flex gap-1 text-[var(--dull)] hover:cursor-pointer hover:text-[var(--primary)]">
+          <div
+            onClick={commentHandler}
+            className="flex gap-1 text-[var(--dull)] hover:cursor-pointer hover:text-[var(--primary)]"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

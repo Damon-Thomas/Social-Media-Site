@@ -7,6 +7,7 @@ import { EssentialPost } from "@/app/lib/definitions";
 import { useCurrentUser } from "@/app/context/UserContext";
 import Post from "@/app/ui/posts/Post";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
+import CommentModal from "./comments/CommentModal";
 
 export default function PostContent({
   selectedFeed,
@@ -17,6 +18,10 @@ export default function PostContent({
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const [initialPosts, setInitialPosts] = useState<EssentialPost[]>([]);
   const [initialCursor, setInitialCursor] = useState<string | null>(null);
+  const [hidden, setHidden] = useState(true); // State to control modal visibility
+  const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
+    null
+  ); // State to store the current post ID
 
   // Function to fetch more posts
   const fetchMore = async (cursor: string | null) => {
@@ -86,11 +91,22 @@ export default function PostContent({
       </div>
       <div className="flex gap-4 w-full no-wrap my-2 pt-2 border-t-1 border-[var(--borderc)] min-h-full h-fit px-4">
         <div className="flex flex-col gap-4 w-full">
+          <CommentModal
+            hidden={hidden}
+            setHidden={setHidden}
+            postId={currentPostId}
+            setPost={setCurrentPostId}
+          />
           {initialDataLoaded ? (
             filteredPosts && filteredPosts.length > 0 ? (
               <>
                 {filteredPosts.map((post) => (
-                  <Post key={`post-${selectedFeed}-${post?.id}`} post={post} />
+                  <Post
+                    setPostId={setCurrentPostId}
+                    setHidden={setHidden}
+                    key={`post-${selectedFeed}-${post?.id}`}
+                    post={post}
+                  />
                 ))}
                 {loading && (
                   <div className="flex justify-center py-4">

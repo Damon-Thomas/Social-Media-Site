@@ -12,7 +12,15 @@ import { useCurrentUser } from "@/app/context/UserContext";
 import { doesUserLikePost, likePost } from "@/app/actions/postActions";
 import { useEffect, useState } from "react";
 
-export default function Post({ post }: { post: EssentialPost }) {
+export default function Post({
+  post,
+  setPostId,
+  setHidden,
+}: {
+  post: EssentialPost;
+  setPostId: React.Dispatch<React.SetStateAction<string | null | undefined>>;
+  setHidden: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { theme } = useTheme();
   const iconSize = 20;
   const userData = useCurrentUser();
@@ -30,6 +38,12 @@ export default function Post({ post }: { post: EssentialPost }) {
         willBeLiked ? prevCount + 1 : prevCount - 1
       );
     }
+  }
+
+  function commentHandler() {
+    setPostId(post?.id);
+    setHidden(false);
+    return;
   }
 
   // This will update when userData changes due to the refreshUser() call
@@ -100,7 +114,7 @@ export default function Post({ post }: { post: EssentialPost }) {
             )}
           </div>
 
-          <div className="flex items-center gap-1">
+          <div onClick={commentHandler} className="flex items-center gap-1">
             <ThemedIcon
               count={post?._count?.comments}
               src={commentText.src}

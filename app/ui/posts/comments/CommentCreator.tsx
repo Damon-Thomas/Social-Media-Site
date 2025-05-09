@@ -14,11 +14,13 @@ export default function CommentCreator({
   parentId,
   setHidden,
 }: {
-  postId: string;
+  postId: string | null | undefined; // Post ID to which the comment belongs
   setPost?: React.Dispatch<React.SetStateAction<Post | null>>;
   parentId?: string; // Optional parentId for nested comments
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
 }) {
+  // Ensure postId is provided
+
   const user = useCurrentUser(); // Get the current user from context
   const defaultProfile = useDefaultProfileImage();
   const formRef = useRef<HTMLFormElement>(null); // Add a ref to the form
@@ -30,7 +32,9 @@ export default function CommentCreator({
     if (!user?.id) {
       throw new Error("User ID is required");
     }
-
+    if (!postId) {
+      throw new Error("Post ID is required");
+    }
     // Add postId, userId, and parentId to the FormData
     payload.append("postId", postId);
     payload.append("userId", user.id);

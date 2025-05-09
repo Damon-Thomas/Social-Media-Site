@@ -301,12 +301,44 @@ export async function getFollowingPosts(
           },
         },
       },
+      posts: {
+        take: limit,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          content: true,
+          authorId: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+          _count: {
+            select: {
+              comments: true,
+              likedBy: true,
+            },
+          },
+        },
+      },
     },
   });
-  const posts = user?.following.flatMap((f) => f.posts) || [];
-  const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
-  console.log(posts, "posts", nextCursor, "nextCursor");
-  return { posts, nextCursor };
+
+  const followingPosts = user?.following.flatMap((f) => f.posts) || [];
+  const userPosts = user?.posts || [];
+  const allPosts = [...followingPosts, ...userPosts].sort(
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+  );
+
+  const nextCursor =
+    allPosts.length === limit ? allPosts[allPosts.length - 1].id : null;
+  return { posts: allPosts, nextCursor };
 }
 
 export async function likePost(

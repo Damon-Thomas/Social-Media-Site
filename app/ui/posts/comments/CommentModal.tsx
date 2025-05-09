@@ -9,7 +9,7 @@ export default function CommentModal({
   setPost,
   parentId,
 }: {
-  postId: string;
+  postId: string | null | undefined;
   hidden: boolean;
   setHidden: React.Dispatch<React.SetStateAction<boolean>>;
   setPost?: React.Dispatch<React.SetStateAction<Post | null>>;

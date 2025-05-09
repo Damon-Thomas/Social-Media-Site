@@ -17,7 +17,9 @@ export default function PostContent({
   const user = useCurrentUser(); // This gets the current user from context
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const [initialPosts, setInitialPosts] = useState<EssentialPost[]>([]);
-  const [initialCursor, setInitialCursor] = useState<string | null>(null);
+  const [initialCursor, setInitialCursor] = useState<string | null | undefined>(
+    null
+  );
   const [hidden, setHidden] = useState(true); // State to control modal visibility
   const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
     null
@@ -95,7 +97,7 @@ export default function PostContent({
             hidden={hidden}
             setHidden={setHidden}
             postId={currentPostId}
-            setPost={setCurrentPostId}
+            setPost={setInitialPosts}
           />
           {initialDataLoaded ? (
             filteredPosts && filteredPosts.length > 0 ? (

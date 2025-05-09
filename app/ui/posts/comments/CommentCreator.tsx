@@ -1,6 +1,6 @@
 import { createComment } from "@/app/actions/commentActions";
 import { useCurrentUser } from "@/app/context/UserContext";
-import { Post, Comment } from "@/app/lib/definitions";
+import { Post, Comment, EssentialPost } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 
@@ -15,7 +15,9 @@ export default function CommentCreator({
   setHidden,
 }: {
   postId: string | null | undefined; // Post ID to which the comment belongs
-  setPost?: React.Dispatch<React.SetStateAction<Post | null>>;
+  setPost?: React.Dispatch<
+    React.SetStateAction<Post | EssentialPost[] | null | undefined>
+  >; // Optional function to update the post state
   parentId?: string; // Optional parentId for nested comments
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
 }) {
@@ -67,13 +69,32 @@ export default function CommentCreator({
       };
 
       // Update the post's comments
-      setPost((prevPost) => {
-        if (!prevPost) return prevPost;
-        return {
-          ...prevPost,
-          comments: [newComment, ...(prevPost.comments || [])], // Add the new comment at the beginning
-        } as Post; // Explicitly cast to Post to resolve type error
-      });
+      if (setPost) {
+        setPost((prevPost) => {
+          if (Array.isArray(prevPost)) {
+            // Handle the case where prevPost is an array of EssentialPost
+            return prevPost.map((post) => {
+              if (post?.id === postId) {
+                return {
+                  ...post,
+                  _count: {
+                    ...post._count,
+                    comments: (post._count?.comments || 0) + 1,
+                  },
+                };
+              }
+              return post;
+            }) as EssentialPost[]; // Ensure the type matches EssentialPost[]
+          } else {
+            // Handle the case where prevPost is a single Post
+            if (!prevPost) return prevPost;
+            return {
+              ...prevPost,
+              comments: [newComment, ...(prevPost.comments || [])],
+            } as Post; // Ensure the type matches Post
+          }
+        });
+      }
 
       // Reset the form and textarea height
       if (formRef.current) {

@@ -1,5 +1,3 @@
-// import { CSSProperties } from "react";
-
 export default function ThemedIcon({
   src,
   alt,
@@ -43,7 +41,7 @@ export default function ThemedIcon({
         <p
           className={`text-sm leading-none ${
             liked ? "text-[var(--primary)]" : "text-[var(--dull)]"
-          } group-hover:text-[var(--primary)]   ${
+          } group-hover:text-[var(--primary)] ${
             !noTransition ? "transition-colors duration-200" : ""
           }`}
         >

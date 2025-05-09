@@ -63,7 +63,10 @@ export async function getPostComments(
       },
       // Include first-level replies with their count
       _count: {
-        select: { replies: true },
+        select: {
+          likedBy: true,
+          replies: true,
+        },
       },
       // First level of replies with basic info
       replies: {
@@ -94,7 +97,10 @@ export async function getPostComments(
             },
           },
           _count: {
-            select: { replies: true },
+            select: {
+              likedBy: true,
+              replies: true,
+            },
           },
         },
       },
@@ -145,7 +151,10 @@ export async function getCommentReplies(
         },
       },
       _count: {
-        select: { replies: true },
+        select: {
+          likedBy: true,
+          replies: true,
+        },
       },
     },
   });
@@ -250,5 +259,139 @@ export async function createComment({
         message: "An error occurred while creating the comment",
       };
     }
+  }
+}
+
+export async function likeComment(
+  commentId: string,
+  userId: string | undefined
+) {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+  if (!commentId) {
+    throw new Error("Comment ID is required");
+  }
+  console.log("Liking comment", commentId, "by user", userId);
+  try {
+    // Check if the comment is already liked by this user
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        likedComments: {
+          where: { id: commentId },
+          select: { id: true },
+        },
+      },
+    });
+
+    const isLiked = (user?.likedComments ?? []).length > 0;
+
+    if (isLiked) {
+      // Unlike: Disconnect the relationship
+      await prisma.comment.update({
+        where: { id: commentId },
+        data: {
+          likedBy: {
+            disconnect: { id: userId },
+          },
+        },
+      });
+
+      // Verify the join table state
+      const joinTableState = await prisma.$queryRaw`
+        SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
+      `;
+      console.log("Join table state after unlike:", joinTableState);
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          likedComments: {
+            disconnect: { id: commentId },
+          },
+        },
+      });
+    } else {
+      // Like: Connect the relationship
+      await prisma.comment.update({
+        where: { id: commentId },
+        data: {
+          likedBy: {
+            connect: { id: userId },
+          },
+        },
+      });
+
+      // Verify the join table state
+      const joinTableState = await prisma.$queryRaw`
+        SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
+      `;
+      console.log("Join table state after like:", joinTableState);
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          likedComments: {
+            connect: { id: commentId },
+          },
+        },
+      });
+    }
+
+    // Fetch the updated comment to verify the likedBy field
+    const updatedComment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      select: {
+        id: true,
+        content: true,
+        authorId: true,
+        likedBy: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    console.log("Comment like status toggled successfully", updatedComment);
+
+    return true;
+  } catch (error) {
+    console.error("Error toggling comment like:", error);
+    throw new Error("Failed to toggle comment like");
+  }
+}
+
+export async function isLikedByUser(
+  userId: string | undefined,
+  commentId: string
+) {
+  if (!userId || !commentId) {
+    console.error("Invalid input: userId or commentId is undefined");
+    return false;
+  }
+
+  console.log("Checking if user has liked the comment:", { userId, commentId });
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        likedComments: {
+          where: { id: commentId },
+          select: { id: true },
+        },
+      },
+    });
+
+    const isLiked = (user?.likedComments ?? []).length > 0;
+    console.log("Is liked by user:", isLiked);
+    return isLiked;
+  } catch (error) {
+    console.error("Error in isLikedByUser:", error);
+    return false;
   }
 }

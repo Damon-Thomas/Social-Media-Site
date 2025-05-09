@@ -16,7 +16,7 @@ datasource db {
 
 model User {
   id       String  @id @default(uuid())
-  name     String?
+  name     String
   email    String? @unique
   password String?
   bio      String? @default("")
@@ -52,8 +52,8 @@ model Post {
 }
 
 model Comment {
-  id           String         @id @default(cuid())
-  content      String?
+  id           String         @id @default(uuid())
+  content      String
   author       User?          @relation("commentAuthor", fields: [authorId], references: [id])
   authorId     String?
   post         Post?          @relation("postComments", fields: [postId], references: [id])
@@ -81,4 +81,13 @@ model Notification {
   creator   User?    @relation("notificationCreator", fields: [createdBy], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserLikedComments {
+  A String
+  B String
+
+  @@id([A, B])
+  @@index([A])
+  @@index([B])
 }

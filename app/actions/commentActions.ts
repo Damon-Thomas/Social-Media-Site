@@ -165,11 +165,11 @@ export async function getCommentReplies(
 }
 
 export async function createComment({
-  state,
+  // state,
   payload,
   userId,
 }: {
-  state: FormState;
+  // state: FormState;
   payload: FormData;
   userId: string | undefined;
 }): Promise<FormState> {
@@ -206,6 +206,7 @@ export async function createComment({
         where: { id: comment.id },
         data: {
           postId: postId,
+          authorId: userId,
         },
       });
     }
@@ -367,7 +368,7 @@ export async function likeComment(
 
 export async function isLikedByUser(
   userId: string | undefined,
-  commentId: string
+  commentId: string | undefined
 ) {
   if (!userId || !commentId) {
     console.error("Invalid input: userId or commentId is undefined");

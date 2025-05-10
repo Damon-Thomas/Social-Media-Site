@@ -8,6 +8,7 @@ import commentText from "@/public/comment.svg";
 import { isLikedByUser, likeComment } from "@/app/actions/commentActions";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/app/context/UserContext";
+// import { set } from "zod";
 
 // Extend EssentialComment to include _count
 type CommentWithCount = EssentialComment & {
@@ -19,8 +20,10 @@ type CommentWithCount = EssentialComment & {
 
 export default function CommentItem({
   comment,
+  setParentId,
 }: {
-  comment: CommentWithCount;
+  comment: CommentWithCount | null;
+  setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -29,7 +32,7 @@ export default function CommentItem({
 
   useEffect(() => {
     async function checkIfLiked() {
-      const likedByUser = await isLikedByUser(user?.id, comment.id);
+      const likedByUser = await isLikedByUser(user?.id, comment?.id);
       console.log("Liked by user:", likedByUser);
       setIsLiked(likedByUser || false);
     }
@@ -58,6 +61,7 @@ export default function CommentItem({
   };
 
   const handleReply = () => {
+    setParentId?.(comment.id);
     console.log("Reply button clicked for comment", comment.id);
     // Add reply functionality here
   };

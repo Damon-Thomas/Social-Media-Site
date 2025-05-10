@@ -60,7 +60,7 @@ export default function Post({
     }
     checkIfLiked();
   }, [post, userData]);
-
+  console.log("Post:", post?.author?.image);
   useEffect(() => {
     setLikeCount(post?._count?.likedBy || 0);
   }, [post?._count?.likedBy]);
@@ -68,22 +68,21 @@ export default function Post({
   return (
     <div className="flex w-full pb-2 border-b-1 border-[var(--borderc)] ">
       <div className="flex-shrink-0 mr-2">
-        {post?.author?.image && (
-          <Link href={`/dashboard/profile/${post.authorId}`}>
-            <Image
-              src={
-                post.author.image ||
-                (theme === "light"
-                  ? "/defaultProfileLight.svg"
-                  : "/defaultProfileDark.svg")
-              }
-              alt="Profile"
-              className="w-8 h-8 rounded-full"
-              width={32}
-              height={32}
-            />
-          </Link>
-        )}
+        <Link href={`/dashboard/profile/${post?.authorId}`}>
+          <Image
+            src={
+              post?.author?.image && post.author.image.trim() !== ""
+                ? post.author.image
+                : theme === "light"
+                ? "/defaultProfileLight.svg"
+                : "/defaultProfileDark.svg"
+            }
+            alt="Profile"
+            className="w-8 h-8 rounded-full"
+            width={32}
+            height={32}
+          />
+        </Link>
       </div>
 
       <div className="flex flex-col flex-grow min-w-0">

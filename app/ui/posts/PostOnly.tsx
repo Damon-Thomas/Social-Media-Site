@@ -1,6 +1,6 @@
 import { likePost } from "@/app/actions/postActions";
 import { useCurrentUser } from "@/app/context/UserContext";
-import { Post } from "@/app/lib/definitions";
+import { FullPost } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import formatDate from "@/app/utils/formatDate";
 import Image from "next/image";
@@ -12,7 +12,7 @@ export default function PostOnly({
   className = "",
   setHidden,
 }: {
-  post: Post | null;
+  post: FullPost | null; // Update to accept FullPost
   className?: string;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {

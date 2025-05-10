@@ -100,7 +100,7 @@ export type Comment = {
   authorId?: string | null;
   post?: Post | null;
   postId?: string | null;
-  likedBy?: User[]; // Was "likes?: User[]"
+  likedBy?: User[];
   replies?: Comment[];
   parent?: Comment | null;
   parentId?: string | null;
@@ -115,7 +115,7 @@ export type CommentUnested = {
   author?: User | null;
   authorId?: string | null;
   postId?: string | null;
-  likedBy?: EssentialUser[]; // Was "likes?: User[]"
+  likedBy?: EssentialUser[];
   replies?: CommentUnested[];
   parentId?: string | null;
   createdAt: Date;
@@ -187,7 +187,7 @@ export type EssentialComment = {
   author?: EssentialUser | null;
   authorId?: string | null;
   postId?: string | null;
-  likedBy?: EssentialUser[]; // Was "likes?: User[]"
+  likedBy?: EssentialUser[];
   replies?: EssentialComment[];
   parentId?: string | null;
   createdAt: Date;
@@ -246,3 +246,57 @@ type FollowingActivity = {
 export type GetFollowingActivitiesResult = {
   following: FollowingActivity[];
 } | null;
+
+export type FullPost = {
+  id: string;
+  content: string | null;
+  authorId: string | null;
+  author: {
+    id: string;
+    name: string;
+    image: string | null;
+  } | null;
+  comments: {
+    id: string;
+    content: string;
+    authorId: string;
+    author: {
+      id: string;
+      name: string;
+      image: string | null;
+    };
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+      likedBy: number;
+      replies: number;
+    };
+    replies: {
+      id: string;
+      content: string;
+      authorId: string;
+      author: {
+        id: string;
+        name: string;
+        image: string | null;
+      };
+      createdAt: Date;
+      updatedAt: Date;
+      _count: {
+        likedBy: number;
+        replies: number;
+      };
+    }[];
+  }[];
+  likedBy: {
+    id: string;
+    name: string;
+    image: string | null;
+  }[];
+  _count: {
+    comments: number;
+    likedBy: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+};

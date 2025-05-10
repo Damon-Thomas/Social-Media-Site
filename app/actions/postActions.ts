@@ -3,6 +3,7 @@
 import {
   EssentialPost,
   // GetFollowingActivitiesResult,
+  FullPost,
 } from "../lib/definitions";
 import prisma from "../lib/prisma";
 import { z } from "zod";
@@ -25,11 +26,11 @@ type FormState =
   | undefined;
 
 export async function createPost({
-  state,
+  // state,
   payload,
   userId,
 }: {
-  state: FormState;
+  // state: FormState;
   payload: FormData;
   userId: string | undefined;
 }): Promise<FormState> {
@@ -94,8 +95,8 @@ export async function createPost({
   }
 }
 
-export async function getfullPost(postId: string) {
-  return await prisma.post.findUnique({
+export async function getfullPost(postId: string): Promise<FullPost> {
+  const post = await prisma.post.findUnique({
     where: { id: postId },
     select: {
       id: true,
@@ -169,6 +170,25 @@ export async function getfullPost(postId: string) {
       updatedAt: true,
     },
   });
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  return {
+    ...post,
+    authorId: post.authorId || "", // Ensure authorId is a string
+    comments: post.comments.map((comment) => ({
+      ...comment,
+      authorId: comment.authorId || "", // Ensure authorId is a string
+      author: comment.author || { id: "", name: "", image: null },
+      replies: comment.replies.map((reply) => ({
+        ...reply,
+        authorId: reply.authorId || "", // Ensure authorId is a string
+        author: reply.author || { id: "", name: "", image: null },
+      })),
+    })),
+  };
 }
 
 export async function getGlobalFeedPosts(

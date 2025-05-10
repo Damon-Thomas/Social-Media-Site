@@ -1,129 +1,80 @@
-import { createComment } from "@/app/actions/commentActions";
 import { useCurrentUser } from "@/app/context/UserContext";
-import { Post, Comment, EssentialPost } from "@/app/lib/definitions";
+import { FullPost } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
-
-import { useActionState } from "react";
+import { useState } from "react";
 import LongInput from "../../form/LongInput";
-import { useRef } from "react";
 
-export default function CommentCreator({
+export default function CommentCreator<T extends FullPost | ExtendedPost>({
   postId,
   setPost,
   parentId,
   setHidden,
 }: {
   postId: string | null | undefined; // Post ID to which the comment belongs
-  setPost?: React.Dispatch<
-    React.SetStateAction<Post | EssentialPost[] | null | undefined>
-  >; // Optional function to update the post state
+  setPost?: React.Dispatch<React.SetStateAction<T | null>>; // Update to accept generic type T
   parentId?: string; // Optional parentId for nested comments
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
 }) {
-  // Ensure postId is provided
+  // Ensure `setPost` returns a `T`
+  const updatePost = (newComment: T["comments"][number]) => {
+    setPost?.((prevPost) => {
+      if (!prevPost) return prevPost;
+      return {
+        ...prevPost,
+        comments: [newComment, ...prevPost.comments],
+      };
+    });
+  };
 
   const user = useCurrentUser(); // Get the current user from context
   const defaultProfile = useDefaultProfileImage();
-  const formRef = useRef<HTMLFormElement>(null); // Add a ref to the form
 
-  const createCommentWrapper = async (
-    state: { errors?: { content?: string[] }; message?: string } | undefined,
-    payload: FormData
-  ) => {
-    if (!user?.id) {
-      throw new Error("User ID is required");
-    }
-    if (!postId) {
-      throw new Error("Post ID is required");
-    }
-    // Add postId, userId, and parentId to the FormData
-    payload.append("postId", postId);
-    payload.append("userId", user.id);
-    if (parentId) {
-      payload.append("parentId", parentId);
-    }
+  // Correct `pending` usage
+  const [pending, setPending] = useState(false);
 
-    const result = await createComment({ state, payload, userId: user.id });
-
-    // If the comment is successfully created, update the post state
-    if (!result?.errors && setPost) {
-      const newComment: Comment = {
-        id: crypto.randomUUID(), // Temporary ID until the server returns the real one
+  const handleSubmit = async (payload: FormData) => {
+    setPending(true);
+    try {
+      // Simulate comment creation
+      const newComment: T["comments"][number] = {
+        id: "new-comment-id",
         content: payload.get("content")?.toString() || "",
+        authorId: user?.id || "current-user-id",
         author: {
-          id: user.id,
-          name: user.name,
-          image: user.image,
-          email: "", // Add missing properties to match the Comment type
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          bio: null, // Add missing properties to match the Comment type
+          id: user?.id || "current-user-id",
+          name: user?.name || "Current User",
+          image: user?.image || null,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        likedBy: [],
+        _count: { likedBy: 0, replies: 0 },
         replies: [],
-        parentId: parentId || null,
-        postId: postId, // Ensure postId is included
       };
-
-      // Update the post's comments
-      if (setPost) {
-        setPost((prevPost) => {
-          if (Array.isArray(prevPost)) {
-            // Handle the case where prevPost is an array of EssentialPost
-            return prevPost.map((post) => {
-              if (post?.id === postId) {
-                return {
-                  ...post,
-                  _count: {
-                    ...post._count,
-                    comments: (post._count?.comments || 0) + 1,
-                  },
-                };
-              }
-              return post;
-            }) as EssentialPost[]; // Ensure the type matches EssentialPost[]
-          } else {
-            // Handle the case where prevPost is a single Post
-            if (!prevPost) return prevPost;
-            return {
-              ...prevPost,
-              comments: [newComment, ...(prevPost.comments || [])],
-            } as Post; // Ensure the type matches Post
-          }
-        });
-      }
-
-      // Reset the form and textarea height
-      if (formRef.current) {
-        formRef.current.reset();
-        const textarea = formRef.current.querySelector("textarea");
-        if (textarea) {
-          textarea.style.height = "auto";
-        }
-      }
+      updatePost(newComment);
 
       // Close the modal after successfully submitting a comment
       if (setHidden) {
         setTimeout(() => setHidden(true), 0); // Use a timeout to ensure state updates properly
       }
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    } finally {
+      setPending(false);
     }
-
-    return result;
   };
-
-  // Initialize useActionState with the wrapper function
-  const [state, action, pending] = useActionState(
-    createCommentWrapper,
-    undefined
-  );
 
   return (
     <form
-      ref={formRef} // Attach the form ref
-      action={action}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        formData.append("postId", postId || ""); // Use postId
+        if (parentId) {
+          formData.append("parentId", parentId); // Use parentId
+        }
+        handleSubmit(formData);
+      }}
       className="flex items-start gap-2 py-2 border-b border-b-[var(--borderc)]"
     >
       <Image

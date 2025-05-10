@@ -17,15 +17,15 @@ export default function PostContent({
   const user = useCurrentUser(); // This gets the current user from context
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const [initialPosts, setInitialPosts] = useState<EssentialPost[]>([]);
-  const [initialCursor, setInitialCursor] = useState<string | null | undefined>(
-    null
+  const [initialCursor, setInitialCursor] = useState<string | undefined>(
+    undefined
   );
   const [hidden, setHidden] = useState(true); // State to control modal visibility
-  const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
-    null
+  const [currentPostId, setCurrentPostId] = useState<string | undefined>(
+    undefined
   ); // State to store the current post ID
 
-  // Function to fetch more posts
+  // Adjust fetchMore to accept string | null
   const fetchMore = async (cursor: string | null) => {
     if (selectedFeed === "global") {
       const { posts, nextCursor } = await getGlobalFeedPosts(
@@ -54,11 +54,11 @@ export default function PostContent({
         }
         console.log("Initial posts:", response.posts);
         setInitialPosts(response.posts);
-        setInitialCursor(response.nextCursor);
+        setInitialCursor(response.nextCursor ?? undefined);
       } catch (error) {
         console.error("Error fetching initial data:", error);
         setInitialPosts([]);
-        setInitialCursor(null);
+        setInitialCursor(undefined);
       } finally {
         setInitialDataLoaded(true);
       }
@@ -67,13 +67,13 @@ export default function PostContent({
     loadInitialData();
   }, [selectedFeed, user]);
 
-  // Use infinite scroll hook with fetched initial data
+  // Ensure useInfiniteScroll passes null for undefined cursors
   const {
     items: posts,
     loading,
     hasMore,
     observerTarget,
-  } = useInfiniteScroll(initialPosts, initialCursor, fetchMore);
+  } = useInfiniteScroll(initialPosts, initialCursor ?? null, fetchMore);
 
   // Filter out duplicate posts based on their IDs
   const uniquePosts = new Map();
@@ -97,7 +97,7 @@ export default function PostContent({
             hidden={hidden}
             setHidden={setHidden}
             postId={currentPostId}
-            setPost={setInitialPosts}
+            setPost={(posts) => setInitialPosts(posts as EssentialPost[])}
           />
           {initialDataLoaded ? (
             filteredPosts && filteredPosts.length > 0 ? (

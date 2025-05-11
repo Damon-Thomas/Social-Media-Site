@@ -1,15 +1,15 @@
 export default function Input({
-  label,
   id,
-  type,
+  label = "",
+  type = "text",
   placeholder,
   value,
   onChange,
   className = "",
 }: Readonly<{
-  label: string;
   id: string;
-  type: string;
+  label?: string;
+  type?: string;
   placeholder?: string;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -17,9 +17,11 @@ export default function Input({
 }>) {
   return (
     <div className="relative flex flex-col gap-1 w-full">
-      <label htmlFor={id} className="block text-sm">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={id} className="block text-sm">
+          {label}
+        </label>
+      )}
       <input
         type={type}
         id={id}

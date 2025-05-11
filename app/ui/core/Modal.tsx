@@ -7,7 +7,7 @@ export default function Modal({
 }: {
   children: ReactNode;
   hidden: boolean;
-  setHidden?: () => void;
+  setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
 }) {
   return (
     <div
@@ -22,7 +22,11 @@ export default function Modal({
       {/* Background overlay */}
       <div
         className="absolute inset-0 bg-[var(--rdmono-90)]  transition-opacity duration-300"
-        onClick={setHidden} // Close modal when clicking outside
+        onClick={() => {
+          if (setHidden) {
+            setHidden(!hidden);
+          }
+        }} // Close modal when clicking outside
       />
 
       {/* Modal content */}
@@ -30,7 +34,11 @@ export default function Modal({
         {/* Close button */}
         {setHidden && (
           <button
-            onClick={setHidden}
+            onClick={() => {
+              if (setHidden) {
+                setHidden(!hidden);
+              }
+            }}
             className="absolute top-3 right-3 text-[var(--rdmono)] bg-[var(--dmono)] bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
             aria-label="Close modal"
           >

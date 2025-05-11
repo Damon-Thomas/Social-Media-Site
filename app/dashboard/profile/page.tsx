@@ -1,5 +1,148 @@
-import UserProfile from "@/app/ui/profile/userProfile/UserProfile";
+"use client"; // Add "use client" because we need useState and useEffect
 
+import { useState, useEffect, useRef } from "react"; // Import hooks and useRef
+import React from "react"; // Import React
+import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
+import {
+  fetchUserById,
+  fetchPaginatedActivity,
+  fetchPaginatedPosts,
+  fetchPaginatedComments,
+  fetchPaginatedLikedPosts,
+  fetchPaginatedLikedComments,
+} from "@/app/actions/fetch";
+import type { Post, Comment, ActivityItem } from "@/app/lib/definitions";
+import Goats from "@/app/ui/dashboard/Goats";
+import Noobs from "@/app/ui/dashboard/Noobs";
+import { useParams } from "next/navigation";
+import { useCurrentUser } from "@/app/context/UserContext";
+import EditProfileModal from "@/app/ui/profile/EditProfileModal";
+
+const ITEMS_PER_PAGE = 10;
+
+// Define a type for the active tab/section
+type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
+
+// Fetch data on the server side (keep this part)
+async function getData(userId: string) {
+  const [
+    userData,
+    activityResponse,
+    postsResponse,
+    commentsResponse,
+    likedPostsResponse,
+    likedCommentsResponse,
+  ] = await Promise.all([
+    fetchUserById(userId),
+    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
+  ]);
+
+  return {
+    userData,
+    initialActivity: (activityResponse.activities || []) as ActivityItem[],
+    activityCursor: activityResponse.nextCursor,
+    initialPosts: (postsResponse.posts || []) as Post[],
+    postsCursor: postsResponse.nextCursor,
+    initialComments: (commentsResponse.comments || []) as Comment[],
+    commentsCursor: commentsResponse.nextCursor,
+    initialLikedPosts: (likedPostsResponse.posts || []) as Post[],
+    likedPostsCursor: likedPostsResponse.nextCursor,
+    initialLikedComments: (likedCommentsResponse.comments || []) as Comment[],
+    likedCommentsCursor: likedCommentsResponse.nextCursor,
+  };
+}
+
+// Client component to handle state and effects
 export default function Profile() {
-  return <UserProfile />;
+  const user = useCurrentUser();
+  const userId = user?.id || "";
+  const [initialData, setInitialData] = useState<Awaited<
+    ReturnType<typeof getData>
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<ActiveProfileTab>("activity"); // Default to 'posts'
+  const sidebarRef = useRef<HTMLDivElement>(null); // Ref for the sidebar
+
+  // const NAVIGATOR_HEIGHT_PX = 64; // Height of the Navigator component
+  // const SIDEBAR_TOP_OFFSET_PX = 20; // Your original top-5 offset
+  // const initialTop = NAVIGATOR_HEIGHT_PX + SIDEBAR_TOP_OFFSET_PX;
+
+  useEffect(() => {
+    // Fetch initial data on the client
+    getData(userId)
+      .then((data) => {
+        setInitialData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch profile data:", error);
+        setLoading(false); // Handle error state appropriately
+      });
+  }, [userId]);
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
+  }
+
+  if (!initialData?.userData) {
+    return <div className="p-6 text-center">User not found.</div>;
+  }
+
+  // Destructure data after loading and checking for user
+  const {
+    userData,
+    initialActivity,
+    activityCursor,
+    initialPosts,
+    postsCursor,
+    initialComments,
+    commentsCursor,
+    initialLikedPosts,
+    likedPostsCursor,
+    initialLikedComments,
+    likedCommentsCursor,
+  } = initialData;
+
+  return (
+    // Adjust parent layout: Use flex, items-start, gap-6. Remove justify-end and large right padding.
+    <div className="max-w-5xl flex items-start gap-6 p-2 w-full">
+      {/* Main Profile Content Area - Takes available space */}
+      {/* Added max-width constraint to prevent overlap on medium screens */}
+      <div className="flex-1 min-w-0 max-w-full ">
+        <EditProfileModal></EditProfileModal>
+        <OtherProfile
+          userData={userData}
+          initialActivity={initialActivity}
+          activityCursor={activityCursor}
+          initialPosts={initialPosts}
+          postsCursor={postsCursor}
+          initialComments={initialComments}
+          commentsCursor={commentsCursor}
+          initialLikedPosts={initialLikedPosts}
+          likedPostsCursor={likedPostsCursor}
+          initialLikedComments={initialLikedComments}
+          likedCommentsCursor={likedCommentsCursor}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+      </div>
+      {/* Right Sidebar - Use sticky positioning */}
+      <div
+        ref={sidebarRef}
+        className={`sideContent md:w-64 lg:w-72 hidden md:block sticky top-0 self-start z-10`}
+        // style={{ top: `${initialTop}px` }}
+      >
+        <div className="space-y-6 flex flex-col grow w-full">
+          <Goats />
+          <Noobs />
+
+          <Goats />
+        </div>
+      </div>
+    </div>
+  );
 }

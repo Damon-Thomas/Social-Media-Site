@@ -1,15 +1,24 @@
 import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import BioText from "./BioText";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export default function PersInfo({ userData }: { userData: User }) {
+  const defaultProfile = useDefaultProfileImage();
+
   if (!userData) {
-    return;
+    return null;
   }
+
+  const profileImage =
+    userData.image && userData.image.trim() !== ""
+      ? userData.image
+      : defaultProfile;
+
   return (
     <div className="flex items-start gap-4 md:gap-8 justify-start w-full">
       <Image
-        src={userData.image || "/default-avatar.png"}
+        src={profileImage}
         alt="User Avatar"
         width={100}
         height={100}
@@ -32,7 +41,6 @@ export default function PersInfo({ userData }: { userData: User }) {
               {userData.followers?.length} followers
             </p>
             <p className="whitespace-nowrap">
-              {" "}
               {userData.friends?.length} friends
             </p>
           </div>

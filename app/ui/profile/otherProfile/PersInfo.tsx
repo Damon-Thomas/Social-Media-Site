@@ -2,8 +2,15 @@ import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import BioText from "./BioText";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
+import EditProfileModal from "../EditProfileModal";
 
-export default function PersInfo({ userData }: { userData: User }) {
+export default function PersInfo({
+  userData,
+  ownProfile = false,
+}: {
+  userData: User;
+  ownProfile?: boolean;
+}) {
   const defaultProfile = useDefaultProfileImage();
 
   if (!userData) {
@@ -26,7 +33,10 @@ export default function PersInfo({ userData }: { userData: User }) {
       />
       <div className="flex grow">
         <div className="grow flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">{userData.name}</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">{userData.name}</h1>
+            {ownProfile && <EditProfileModal></EditProfileModal>}
+          </div>
           <BioText>{userData.bio}</BioText>
           <p>
             {`Joined on:

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"; // Import hooks and useRef
 import React from "react"; // Import React
-import OtherProfile from "@/app/ui/profile/otherProfile/OtherProfile";
 import {
   fetchUserById,
   fetchPaginatedActivity,
@@ -15,6 +14,8 @@ import type { Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import Goats from "@/app/ui/dashboard/Goats";
 import Noobs from "@/app/ui/dashboard/Noobs";
 import { useParams } from "next/navigation";
+import { useCurrentUser } from "@/app/context/UserContext";
+import ProfileSection from "@/app/ui/profile/ProfileSection";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -57,6 +58,7 @@ async function getData(userId: string) {
 // Client component to handle state and effects
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
+  const user = useCurrentUser();
   const [initialData, setInitialData] = useState<Awaited<
     ReturnType<typeof getData>
   > | null>(null);
@@ -70,7 +72,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Fetch initial data on the client
-    getData(userId)
+    console.log("Fetching profile data for userId:", userId);
+    getData(userId || user?.id || "")
       .then((data) => {
         setInitialData(data);
         setLoading(false);
@@ -79,7 +82,7 @@ export default function ProfilePage() {
         console.error("Failed to fetch profile data:", error);
         setLoading(false); // Handle error state appropriately
       });
-  }, [userId]);
+  }, [userId, user?.id]);
 
   if (loading) {
     return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
@@ -110,7 +113,7 @@ export default function ProfilePage() {
       {/* Main Profile Content Area - Takes available space */}
       {/* Added max-width constraint to prevent overlap on medium screens */}
       <div className="flex-1 min-w-0 max-w-full ">
-        <OtherProfile
+        <ProfileSection
           userData={userData}
           initialActivity={initialActivity}
           activityCursor={activityCursor}
@@ -124,6 +127,7 @@ export default function ProfilePage() {
           likedCommentsCursor={likedCommentsCursor}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          ownProfile={userId === user?.id} // Check if the profile belongs to the current user
         />
       </div>
       {/* Right Sidebar - Use sticky positioning */}

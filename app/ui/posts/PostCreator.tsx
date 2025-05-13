@@ -13,7 +13,6 @@ export default function PostCreator({ user }: { user: EssentialUser }) {
   const currentUser = useCurrentUser();
   const defaultProfile = useDefaultProfileImage();
 
-  // Wrapper function to match the expected signature of useActionState
   const createPostWrapper = async (
     state: { errors?: { content?: string[] }; message?: string } | undefined,
     payload: FormData
@@ -22,10 +21,16 @@ export default function PostCreator({ user }: { user: EssentialUser }) {
     if (!userId) {
       throw new Error("User ID is required");
     }
-    return createPost({ state, payload, userId });
+
+    // Adjust the payload to match the expected structure of createPost
+    const postPayload = {
+      payload,
+      userId,
+    };
+
+    return createPost(postPayload); // Pass the adjusted payload
   };
 
-  // Initialize useActionState with the wrapper function
   const [state, action, pending] = useActionState(createPostWrapper, undefined);
 
   return (

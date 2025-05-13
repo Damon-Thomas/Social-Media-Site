@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { CommentUnested } from "../lib/definitions";
+import { CommentUnested, EssentialComment } from "../lib/definitions";
 import { z } from "zod";
 import DOMPurify from "isomorphic-dompurify";
 
@@ -164,17 +164,12 @@ export async function getCommentReplies(
   return { replies, nextCursor };
 }
 
-export async function createComment({
-  // state,
-  payload,
-  userId,
-}: {
-  // state: FormState;
-  payload: FormData;
-  userId: string | undefined;
-}): Promise<FormState> {
-  // Sanitize the content
-  const content = payload.get("content");
+export async function createComment(
+  payload: FormData,
+  userId: string
+): Promise<FormState | ReturnType<typeof getEssentialComment>> {
+  const content = payload.get("content")?.toString();
+  console.log("Creating comment with content:", content);
   if (!content) {
     return {
       errors: {
@@ -184,80 +179,89 @@ export async function createComment({
     };
   }
 
-  const sanitizedContent = DOMPurify.sanitize(content.toString());
-
+  const sanitizedContent = DOMPurify.sanitize(content);
+  console.log("Sanitized content:", sanitizedContent);
   try {
     // Validate the sanitized content
     const parsedContent = CommentFormSchema.parse({
       content: sanitizedContent,
     });
-
-    // Create the comment in the database
-    const comment = await prisma.comment.create({
-      data: {
-        content: parsedContent.content,
-      },
-    });
-
-    // If a postId is provided, associate the comment with the post
+    console.log("Parsed content:", parsedContent);
+    // Extract postId and parentId
     const postId = payload.get("postId")?.toString();
-    if (postId) {
-      await prisma.comment.update({
-        where: { id: comment.id },
-        data: {
-          postId: postId,
-          authorId: userId,
-        },
+    const parentId = payload.get("parentId")?.toString();
+    let comment: EssentialComment | null = null;
+    console.log("Post ID:", postId, "Parent ID:", parentId, "User ID:", userId);
+    // Validate parentId if provided
+    if (parentId) {
+      const parentExists = await prisma.comment.findUnique({
+        where: { id: parentId },
       });
-    }
-
-    // Update the user's comments
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        comments: {
-          connect: { id: comment.id },
-        },
-      },
-    });
-
-    // If a parentId is provided, update the parent comment
-    if (payload.get("parentId")) {
-      const parentId = payload.get("parentId")?.toString();
-      if (parentId) {
-        await prisma.comment.update({
-          where: { id: parentId },
-          data: {
-            replies: {
-              connect: { id: comment.id },
-            },
+      if (!parentExists) {
+        return {
+          errors: {
+            content: [], // Ensure the structure matches expected type
           },
-        });
+          message: "Parent comment does not exist",
+        };
       }
-    }
-
-    return undefined; // No errors
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const fieldErrors: Record<string, string[]> = {};
-      error.errors.forEach((err) => {
-        const field = err.path[0] as string;
-        if (!fieldErrors[field]) {
-          fieldErrors[field] = [];
-        }
-        fieldErrors[field].push(err.message);
+      comment = await prisma.comment.create({
+        data: {
+          content: parsedContent.content,
+          author: {
+            connect: { id: userId },
+          },
+          post: postId
+            ? {
+                connect: { id: postId },
+              }
+            : undefined,
+          parent: parentId
+            ? {
+                connect: { id: parentId },
+              }
+            : undefined,
+        },
       });
-      return {
-        errors: fieldErrors,
-        message: "Validation errors occurred",
-      };
     } else {
-      console.error("Error creating comment:", error);
+      comment = await prisma.comment.create({
+        data: {
+          content: parsedContent.content,
+          author: {
+            connect: { id: userId },
+          },
+          post: postId
+            ? {
+                connect: { id: postId },
+              }
+            : undefined,
+        },
+      });
+    }
+    console.log("Comment created successfully:", comment);
+    const processedComment = await getEssentialComment(comment.id);
+
+    return processedComment;
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    if (error instanceof z.ZodError) {
+      return {
+        errors: error.flatten().fieldErrors,
+        message: "Validation error",
+      };
+    } else if (error instanceof Error) {
       return {
         errors: {
-          content: ["An error occurred while creating the comment"],
+          content: [error.message],
         },
-        message: "An error occurred while creating the comment",
+        message: "An unexpected error occurred",
+      };
+    } else {
+      return {
+        errors: {
+          content: ["Unknown error occurred"],
+        },
+        message: "An unexpected error occurred",
       };
     }
   }
@@ -273,6 +277,17 @@ export async function likeComment(
   if (!commentId) {
     throw new Error("Comment ID is required");
   }
+
+  // Check if the comment exists
+  const commentExists = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { id: true },
+  });
+
+  if (!commentExists) {
+    throw new Error(`Comment with ID ${commentId} does not exist`);
+  }
+
   console.log("Liking comment", commentId, "by user", userId);
   try {
     // Check if the comment is already liked by this user
@@ -358,11 +373,10 @@ export async function likeComment(
     });
 
     console.log("Comment like status toggled successfully", updatedComment);
-
-    return true;
+    return updatedComment;
   } catch (error) {
-    console.error("Error toggling comment like:", error);
-    throw new Error("Failed to toggle comment like");
+    console.error("Error toggling comment like status:", error);
+    throw error;
   }
 }
 
@@ -374,8 +388,6 @@ export async function isLikedByUser(
     console.error("Invalid input: userId or commentId is undefined");
     return false;
   }
-
-  console.log("Checking if user has liked the comment:", { userId, commentId });
 
   try {
     const user = await prisma.user.findUnique({
@@ -389,10 +401,62 @@ export async function isLikedByUser(
     });
 
     const isLiked = (user?.likedComments ?? []).length > 0;
-    console.log("Is liked by user:", isLiked);
     return isLiked;
   } catch (error) {
     console.error("Error in isLikedByUser:", error);
     return false;
   }
+}
+
+export async function getEssentialComment(commentId: string) {
+  return prisma.comment.findUnique({
+    where: { id: commentId },
+    select: {
+      id: true,
+      content: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      authorId: true,
+      postId: true,
+      likedBy: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      replies: {
+        select: {
+          id: true,
+          content: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          authorId: true,
+          postId: true,
+          _count: {
+            select: {
+              likedBy: true,
+              replies: true,
+            },
+          },
+          parentId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      parentId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 }

@@ -1,25 +1,44 @@
 import { useCurrentUser } from "@/app/context/UserContext";
-import { FullPost } from "@/app/lib/definitions";
+import { EssentialComment, FullPost } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
-import { useState } from "react";
 import LongInput from "../../form/LongInput";
+import { createComment } from "@/app/actions/commentActions";
+import { useActionState } from "react";
 
-export default function CommentCreator<T extends FullPost | ExtendedPost>({
+export default function CommentCreator({
   postId,
   setPost,
-  parentId,
+  setComment,
+  parentId = undefined,
   setHidden,
 }: {
-  postId: string | null | undefined; // Post ID to which the comment belongs
-  setPost?: React.Dispatch<React.SetStateAction<T | null>>; // Update to accept generic type T
-  parentId?: string; // Optional parentId for nested comments
-  setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
+  postId: string | null | undefined;
+  setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
+  setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
+  parentId?: string;
+  setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  // Ensure `setPost` returns a `T`
-  const updatePost = (newComment: T["comments"][number]) => {
-    setPost?.((prevPost) => {
+  const [, action, pending] = useActionState(actionWrapper, null);
+
+  const updatePost = (newComment: EssentialComment | null) => {
+    if (!newComment) {
+      console.error("Failed to create a new comment.");
+      return;
+    }
+    if (setComment && !parentId) {
+      setComment((prevComment: EssentialComment[]) => {
+        if (!prevComment) return prevComment;
+        return [newComment, ...prevComment];
+      });
+    }
+    if (setComment && parentId) {
+      return;
+      // add nested comment
+    }
+    setPost?.((prevPost: FullPost | null) => {
       if (!prevPost) return prevPost;
+
       return {
         ...prevPost,
         comments: [newComment, ...prevPost.comments],
@@ -27,58 +46,54 @@ export default function CommentCreator<T extends FullPost | ExtendedPost>({
     });
   };
 
-  const user = useCurrentUser(); // Get the current user from context
+  const user = useCurrentUser();
   const defaultProfile = useDefaultProfileImage();
 
-  // Correct `pending` usage
-  const [pending, setPending] = useState(false);
-
-  const handleSubmit = async (payload: FormData) => {
-    setPending(true);
+  async function actionWrapper(state: void | null, payload: FormData) {
     try {
-      // Simulate comment creation
-      const newComment: T["comments"][number] = {
-        id: "new-comment-id",
-        content: payload.get("content")?.toString() || "",
-        authorId: user?.id || "current-user-id",
-        author: {
-          id: user?.id || "current-user-id",
-          name: user?.name || "Current User",
-          image: user?.image || null,
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        _count: { likedBy: 0, replies: 0 },
-        replies: [],
-      };
-      updatePost(newComment);
+      if (!postId) {
+        console.error("Post ID is required to create a comment.");
+        return;
+      }
+      if (!user) {
+        console.error("User must be logged in to create a comment.");
+        return;
+      }
+      payload.append("postId", postId);
+      payload.append("parentId", parentId || "");
+      payload.append("userId", user.id);
+      const newComment = await createComment(payload, user?.id || "");
 
-      // Close the modal after successfully submitting a comment
+      if (newComment && "errors" in newComment) {
+        console.error("Failed to create comment:", newComment.errors);
+        alert(
+          "Failed to create comment. Please check your input and try again."
+        );
+        return;
+      }
+
+      if (newComment && "id" in newComment) {
+        updatePost(newComment);
+      } else {
+        console.error("Unexpected response from createComment:", newComment);
+        alert("An unexpected error occurred. Please try again later.");
+      }
+
       if (setHidden) {
-        setTimeout(() => setHidden(true), 0); // Use a timeout to ensure state updates properly
+        setTimeout(() => setHidden(true), 0);
       }
     } catch (error) {
       console.error("Error creating comment:", error);
-    } finally {
-      setPending(false);
     }
-  };
+  }
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        formData.append("postId", postId || ""); // Use postId
-        if (parentId) {
-          formData.append("parentId", parentId); // Use parentId
-        }
-        handleSubmit(formData);
-      }}
+      action={action}
       className="flex items-start gap-2 py-2 border-b border-b-[var(--borderc)]"
     >
       <Image
-        src={user?.image || defaultProfile} // Use a default image if user image is not available
+        src={user?.image || defaultProfile}
         alt="User profile picture"
         width={40}
         height={40}
@@ -87,7 +102,7 @@ export default function CommentCreator<T extends FullPost | ExtendedPost>({
       <LongInput
         label=""
         id="comment"
-        name="content" // Name attribute for form submission
+        name="content"
         placeholder="Share your thoughts..."
         className="flex-grow p-2 rounded-md"
         disabled={pending}

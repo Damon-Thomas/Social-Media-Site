@@ -188,7 +188,22 @@ export type EssentialComment = {
   authorId?: string | null;
   postId?: string | null;
   likedBy?: EssentialUser[];
-  replies?: EssentialComment[];
+  replies?: BasicComment[];
+  parentId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+} | null;
+
+export type BasicComment = {
+  id: string;
+  content?: string | null;
+  author?: EssentialUser | null;
+  authorId?: string | null;
+  postId?: string | null;
+  _count?: {
+    likedBy: number;
+    replies: number;
+  };
   parentId?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -256,38 +271,7 @@ export type FullPost = {
     name: string;
     image: string | null;
   } | null;
-  comments: {
-    id: string;
-    content: string;
-    authorId: string;
-    author: {
-      id: string;
-      name: string;
-      image: string | null;
-    };
-    createdAt: Date;
-    updatedAt: Date;
-    _count: {
-      likedBy: number;
-      replies: number;
-    };
-    replies: {
-      id: string;
-      content: string;
-      authorId: string;
-      author: {
-        id: string;
-        name: string;
-        image: string | null;
-      };
-      createdAt: Date;
-      updatedAt: Date;
-      _count: {
-        likedBy: number;
-        replies: number;
-      };
-    }[];
-  }[];
+  comments: EssentialComment[];
   likedBy: {
     id: string;
     name: string;

@@ -12,12 +12,16 @@ export default function CommentCreator({
   setComment,
   parentId = undefined,
   setHidden,
+  placeholder = "Share your thoughts...",
+  className = "",
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
   setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
   parentId?: string;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
+  placeholder?: string;
+  className?: string;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
 
@@ -90,26 +94,26 @@ export default function CommentCreator({
   return (
     <form
       action={action}
-      className="flex items-start gap-2 py-2 border-b border-b-[var(--borderc)]"
+      className={`flex w-full  items-start gap-2 py-2 ${className}`}
     >
       <Image
         src={user?.image || defaultProfile}
         alt="User profile picture"
         width={40}
         height={40}
-        className="rounded-full flex-shrink-0 h-10 w-10"
+        className="rounded-full flex-shrink-0 h-10 w-10 my-0.5"
       />
       <LongInput
         label=""
         id="comment"
         name="content"
-        placeholder="Share your thoughts..."
-        className="flex-grow p-2 rounded-md"
+        placeholder={placeholder}
+        className="flex-grow rounded-md h-full "
         disabled={pending}
       />
       <button
         type="submit"
-        className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md"
+        className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md my-1"
         disabled={pending}
       >
         {pending ? "Sending..." : "Send"}

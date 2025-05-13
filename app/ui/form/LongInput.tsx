@@ -59,7 +59,7 @@ const LongInput = forwardRef(function LongInput(
   };
 
   return (
-    <div className="flex flex-col justify-center items-center gap-1 w-full h-full">
+    <div className="flex flex-col justify-center items-center grow gap-1 w-full h-full">
       {label && (
         <label htmlFor={id} className="block text-sm">
           {label}

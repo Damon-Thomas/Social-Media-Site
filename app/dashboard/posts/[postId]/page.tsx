@@ -2,55 +2,13 @@
 
 import { getfullPost } from "@/app/actions/postActions";
 import { EssentialComment, FullPost } from "@/app/lib/definitions";
+import PopDownComment from "@/app/ui/posts/comments/PopDownComment";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import CommentModal from "@/app/ui/posts/comments/CommentModal";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
 import { use } from "react";
-// import { set } from "zod";
-
-// Removed ExtendedPost in favor of FullPost
-
-// Explicitly type `comment` and `reply` in map functions
-// const transformToFullPost = (post: FullPost | null): FullPost | null => {
-//   if (!post) return null;
-//   return {
-//     ...post,
-//     authorId: post.authorId || "", // Ensure authorId is a string
-//     comments: post.comments.map((comment: FullPost["comments"][number]) => ({
-//       ...comment,
-//       authorId: comment.authorId || "", // Ensure authorId is a string
-//       author: comment.author || { id: "", name: "", image: null },
-//       replies: comment.replies.map(
-//         (reply: FullPost["comments"][number]["replies"][number]) => ({
-//           ...reply,
-//           authorId: reply.authorId || "", // Ensure authorId is a string
-//           author: reply.author || { id: "", name: "", image: null },
-//         })
-//       ),
-//     })),
-//   };
-// };
-
-// Adjust transformation logic to ensure compatibility
-// const transformToFullPostBack = (post: FullPost | null): FullPost | null => {
-//   if (!post) return null;
-//   return {
-//     ...post,
-//     authorId: post.authorId || null, // Convert empty string back to null
-//     comments: post.comments.map((comment) => ({
-//       ...comment,
-//       authorId: comment.authorId || null, // Convert empty string back to null
-//       author: comment.author || null,
-//       replies: comment.replies.map((reply) => ({
-//         ...reply,
-//         authorId: reply.authorId || null, // Convert empty string back to null
-//         author: reply.author || null,
-//       })),
-//     })),
-//   };
-// };
 
 export default function PostPage({
   params,
@@ -65,11 +23,16 @@ export default function PostPage({
   const [commentsInOrder, setCommentsInOrder] = useState<EssentialComment[]>(
     []
   );
+
+  // State to track the currently expanded PopDownComment
+  const [expandedCommentId, setExpandedCommentId] = useState<string | null>(
+    null
+  );
+
   useEffect(() => {
     async function fetchPost() {
       try {
         const data = await getfullPost(postId);
-        // const transformedPost = transformToFullPost(data);
         setPost(data);
         const comments = data?.comments || [];
         const sortedComments = comments.sort((a, b) => {
@@ -96,16 +59,27 @@ export default function PostPage({
           setComment={setCommentsInOrder}
           parentId={undefined}
           setHidden={setModalHidden}
+          className="border-b border-b-[var(--borderc)]"
         />
         <h3 className="text-xl font-bold my-4">Comments</h3>
         <div className="overflow-auto">
           {Array.isArray(commentsInOrder) && commentsInOrder.length > 0 ? (
             commentsInOrder.map((comment: EssentialComment) => (
-              <CommentItem
-                setParentId={setParentId}
-                comment={comment}
-                key={comment?.id}
-              />
+              <div className="flex flex-col " key={comment?.id}>
+                <CommentItem
+                  setParentId={setParentId}
+                  comment={comment}
+                  setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                />
+                <PopDownComment
+                  setComment={setCommentsInOrder}
+                  postId={postId}
+                  parentId={comment?.id}
+                  setHidden={setModalHidden}
+                  hidden={expandedCommentId !== comment?.id} // Hide if not expanded
+                  creatorClassName="min-h-15"
+                />
+              </div>
             ))
           ) : (
             <p className="text-[var(--dull)]">No comments yet.</p>
@@ -113,10 +87,10 @@ export default function PostPage({
         </div>
         <CommentModal
           postId={postId}
-          setPost={setPost}
+          setComment={setCommentsInOrder}
           hidden={modalHidden}
           setHidden={setModalHidden}
-          parentId={parentId || undefined} // Explicitly convert null to undefined
+          parentId={parentId || undefined}
         ></CommentModal>
       </div>
     </div>

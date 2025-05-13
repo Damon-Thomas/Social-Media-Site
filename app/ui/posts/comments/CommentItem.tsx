@@ -21,9 +21,11 @@ type CommentWithCount = EssentialComment & {
 export default function CommentItem({
   comment,
   setParentId,
+  setExpandedCommentId,
 }: {
   comment: CommentWithCount | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
+  setExpandedCommentId?: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -34,7 +36,7 @@ export default function CommentItem({
     if (!comment || !user) return; // Early exit if dependencies are null
 
     async function checkIfLiked() {
-      const likedByUser = await isLikedByUser(user.id, comment.id);
+      const likedByUser = await isLikedByUser(user?.id, comment?.id);
       console.log("Liked by user:", likedByUser);
       setIsLiked(likedByUser || false);
     }
@@ -65,12 +67,13 @@ export default function CommentItem({
 
   const handleReply = () => {
     setParentId?.(comment.id);
+    setExpandedCommentId?.(comment.id);
     console.log("Reply button clicked for comment", comment.id);
     // Add reply functionality here
   };
 
   return (
-    <div key={comment.id} className="mb-4 p-4 ">
+    <div key={comment.id} className=" p-4 ">
       <p className="">{comment.content}</p>
       <p className="text-[var(--dull)] text-sm">
         {comment.author?.name || "Unknown User"}

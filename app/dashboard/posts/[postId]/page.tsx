@@ -1,7 +1,11 @@
 "use client";
 
 import { getfullPost } from "@/app/actions/postActions";
-import { EssentialComment, FullPost } from "@/app/lib/definitions";
+import {
+  BasicComment,
+  EssentialComment,
+  FullPost,
+} from "@/app/lib/definitions";
 import PopDownComment from "@/app/ui/posts/comments/PopDownComment";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
@@ -35,7 +39,18 @@ export default function PostPage({
         const data = await getfullPost(postId);
         setPost(data);
         const comments = data?.comments || [];
-        const sortedComments = comments.sort((a, b) => {
+        for (const comment of comments) {
+          if (comment?.replies) {
+            for (const reply of comment.replies) {
+              console.log("Reply:", reply);
+            }
+          }
+        }
+        console.log("Comments:", comments);
+        const filteredComments = comments.filter(
+          (comment: EssentialComment) => comment?.parentId === null
+        ); // Filter out comments with parentId
+        const sortedComments = filteredComments.sort((a, b) => {
           const dateA = a && a.createdAt && new Date(a.createdAt).getTime();
           const dateB = b && b.createdAt && new Date(b.createdAt).getTime();
           if (!dateA || !dateB) return 0; // Handle null or undefined dates
@@ -79,6 +94,18 @@ export default function PostPage({
                   hidden={expandedCommentId !== comment?.id} // Hide if not expanded
                   creatorClassName="min-h-15"
                 />
+                {comment?.replies && comment?.replies.length > 0 && (
+                  <div className="ml-4">
+                    {comment.replies.map((reply: BasicComment) => (
+                      <CommentItem
+                        key={reply?.id}
+                        setParentId={setParentId}
+                        comment={reply}
+                        setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ))
           ) : (

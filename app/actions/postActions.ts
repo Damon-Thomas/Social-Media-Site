@@ -120,6 +120,9 @@ export async function getfullPost(postId: string): Promise<FullPost> {
               image: true,
             },
           },
+          postId: true,
+          parentId: true,
+
           createdAt: true,
           updatedAt: true,
           _count: {
@@ -142,6 +145,7 @@ export async function getfullPost(postId: string): Promise<FullPost> {
               },
               createdAt: true,
               updatedAt: true,
+              parentId: true,
               _count: {
                 select: {
                   likedBy: true,

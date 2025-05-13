@@ -31,13 +31,16 @@ export default function CommentItem({
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
+    if (!comment || !user) return; // Early exit if dependencies are null
+
     async function checkIfLiked() {
-      const likedByUser = await isLikedByUser(user?.id, comment?.id);
+      const likedByUser = await isLikedByUser(user.id, comment.id);
       console.log("Liked by user:", likedByUser);
       setIsLiked(likedByUser || false);
     }
+
     checkIfLiked();
-  }, [comment, user]);
+  }, [comment, user]); // Include full objects in the dependency array
 
   useEffect(() => {
     setLikeCount(comment?._count?.likedBy || 0);

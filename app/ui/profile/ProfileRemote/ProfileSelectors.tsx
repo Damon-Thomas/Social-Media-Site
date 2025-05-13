@@ -18,15 +18,14 @@ export default function ProfileSelectors({
   const tabs: Tab[] = ["activity", "posts", "comments", "liked"];
 
   return (
-    // Apply the passed className here
-    <div className={`flex space-x-4 mb-4 ${className}`}>
+    <div className={`flex grow gap-2 justify-around ${className}`}>
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={`px-4 py-2 rounded ${
+          className={`flex-1 px-4 py-2 h-10 text-center ${
             activeTab === tab
-              ? "bg-blue-500 text-white" // Example active style
-              : "bg-gray-200 text-black" // Example inactive style
+              ? "bg-[var(--primary)] text-[var(--aBlack)]"
+              : "bg-[var(--dmono)] text-[var(--rdmono)]"
           }`}
           onClick={() => setActiveTab(tab)}
         >

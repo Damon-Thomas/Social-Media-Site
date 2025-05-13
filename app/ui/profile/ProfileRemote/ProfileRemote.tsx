@@ -4,7 +4,7 @@ import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import type { Dispatch, SetStateAction } from "react";
 import ProfileSelectors from "./ProfileSelectors";
 import ProfileInfo from "./ProfileInfo";
-import CombinedLikedSection from "../CombinedLikedSection";
+import CombinedLikedSection from "../ProfileActivityComponents/CombinedLikedSection";
 import { useEffect } from "react";
 
 // Define the type for the active tab
@@ -62,8 +62,8 @@ export default function ProfileRemote({
         setActiveTab={setActiveTab}
         className={`sticky top-0 z-10 bg-[var(--rdmono)] py-2`}
       />
-      <div className="flex flex-col w-full mt-4">
-        <div className="pt-4">
+      <div className="flex flex-col w-full">
+        <div className="">
           {activeTab === "activity" && (
             <ProfileInfo
               type="activity"

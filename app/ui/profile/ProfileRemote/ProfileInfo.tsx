@@ -1,10 +1,10 @@
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import InfoContainer from "./InfoContainer";
 import ActivitySection from "./ActivitySection";
-import PostsSection from "../otherProfile/PostsSection";
-import CommentsSection from "../otherProfile/CommentsSection";
-import LikedPostsSection from "../otherProfile/LikedPostsSection";
-import LikedCommentsSection from "../otherProfile/LikedCommentsSection";
+import PostsSection from "../ProfileActivityComponents/PostsSection";
+import CommentsSection from "../ProfileActivityComponents/CommentsSection";
+import LikedPostsSection from "../ProfileActivityComponents/LikedPostsSection";
+import LikedCommentsSection from "../ProfileActivityComponents/LikedCommentsSection";
 
 type ProfileInfoProps =
   | {

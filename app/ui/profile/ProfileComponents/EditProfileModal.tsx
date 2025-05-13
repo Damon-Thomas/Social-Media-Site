@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Image from "next/image"; // Import Image for rendering the icon
-import Modal from "../core/Modal";
+import Modal from "@/app/ui/core/Modal";
 import editIcon from "@public/square-edit-outline.svg";
-import EditProfileForm from "../form/editProfile/EditProfileForm";
+import EditProfileForm from "@/app/ui/form/editProfile/EditProfileForm";
 
 export default function EditProfileModal() {
   const [hidden, setHidden] = useState(true); // State to control modal visibility

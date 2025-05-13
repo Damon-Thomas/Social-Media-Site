@@ -2,8 +2,8 @@
 
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import type { Dispatch, SetStateAction } from "react";
-import PersInfo from "./otherProfile/PersInfo";
-import ProfileRemote from "./ProfileRemote/ProfileRemote";
+import PersInfo from "@/app/ui/profile/ProfileComponents/PersInfo";
+import ProfileRemote from "@/app/ui/profile/ProfileRemote/ProfileRemote";
 
 // Use the same type as ProfileRemote's activeTab state
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";

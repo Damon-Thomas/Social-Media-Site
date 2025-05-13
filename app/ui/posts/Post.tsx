@@ -48,6 +48,7 @@ export default function Post({
 
   // This will update when userData changes due to the refreshUser() call
   useEffect(() => {
+    if (!userData || !post) return; // Early exit if userData is not available
     async function checkIfLiked() {
       setIconLoading(true);
       if (userData && post) {

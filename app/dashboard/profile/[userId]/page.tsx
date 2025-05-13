@@ -15,7 +15,7 @@ import Goats from "@/app/ui/dashboard/Goats";
 import Noobs from "@/app/ui/dashboard/Noobs";
 import { useParams } from "next/navigation";
 import { useCurrentUser } from "@/app/context/UserContext";
-import ProfileSection from "@/app/ui/profile/ProfileSection";
+import ProfileSection from "@/app/ui/profile/ProfileActivityComponents/ProfileSection";
 
 const ITEMS_PER_PAGE = 10;
 

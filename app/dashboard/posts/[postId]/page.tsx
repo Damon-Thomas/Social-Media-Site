@@ -29,9 +29,7 @@ export default function PostPage({
   );
 
   // State to track the currently expanded PopDownComment
-  const [expandedCommentId, setExpandedCommentId] = useState<string | null>(
-    null
-  );
+  const [expandedCommentId, setExpandedCommentId] = useState<string>("");
 
   useEffect(() => {
     async function fetchPost() {

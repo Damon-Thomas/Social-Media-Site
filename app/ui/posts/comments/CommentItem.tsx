@@ -56,7 +56,6 @@ export default function CommentItem({
 
     async function checkIfLiked() {
       const likedByUser = await isLikedByUser(user?.id, comment?.id);
-      console.log("Liked by user:", likedByUser);
       setIsLiked(likedByUser || false);
     }
 

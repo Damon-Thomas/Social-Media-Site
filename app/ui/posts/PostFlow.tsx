@@ -30,7 +30,7 @@ function ReplyFlow({
 }: {
   comment: BasicComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
-  setExpandedCommentId?: React.Dispatch<React.SetStateAction<string | null>>;
+  setExpandedCommentId?: React.Dispatch<React.SetStateAction<string>>;
   isLast?: boolean;
   setCommentsInOrder?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
   postId: string | null | undefined;
@@ -44,6 +44,7 @@ function ReplyFlow({
   const [replyCount, setReplyCount] = useState(comment?._count?.replies || 0);
   const [isLiked, setIsLiked] = useState(false);
   const defaultProfileImage = useDefaultProfileImage();
+  console.log("ReplyFlow comment:", comment?.content, isLast);
 
   const handleLike = async () => {
     try {
@@ -60,14 +61,18 @@ function ReplyFlow({
   const handleReply = () => {
     setParentId?.(comment?.id || "");
     setExpandedCommentId?.(comment?.id || "");
-    setReplyCount((prevCount) => prevCount + 1); // Increment reply count
-    console.log("Reply button clicked for comment", comment?.id);
-    // Add reply functionality here
   };
 
   return (
-    <div className=" h-full">
-      <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)] bg-amber-300">
+    <div className=" relative">
+      <div
+        className={`${
+          isLast ? "z-10 bg-[var(--rdmono)]" : ""
+        } w-[24px] sm:w-[32px] h-full z-10 absolute -left-[24px] sm:-left-[32px] top-0`}
+      ></div>
+      <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)]  relative">
+        <div className="here absolute top-0 z-20 -left-[12px] sm:-left-[16px] w-[12px] sm:w-[16px] h-4 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
+
         <Image
           src={comment?.author?.image || defaultProfileImage}
           alt="Post Image"
@@ -78,7 +83,7 @@ function ReplyFlow({
         <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr] ">
-        <div className="bg-amber-200 grid grid-cols-2">
+        <div className=" grid grid-cols-2">
           {expandedCommentId === comment?.id && (
             <>
               <div className=""></div>
@@ -86,7 +91,7 @@ function ReplyFlow({
             </>
           )}
         </div>
-        <div className="commentContent p-2 bg-cyan-300 w-full h-full">
+        <div className="commentContent p-2  w-full h-full">
           <p className="">{comment?.content}</p>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
@@ -109,16 +114,28 @@ function ReplyFlow({
                 formatRelativeTime(new Date(comment?.createdAt), true)}
             </p>
           </div>
-          <div className=""></div>
+
+          <div className=""> </div>
         </div>
       </div>
-      <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]  min-h-96">
-        <div className="bg-amber-100 relative  grid grid-cols-2">
+      <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]">
+        <div className={` relative   grid grid-cols-2  `}>
           {expandedCommentId === comment?.id && (
-            <div className="absolute top-0 z-0 left-1/2 w-full h-5 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
+            <div className="absolute top-0 z-20 left-1/2 w-full h-5 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
           )}
         </div>
-        <div className="commentContent bg-cyan-500 z-10 w-full h-full"></div>
+        <div className="commentContent  z-10 w-full h-full">
+          <PopDownComment
+            setComment={setCommentsInOrder}
+            postId={postId}
+            parentId={comment?.id}
+            setHidden={setHidden}
+            hidden={expandedCommentId !== comment?.id} // Hide if not expanded
+            creatorClassName="min-h-15 ml-8 pl-2"
+            continueLink={continueLink}
+            anotherReply={anotherReply}
+          />
+        </div>
       </div>
     </div>
   );
@@ -138,7 +155,7 @@ export default function PostFlow({
 }: {
   comment: EssentialComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
-  setExpandedCommentId?: React.Dispatch<React.SetStateAction<string | null>>;
+  setExpandedCommentId?: React.Dispatch<React.SetStateAction<string>>;
   isLast?: boolean;
   setCommentsInOrder?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
   postId: string | null | undefined;
@@ -159,7 +176,6 @@ export default function PostFlow({
 
     async function checkIfLiked() {
       const likedByUser = await isLikedByUser(user?.id, comment?.id);
-      console.log("Liked by user:", likedByUser);
       setIsLiked(likedByUser || false);
     }
 
@@ -195,10 +211,10 @@ export default function PostFlow({
   };
 
   return (
-    <div className="w-xl h-full">
+    <div className="w-full h-full">
       {" "}
       {/* <= temp container dimensions*/}
-      <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)] bg-amber-300">
+      <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)]">
         <Image
           src={comment?.author?.image || defaultProfileImage}
           alt="Post Image"
@@ -209,7 +225,7 @@ export default function PostFlow({
         <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr] ">
-        <div className="bg-amber-200 grid grid-cols-2">
+        <div className=" grid grid-cols-2">
           {(comment?.replies?.length ?? 0) > 0 && (
             <>
               <div className=""></div>
@@ -217,7 +233,7 @@ export default function PostFlow({
             </>
           )}
         </div>
-        <div className="commentContent p-2 bg-cyan-300 w-full h-full">
+        <div className="commentContent p-2  w-full h-full">
           <div className="flex flex-col grow">
             <p className="">{comment?.content}</p>
             <div className="flex items-center gap-4 mt-2 justify-between">
@@ -244,11 +260,21 @@ export default function PostFlow({
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]  min-h-96">
-        <div className="bg-amber-100 relative  grid grid-cols-2">
-          <div className="absolute top-0 z-0 left-1/2 w-full h-4 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
+      <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]">
+        <div className={` relative  grid grid-cols-2 `}>
+          {(comment?.replies?.length ?? 0) > 0 && !isLast && (
+            <>
+              <div className=""></div>
+              <div
+                className={`${
+                  isLast ? "" : "border-l-[1px] border-[var(--dull)]}"
+                }`}
+              ></div>
+              <div className="absolute top-0 z-0 left-1/2 w-full h-4 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
+            </>
+          )}
         </div>
-        <div className="commentContent bg-cyan-500 z-10 w-full h-full">
+        <div className="commentContent  z-10 w-full h-full">
           <PopDownComment
             setComment={setCommentsInOrder}
             postId={postId}
@@ -259,7 +285,7 @@ export default function PostFlow({
             continueLink={continueLink}
             anotherReply={anotherReply}
           />
-          {comment?.replies?.map((reply: BasicComment) => (
+          {comment?.replies?.map((reply: BasicComment, replyIndex: number) => (
             <ReplyFlow
               key={reply?.id}
               comment={reply}
@@ -269,7 +295,7 @@ export default function PostFlow({
               setHidden={setHidden}
               expandedCommentId={expandedCommentId}
               setExpandedCommentId={setExpandedCommentId}
-              isLast={true}
+              isLast={replyIndex === (comment?.replies?.length ?? 0) - 1}
             />
           ))}
         </div>

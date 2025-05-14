@@ -108,12 +108,12 @@ export default function CommentCreator({
           height={40}
           className="rounded-full  h-10 w-10 "
         />
-        {continueLink && (
+        {/* {continueLink && (
           <div className="z-0 absolute -bottom-12 -left-3 h-18 w-5 border-l-1  border-[var(--dull)] "></div>
         )}
         {anotherReply && (
           <div className="z-0 absolute -bottom-18 left-1/2 h-18 w-5 border-l-1  border-[var(--dull)] "></div>
-        )}
+        )} */}
       </div>
       <LongInput
         label=""

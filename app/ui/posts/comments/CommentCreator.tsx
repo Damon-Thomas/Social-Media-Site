@@ -14,6 +14,8 @@ export default function CommentCreator({
   setHidden,
   placeholder = "Share your thoughts...",
   className = "",
+  continueLink = false,
+  anotherReply = false,
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
@@ -22,6 +24,8 @@ export default function CommentCreator({
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   placeholder?: string;
   className?: string;
+  continueLink?: boolean;
+  anotherReply?: boolean;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
 
@@ -94,15 +98,23 @@ export default function CommentCreator({
   return (
     <form
       action={action}
-      className={`flex w-full  items-start gap-2 py-2 ${className}`}
+      className={`flex w-full items-start gap-2 py-2 z-10 ${className}`}
     >
-      <Image
-        src={user?.image || defaultProfile}
-        alt="User profile picture"
-        width={40}
-        height={40}
-        className="rounded-full flex-shrink-0 h-10 w-10 my-0.5"
-      />
+      <div className="relative flex-shrink-0 h-10 w-10 my-0.5">
+        <Image
+          src={user?.image || defaultProfile}
+          alt="User profile picture"
+          width={40}
+          height={40}
+          className="rounded-full  h-10 w-10 "
+        />
+        {continueLink && (
+          <div className="z-0 absolute -bottom-12 -left-3 h-18 w-5 border-l-1  border-[var(--dull)] "></div>
+        )}
+        {anotherReply && (
+          <div className="z-0 absolute -bottom-18 left-1/2 h-18 w-5 border-l-1  border-[var(--dull)] "></div>
+        )}
+      </div>
       <LongInput
         label=""
         id="comment"

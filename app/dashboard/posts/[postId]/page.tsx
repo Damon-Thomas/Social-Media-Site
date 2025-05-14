@@ -6,7 +6,6 @@ import {
   EssentialComment,
   FullPost,
 } from "@/app/lib/definitions";
-import PopDownComment from "@/app/ui/posts/comments/PopDownComment";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import CommentModal from "@/app/ui/posts/comments/CommentModal";
@@ -79,35 +78,49 @@ export default function PostPage({
         <h3 className="text-xl font-bold my-4">Comments</h3>
         <div className="overflow-auto">
           {Array.isArray(commentsInOrder) && commentsInOrder.length > 0 ? (
-            commentsInOrder.map((comment: EssentialComment) => (
-              <div className="flex flex-col " key={comment?.id}>
-                <CommentItem
-                  setParentId={setParentId}
-                  comment={comment}
-                  setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                />
-                <PopDownComment
-                  setComment={setCommentsInOrder}
-                  postId={postId}
-                  parentId={comment?.id}
-                  setHidden={setModalHidden}
-                  hidden={expandedCommentId !== comment?.id} // Hide if not expanded
-                  creatorClassName="min-h-15"
-                />
-                {comment?.replies && comment?.replies.length > 0 && (
-                  <div className="ml-4">
-                    {comment.replies.map((reply: BasicComment) => (
-                      <CommentItem
-                        key={reply?.id}
-                        setParentId={setParentId}
-                        comment={reply}
-                        setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))
+            commentsInOrder.map(
+              (comment: EssentialComment, replyIndex: number) => (
+                <div className="flex flex-col" key={comment?.id}>
+                  <CommentItem
+                    setParentId={setParentId}
+                    comment={comment}
+                    setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                    isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
+                    setCommentsInOrder={setCommentsInOrder}
+                    postId={postId}
+                    expandedCommentId={expandedCommentId}
+                    anotherReply={
+                      replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
+                    }
+                  />
+
+                  {comment?.replies && comment?.replies.length > 0 && (
+                    <div className="ml-8">
+                      {comment.replies.map(
+                        (reply: BasicComment, replyIndex: number) => (
+                          <CommentItem
+                            key={reply?.id}
+                            setParentId={setParentId}
+                            comment={reply}
+                            setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                            isLast={
+                              replyIndex === (comment.replies?.length ?? 0) - 1
+                            } // Pass the "isLast" prop for replies
+                            setCommentsInOrder={setCommentsInOrder}
+                            postId={postId}
+                            setHidden={setModalHidden}
+                            expandedCommentId={expandedCommentId}
+                            continueLink={
+                              replyIndex < (comment.replies?.length ?? 0) - 1
+                            } // Simplified logic
+                          />
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            )
           ) : (
             <p className="text-[var(--dull)]">No comments yet.</p>
           )}

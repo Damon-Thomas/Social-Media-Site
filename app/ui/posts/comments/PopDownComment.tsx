@@ -9,6 +9,8 @@ export default function PopDownComment({
   setHidden,
   className = "",
   creatorClassName = "",
+  continueLink = false,
+  anotherReply = false,
 }: {
   postId: string | null | undefined;
   setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
@@ -17,6 +19,8 @@ export default function PopDownComment({
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
   creatorClassName?: string;
+  continueLink?: boolean;
+  anotherReply?: boolean;
 }) {
   if (!postId || !parentId) {
     console.error("Post ID and Parent Id is required to create a comment.");
@@ -27,7 +31,7 @@ export default function PopDownComment({
     <div
       className={`${
         hidden && "hidden"
-      } ${className}  ml-4 pb-2 px-4 grow flex `}
+      } ${className}   py-2 px-4 grow flex relative `}
     >
       <CommentCreator
         postId={postId}
@@ -35,7 +39,9 @@ export default function PopDownComment({
         setComment={setComment}
         parentId={parentId}
         setHidden={setHidden}
-        className={`w-full ${creatorClassName} `}
+        className={`w-full ${creatorClassName} relative z-10`}
+        continueLink={continueLink}
+        anotherReply={anotherReply}
       ></CommentCreator>
     </div>
   );

@@ -94,7 +94,7 @@ export default function CommentItem({
   return (
     <>
       <div key={comment.id} className={`py-2 px-4 flex w-full items-center`}>
-        <div className="w-fit relative">
+        <div className="w-fit relative shrink-0">
           <Image
             src={comment.author?.image || defaultProfileImage}
             alt="User Avatar"

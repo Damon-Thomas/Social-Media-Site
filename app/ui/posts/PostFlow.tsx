@@ -21,8 +21,7 @@ function ReplyFlow({
   postId,
   setHidden,
   expandedCommentId,
-  continueLink = false,
-  anotherReply = false,
+  setCloseCreator,
 }: {
   comment: BasicComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -32,8 +31,7 @@ function ReplyFlow({
   postId: string | null | undefined;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   expandedCommentId?: string | null;
-  continueLink?: boolean;
-  anotherReply?: boolean;
+  setCloseCreator?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -139,8 +137,7 @@ function ReplyFlow({
             setHidden={setHidden}
             hidden={expandedCommentId !== comment?.id} // Hide if not expanded
             creatorClassName="min-h-15 ml-8 pl-2"
-            continueLink={continueLink}
-            anotherReply={anotherReply}
+            setCloseCreator={setCloseCreator}
             setCommentCount={setReplyCount}
           />
         </div>
@@ -158,8 +155,6 @@ export default function PostFlow({
   postId,
   setHidden,
   expandedCommentId,
-  continueLink = false,
-  anotherReply = false,
 }: {
   comment: EssentialComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -170,8 +165,6 @@ export default function PostFlow({
   hidden?: boolean;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   expandedCommentId?: string | null;
-  continueLink?: boolean;
-  anotherReply?: boolean;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -290,8 +283,7 @@ export default function PostFlow({
             setHidden={setHidden}
             hidden={expandedCommentId !== comment?.id} // Hide if not expanded
             creatorClassName="min-h-15 ml-8 pl-2"
-            continueLink={continueLink}
-            anotherReply={anotherReply}
+            setCloseCreator={setExpandedCommentId}
             setCommentCount={setReplyCount}
           />
           {comment?.replies?.map((reply: BasicComment, replyIndex: number) => (
@@ -305,6 +297,7 @@ export default function PostFlow({
               expandedCommentId={expandedCommentId}
               setExpandedCommentId={setExpandedCommentId}
               isLast={replyIndex === (comment?.replies?.length ?? 0) - 1}
+              setCloseCreator={setExpandedCommentId}
             />
           ))}
         </div>

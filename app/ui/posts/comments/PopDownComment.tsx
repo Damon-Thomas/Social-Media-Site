@@ -9,8 +9,7 @@ export default function PopDownComment({
   setHidden,
   className = "",
   creatorClassName = "",
-  continueLink = false,
-  anotherReply = false,
+  setCloseCreator,
   setCommentCount,
 }: {
   postId: string | null | undefined;
@@ -20,8 +19,7 @@ export default function PopDownComment({
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
   creatorClassName?: string;
-  continueLink?: boolean;
-  anotherReply?: boolean;
+  setCloseCreator?: React.Dispatch<React.SetStateAction<string>>;
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   if (!postId || !parentId) {
@@ -42,8 +40,7 @@ export default function PopDownComment({
         parentId={parentId}
         setHidden={setHidden}
         className={`w-full ${creatorClassName} relative z-10`}
-        continueLink={continueLink}
-        anotherReply={anotherReply}
+        setCloseCreator={setCloseCreator}
         setCommentCount={setCommentCount}
       ></CommentCreator>
     </div>

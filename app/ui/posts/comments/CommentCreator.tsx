@@ -5,29 +5,27 @@ import Image from "next/image";
 import LongInput from "../../form/LongInput";
 import { createComment } from "@/app/actions/commentActions";
 import { useActionState } from "react";
-import { set } from "zod";
 
 export default function CommentCreator({
   postId,
   setPost,
   setComment,
   parentId = undefined,
+  setCloseCreator,
   setHidden,
   placeholder = "Share your thoughts...",
   className = "",
-  continueLink = false,
-  anotherReply = false,
+
   setCommentCount,
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
   setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
   parentId?: string;
+  setCloseCreator?: React.Dispatch<React.SetStateAction<string>>;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   placeholder?: string;
   className?: string;
-  continueLink?: boolean;
-  anotherReply?: boolean;
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
@@ -44,6 +42,21 @@ export default function CommentCreator({
       });
     }
     if (setComment && parentId) {
+      setComment((prevComment: EssentialComment[]) => {
+        if (!prevComment) return prevComment;
+        const updatedComments = prevComment.map((comment) => {
+          if (comment?.id === parentId) {
+            return {
+              ...comment,
+              replies: [newComment, ...(comment.replies || [])],
+            };
+          }
+          return comment;
+        });
+
+        return updatedComments;
+      });
+      setCloseCreator?.("");
       return;
       // add nested comment
     }

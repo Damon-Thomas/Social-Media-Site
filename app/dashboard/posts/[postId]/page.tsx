@@ -8,7 +8,6 @@ import PostFlow from "@/app/ui/posts/PostFlow";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
 import { use } from "react";
-import { set } from "zod";
 
 export default function PostPage({
   params,
@@ -85,63 +84,61 @@ export default function PostPage({
         <h3 className="text-xl font-bold my-4">Comments</h3>
         <div className="overflow-auto">
           {Array.isArray(commentsInOrder) && commentsInOrder.length > 0 ? (
-            commentsInOrder.map(
-              (comment: EssentialComment, replyIndex: number) => (
-                <div className="flex flex-col" key={comment?.id}>
-                  <PostFlow
-                    setParentId={setParentId}
-                    comment={comment}
-                    setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                    isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
-                    setCommentsInOrder={setCommentsInOrder}
-                    postId={postId}
-                    expandedCommentId={expandedCommentId}
-                    anotherReply={
-                      replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
-                    }
-                  />
-                </div>
-                // <div className="flex flex-col" key={comment?.id}>
-                //   <CommentItem
-                //     setParentId={setParentId}
-                //     comment={comment}
-                //     setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                //     isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
-                //     setCommentsInOrder={setCommentsInOrder}
-                //     postId={postId}
-                //     expandedCommentId={expandedCommentId}
-                //     anotherReply={
-                //       replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
-                //     }
-                //   />
+            commentsInOrder.map((comment: EssentialComment) => (
+              <div className="flex flex-col" key={comment?.id}>
+                <PostFlow
+                  setParentId={setParentId}
+                  comment={comment}
+                  setCommentsInOrder={setCommentsInOrder}
+                  setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                  isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
+                  postId={postId}
+                  expandedCommentId={expandedCommentId}
+                  // anotherReply={
+                  //   replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
+                  // }
+                />
+              </div>
+              // <div className="flex flex-col" key={comment?.id}>
+              //   <CommentItem
+              //     setParentId={setParentId}
+              //     comment={comment}
+              //     setExpandedCommentId={setExpandedCommentId} // Pass the setter
+              //     isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
+              //     setCommentsInOrder={setCommentsInOrder}
+              //     postId={postId}
+              //     expandedCommentId={expandedCommentId}
+              //     anotherReply={
+              //       replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
+              //     }
+              //   />
 
-                //   {comment?.replies && comment?.replies.length > 0 && (
-                //     <div className="ml-8">
-                //       {comment.replies.map(
-                //         (reply: BasicComment, replyIndex: number) => (
-                //           <CommentItem
-                //             key={reply?.id}
-                //             setParentId={setParentId}
-                //             comment={reply}
-                //             setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                //             isLast={
-                //               replyIndex === (comment.replies?.length ?? 0) - 1
-                //             } // Pass the "isLast" prop for replies
-                //             setCommentsInOrder={setCommentsInOrder}
-                //             postId={postId}
-                //             setHidden={setModalHidden}
-                //             expandedCommentId={expandedCommentId}
-                //             continueLink={
-                //               replyIndex < (comment.replies?.length ?? 0) - 1
-                //             } // Simplified logic
-                //           />
-                //         )
-                //       )}
-                //     </div>
-                //   )}
-                // </div>
-              )
-            )
+              //   {comment?.replies && comment?.replies.length > 0 && (
+              //     <div className="ml-8">
+              //       {comment.replies.map(
+              //         (reply: BasicComment, replyIndex: number) => (
+              //           <CommentItem
+              //             key={reply?.id}
+              //             setParentId={setParentId}
+              //             comment={reply}
+              //             setExpandedCommentId={setExpandedCommentId} // Pass the setter
+              //             isLast={
+              //               replyIndex === (comment.replies?.length ?? 0) - 1
+              //             } // Pass the "isLast" prop for replies
+              //             setCommentsInOrder={setCommentsInOrder}
+              //             postId={postId}
+              //             setHidden={setModalHidden}
+              //             expandedCommentId={expandedCommentId}
+              //             continueLink={
+              //               replyIndex < (comment.replies?.length ?? 0) - 1
+              //             } // Simplified logic
+              //           />
+              //         )
+              //       )}
+              //     </div>
+              //   )}
+              // </div>
+            ))
           ) : (
             <p className="text-[var(--dull)]">No comments yet.</p>
           )}

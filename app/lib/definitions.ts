@@ -192,6 +192,10 @@ export type EssentialComment = {
   parentId?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    likedBy: number;
+    replies: number;
+  };
 } | null;
 
 export type BasicComment = {

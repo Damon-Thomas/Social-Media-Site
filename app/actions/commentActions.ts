@@ -457,6 +457,12 @@ export async function getEssentialComment(commentId: string) {
       parentId: true,
       createdAt: true,
       updatedAt: true,
+      _count: {
+        select: {
+          likedBy: true,
+          replies: true,
+        },
+      },
     },
   });
 }

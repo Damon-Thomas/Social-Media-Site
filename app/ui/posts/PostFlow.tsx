@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  getEssentialComment,
-  isLikedByUser,
-  likeComment,
-} from "@/app/actions/commentActions";
+import { isLikedByUser, likeComment } from "@/app/actions/commentActions";
 import { BasicComment, EssentialComment } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
@@ -45,6 +41,17 @@ function ReplyFlow({
   const [isLiked, setIsLiked] = useState(false);
   const defaultProfileImage = useDefaultProfileImage();
   console.log("ReplyFlow comment:", comment?.content, isLast);
+
+  useEffect(() => {
+    if (!comment || !user) return; // Early exit if dependencies are null
+
+    async function checkIfLiked() {
+      const likedByUser = await isLikedByUser(user?.id, comment?.id);
+      setIsLiked(likedByUser || false);
+    }
+
+    checkIfLiked();
+  }, [comment, user]); // Include full objects in the dependency array
 
   const handleLike = async () => {
     try {
@@ -134,6 +141,7 @@ function ReplyFlow({
             creatorClassName="min-h-15 ml-8 pl-2"
             continueLink={continueLink}
             anotherReply={anotherReply}
+            setCommentCount={setReplyCount}
           />
         </div>
       </div>
@@ -284,6 +292,7 @@ export default function PostFlow({
             creatorClassName="min-h-15 ml-8 pl-2"
             continueLink={continueLink}
             anotherReply={anotherReply}
+            setCommentCount={setReplyCount}
           />
           {comment?.replies?.map((reply: BasicComment, replyIndex: number) => (
             <ReplyFlow

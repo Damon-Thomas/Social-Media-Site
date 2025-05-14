@@ -1,18 +1,14 @@
 "use client";
 
 import { getfullPost } from "@/app/actions/postActions";
-import {
-  BasicComment,
-  EssentialComment,
-  FullPost,
-} from "@/app/lib/definitions";
+import { EssentialComment, FullPost } from "@/app/lib/definitions";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
-import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import CommentModal from "@/app/ui/posts/comments/CommentModal";
 import PostFlow from "@/app/ui/posts/PostFlow";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
 import { use } from "react";
+import { set } from "zod";
 
 export default function PostPage({
   params,
@@ -22,6 +18,8 @@ export default function PostPage({
   const { postId } = use(params); // Unwrap the params Promise
 
   const [post, setPost] = useState<FullPost | null>(null);
+  const [commentCount, setCommentCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(0);
   const [modalHidden, setModalHidden] = useState(true);
   const [parentId, setParentId] = useState<string | null>(null); // Update parentId to use null for compatibility
   const [commentsInOrder, setCommentsInOrder] = useState<EssentialComment[]>(
@@ -55,6 +53,8 @@ export default function PostPage({
           return dateB - dateA; // Sort in descending order
         });
         setCommentsInOrder(sortedComments);
+        setCommentCount(data?.comments?.length || 0);
+        setLikeCount(data?.likedBy?.length || 0);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
@@ -65,7 +65,14 @@ export default function PostPage({
   return (
     <div className="max-w-3xl h-full w-full mx-auto py-4 border-x-1 border-x-[var(--borderc)]">
       <div className="flex flex-col w-full h-full overflow-hidden px-2 md:px-4">
-        <PostOnly post={post} setHidden={setModalHidden} />
+        <PostOnly
+          post={post}
+          setHidden={setModalHidden}
+          likeCount={likeCount}
+          setLikeCount={setLikeCount}
+          commentCount={commentCount}
+          setCommentCount={setCommentCount}
+        />
 
         <CommentCreator
           postId={postId}
@@ -73,6 +80,7 @@ export default function PostPage({
           parentId={undefined}
           setHidden={setModalHidden}
           className="border-b border-b-[var(--borderc)]"
+          setCommentCount={setCommentCount}
         />
         <h3 className="text-xl font-bold my-4">Comments</h3>
         <div className="overflow-auto">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import LongInput from "../../form/LongInput";
 import { createComment } from "@/app/actions/commentActions";
 import { useActionState } from "react";
+import { set } from "zod";
 
 export default function CommentCreator({
   postId,
@@ -16,6 +17,7 @@ export default function CommentCreator({
   className = "",
   continueLink = false,
   anotherReply = false,
+  setCommentCount,
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
@@ -26,6 +28,7 @@ export default function CommentCreator({
   className?: string;
   continueLink?: boolean;
   anotherReply?: boolean;
+  setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
 
@@ -82,6 +85,7 @@ export default function CommentCreator({
 
       if (newComment && "id" in newComment) {
         updatePost(newComment);
+        setCommentCount?.((prevCount) => (prevCount || 0) + 1);
       } else {
         console.error("Unexpected response from createComment:", newComment);
         alert("An unexpected error occurred. Please try again later.");

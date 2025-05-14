@@ -11,14 +11,22 @@ export default function PostOnly({
   post,
   className = "",
   setHidden,
+  likeCount = 0,
+  setLikeCount,
+  commentCount = 0,
+  setCommentCount,
 }: {
   post: FullPost | null; // Update to accept FullPost
   className?: string;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
+  likeCount?: number;
+  setLikeCount?: React.Dispatch<React.SetStateAction<number>>;
+  commentCount?: number;
+  setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
-  const [commentCount, setCommentCount] = useState(0);
+  // const [likeCount, setLikeCount] = useState(0);
+  // const [commentCount, setCommentCount] = useState(0);
   const user = useCurrentUser(); // Get the current user
   const defaultProfile = useDefaultProfileImage();
   // Format the date
@@ -31,10 +39,14 @@ export default function PostOnly({
         (likedUser) => likedUser?.id === currentUserId
       );
       setLiked(!!isLiked);
-      setLikeCount(post?.likedBy?.length || 0);
-      setCommentCount(post?.comments?.length || 0);
+      if (setLikeCount) {
+        setLikeCount(post?.likedBy?.length ?? 0);
+      }
+      if (setCommentCount) {
+        setCommentCount(post?.comments?.length ?? 0);
+      }
     }
-  }, [post, user]);
+  }, [post, user, setLikeCount, setCommentCount]);
 
   async function handleLike() {
     if (!user) {
@@ -50,7 +62,9 @@ export default function PostOnly({
         return;
       }
       setLiked((prev) => !prev);
-      setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+      if (setLikeCount) {
+        setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+      }
     } catch (error) {
       console.error("Error liking post:", error);
     }

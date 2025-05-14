@@ -11,6 +11,7 @@ export default function PopDownComment({
   creatorClassName = "",
   continueLink = false,
   anotherReply = false,
+  setCommentCount,
 }: {
   postId: string | null | undefined;
   setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
@@ -21,6 +22,7 @@ export default function PopDownComment({
   creatorClassName?: string;
   continueLink?: boolean;
   anotherReply?: boolean;
+  setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   if (!postId || !parentId) {
     console.error("Post ID and Parent Id is required to create a comment.");
@@ -42,6 +44,7 @@ export default function PopDownComment({
         className={`w-full ${creatorClassName} relative z-10`}
         continueLink={continueLink}
         anotherReply={anotherReply}
+        setCommentCount={setCommentCount}
       ></CommentCreator>
     </div>
   );

@@ -9,6 +9,7 @@ import {
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import CommentItem from "@/app/ui/posts/comments/CommentItem";
 import CommentModal from "@/app/ui/posts/comments/CommentModal";
+import PostFlow from "@/app/ui/posts/PostFlow";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
 import { use } from "react";
@@ -81,7 +82,7 @@ export default function PostPage({
             commentsInOrder.map(
               (comment: EssentialComment, replyIndex: number) => (
                 <div className="flex flex-col" key={comment?.id}>
-                  <CommentItem
+                  <PostFlow
                     setParentId={setParentId}
                     comment={comment}
                     setExpandedCommentId={setExpandedCommentId} // Pass the setter
@@ -93,32 +94,46 @@ export default function PostPage({
                       replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
                     }
                   />
-
-                  {comment?.replies && comment?.replies.length > 0 && (
-                    <div className="ml-8">
-                      {comment.replies.map(
-                        (reply: BasicComment, replyIndex: number) => (
-                          <CommentItem
-                            key={reply?.id}
-                            setParentId={setParentId}
-                            comment={reply}
-                            setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                            isLast={
-                              replyIndex === (comment.replies?.length ?? 0) - 1
-                            } // Pass the "isLast" prop for replies
-                            setCommentsInOrder={setCommentsInOrder}
-                            postId={postId}
-                            setHidden={setModalHidden}
-                            expandedCommentId={expandedCommentId}
-                            continueLink={
-                              replyIndex < (comment.replies?.length ?? 0) - 1
-                            } // Simplified logic
-                          />
-                        )
-                      )}
-                    </div>
-                  )}
                 </div>
+                // <div className="flex flex-col" key={comment?.id}>
+                //   <CommentItem
+                //     setParentId={setParentId}
+                //     comment={comment}
+                //     setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                //     isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
+                //     setCommentsInOrder={setCommentsInOrder}
+                //     postId={postId}
+                //     expandedCommentId={expandedCommentId}
+                //     anotherReply={
+                //       replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
+                //     }
+                //   />
+
+                //   {comment?.replies && comment?.replies.length > 0 && (
+                //     <div className="ml-8">
+                //       {comment.replies.map(
+                //         (reply: BasicComment, replyIndex: number) => (
+                //           <CommentItem
+                //             key={reply?.id}
+                //             setParentId={setParentId}
+                //             comment={reply}
+                //             setExpandedCommentId={setExpandedCommentId} // Pass the setter
+                //             isLast={
+                //               replyIndex === (comment.replies?.length ?? 0) - 1
+                //             } // Pass the "isLast" prop for replies
+                //             setCommentsInOrder={setCommentsInOrder}
+                //             postId={postId}
+                //             setHidden={setModalHidden}
+                //             expandedCommentId={expandedCommentId}
+                //             continueLink={
+                //               replyIndex < (comment.replies?.length ?? 0) - 1
+                //             } // Simplified logic
+                //           />
+                //         )
+                //       )}
+                //     </div>
+                //   )}
+                // </div>
               )
             )
           ) : (

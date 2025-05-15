@@ -11,7 +11,9 @@ const LongInput = forwardRef(function LongInput(
     name = id,
     onChange,
     className = "",
+    text = "text-xl",
     disabled = false,
+    noPadding = false,
   }: Readonly<{
     label?: string | null;
     id: string;
@@ -20,7 +22,9 @@ const LongInput = forwardRef(function LongInput(
     name?: string;
     onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
     className?: string;
+    text?: string;
     disabled?: boolean;
+    noPadding?: boolean;
   }>,
   ref
 ) {
@@ -74,7 +78,9 @@ const LongInput = forwardRef(function LongInput(
         onChange={handleInput}
         rows={1}
         disabled={disabled}
-        className={`w-full px-4 py-1 md:py-2 resize-none overflow-hidden text-xl focus:outline-none focus:ring-0 focus:border-none ${className}`}
+        className={`w-full ${
+          noPadding ? "p-0" : "px-4 py-1 md:py-2"
+        }resize-none overflow-hidden focus:outline-none focus:ring-0 focus:border-none ${text} ${className}`}
       />
     </div>
   );

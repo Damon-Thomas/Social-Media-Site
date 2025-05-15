@@ -22,6 +22,7 @@ function ReplyFlow({
   setHidden,
   expandedCommentId,
   setCloseCreator,
+  setTopCommentCount,
 }: {
   comment: BasicComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -32,6 +33,7 @@ function ReplyFlow({
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   expandedCommentId?: string | null;
   setCloseCreator?: React.Dispatch<React.SetStateAction<string>>;
+  setTopCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -96,7 +98,7 @@ function ReplyFlow({
             </>
           )}
         </div>
-        <div className="commentContent p-2  w-full h-full">
+        <div className={`commentContent p-2  w-full h-full`}>
           <p className="">{comment?.content}</p>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
@@ -125,9 +127,9 @@ function ReplyFlow({
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]">
         <div className={` relative   grid grid-cols-2  `}>
-          {expandedCommentId === comment?.id && (
+          {/* {expandedCommentId === comment?.id && (
             <div className="absolute top-0 z-20 left-1/2 w-full h-5 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
-          )}
+          )} */}
         </div>
         <div className="commentContent  z-10 w-full h-full">
           <PopDownComment
@@ -139,6 +141,8 @@ function ReplyFlow({
             creatorClassName="min-h-15 ml-8 pl-2"
             setCloseCreator={setCloseCreator}
             setCommentCount={setReplyCount}
+            setTopCommentCount={setTopCommentCount}
+            chained={true}
           />
         </div>
       </div>
@@ -155,6 +159,7 @@ export default function PostFlow({
   postId,
   setHidden,
   expandedCommentId,
+  setTopCommentCount,
 }: {
   comment: EssentialComment | null;
   setParentId?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -165,6 +170,7 @@ export default function PostFlow({
   hidden?: boolean;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   expandedCommentId?: string | null;
+  setTopCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const user = useCurrentUser();
   const [likeCount, setLikeCount] = useState(comment?._count?.likedBy || 0);
@@ -285,6 +291,8 @@ export default function PostFlow({
             creatorClassName="min-h-15 ml-8 pl-2"
             setCloseCreator={setExpandedCommentId}
             setCommentCount={setReplyCount}
+            setTopCommentCount={setTopCommentCount}
+            chained={true}
           />
           {comment?.replies?.map((reply: BasicComment, replyIndex: number) => (
             <ReplyFlow
@@ -298,6 +306,7 @@ export default function PostFlow({
               setExpandedCommentId={setExpandedCommentId}
               isLast={replyIndex === (comment?.replies?.length ?? 0) - 1}
               setCloseCreator={setExpandedCommentId}
+              setTopCommentCount={setTopCommentCount}
             />
           ))}
         </div>

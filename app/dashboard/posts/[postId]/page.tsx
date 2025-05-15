@@ -94,6 +94,7 @@ export default function PostPage({
                   isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
                   postId={postId}
                   expandedCommentId={expandedCommentId}
+                  setTopCommentCount={setCommentCount}
                   // anotherReply={
                   //   replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
                   // }

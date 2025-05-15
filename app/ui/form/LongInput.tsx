@@ -78,9 +78,9 @@ const LongInput = forwardRef(function LongInput(
         onChange={handleInput}
         rows={1}
         disabled={disabled}
-        className={`w-full ${
+        className={`w-full h-full flex items-center justify-center ${
           noPadding ? "p-0" : "px-4 py-1 md:py-2"
-        }resize-none overflow-hidden focus:outline-none focus:ring-0 focus:border-none ${text} ${className}`}
+        } resize-none overflow-hidden focus:outline-none focus:ring-0 focus:border-none ${text} ${className}`}
       />
     </div>
   );

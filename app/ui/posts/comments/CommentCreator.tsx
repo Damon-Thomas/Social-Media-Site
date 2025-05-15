@@ -129,7 +129,7 @@ export default function CommentCreator({
       {!chained ? (
         <form
           action={action}
-          className={`flex w-full items-start gap-2 z-10 ${className}  `}
+          className={`flex w-full items-start gap-2 py-2 z-10 ${className}  `}
         >
           <div className="relative flex-shrink-0 h-10 w-10 my-0.5">
             <Image
@@ -151,7 +151,7 @@ export default function CommentCreator({
             id="comment"
             name="content"
             placeholder={placeholder}
-            className="flex-grow rounded-md h-full "
+            className="flex-grow rounded-md  "
             disabled={pending}
             noPadding={noPadding}
           />
@@ -182,7 +182,7 @@ export default function CommentCreator({
             />
             <form
               action={action}
-              className={`flex w-full justify-between items-start gap-2 py-2 z-10 `}
+              className={`flex w-full justify-between items-start gap-2 pb-4 z-10 `}
             >
               <LongInput
                 label=""

@@ -99,7 +99,7 @@ function ReplyFlow({
           )}
         </div>
         <div className={`commentContent p-2  w-full h-full`}>
-          <p className="">{comment?.content}</p>
+          <p className="whitespace-pre-line">{comment?.content}</p>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
               <ThemedIcon
@@ -242,7 +242,7 @@ export default function PostFlow({
         </div>
         <div className="commentContent p-2  w-full h-full">
           <div className="flex flex-col grow">
-            <p className="">{comment?.content}</p>
+            <p className="whitespace-pre-line">{comment?.content}</p>
             <div className="flex items-center gap-4 mt-2 justify-between">
               <div className="flex">
                 <ThemedIcon

@@ -5,13 +5,17 @@ import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
 import ThemedIcon from "@/app/ui/core/ThemedIcon";
 import flame from "@/public/flame.svg";
 import commentText from "@/public/comment.svg";
-import { isLikedByUser, likeComment } from "@/app/actions/commentActions";
+import {
+  isLikedByUser,
+  likeComment,
+  fetchPaginatedReplies,
+} from "@/app/actions/commentActions";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/app/context/UserContext";
 import Image from "next/image";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import PopDownComment from "./PopDownComment";
-// import { set } from "zod";
+import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 
 // Extend EssentialComment to include _count
 type CommentWithCount = EssentialComment & {
@@ -90,6 +94,20 @@ export default function CommentItem({
     // Add reply functionality here
   };
 
+  const fetchMoreReplies = async (cursor: string | null) => {
+    const { replies, nextCursor } = await fetchPaginatedReplies(
+      comment?.id || "",
+      cursor
+    );
+    return { items: replies.filter(Boolean), nextCursor };
+  };
+
+  const {
+    items: replies,
+    loading,
+    observerTarget,
+  } = useInfiniteScroll<EssentialComment>([], null, fetchMoreReplies);
+
   return (
     <>
       <div key={comment.id} className={`py-2 px-4 flex w-full items-center`}>
@@ -144,6 +162,18 @@ export default function CommentItem({
           continueLink={continueLink}
           anotherReply={anotherReply}
         />
+      </div>
+      <div className="replies-section">
+        {replies.map((reply) =>
+          reply ? (
+            <div key={reply.id} className="reply-item">
+              {/* Render each reply */}
+              <p>{reply.content}</p>
+            </div>
+          ) : null
+        )}
+        <div ref={observerTarget} className="h-10" />
+        {loading && <p>Loading more replies...</p>}
       </div>
     </>
   );

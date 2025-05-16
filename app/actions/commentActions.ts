@@ -466,3 +466,44 @@ export async function getEssentialComment(commentId: string) {
     },
   });
 }
+
+export async function getBasicComment(commentId: string) {
+  return prisma.comment.findUnique({
+    where: { id: commentId },
+    select: {
+      id: true,
+      content: true,
+      authorId: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      _count: {
+        select: {
+          likedBy: true,
+          replies: true,
+        },
+      },
+      postId: true,
+      createdAt: true,
+      updatedAt: true,
+      parentId: true,
+    },
+  });
+}
+
+export async function fetchPaginatedReplies(
+  commentId: string,
+  cursor: string | null
+): Promise<{ replies: EssentialComment[]; nextCursor: string | null }> {
+  const response = await fetch(
+    `/api/comments/${commentId}/replies?cursor=${cursor || ""}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch replies");
+  }
+  return response.json();
+}

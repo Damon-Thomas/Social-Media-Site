@@ -11,6 +11,7 @@ import ThemedIcon from "../core/ThemedIcon";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
 import PopDownComment from "./comments/PopDownComment";
+import Link from "next/link";
 
 function ReplyFlow({
   comment,
@@ -80,14 +81,21 @@ function ReplyFlow({
       <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)]  relative">
         <div className="here absolute top-0 z-20 -left-[12px] sm:-left-[16px] w-[12px] sm:w-[16px] h-4 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
 
-        <Image
-          src={comment?.author?.image || defaultProfileImage}
-          alt="Post Image"
-          width={24}
-          height={24}
-          className="rounded-full w-full h-auto"
-        />
-        <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
+        <Link href={`/dashboard/profile/${comment?.authorId}`}>
+          <Image
+            src={comment?.author?.image || defaultProfileImage}
+            alt="Post Image"
+            width={24}
+            height={24}
+            className="rounded-full w-full h-auto"
+          />
+        </Link>
+        <Link
+          href={`/dashboard/comment/${comment?.id}`}
+          className="flex items-center"
+        >
+          <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
+        </Link>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr] ">
         <div className=" grid grid-cols-2">
@@ -98,8 +106,10 @@ function ReplyFlow({
             </>
           )}
         </div>
-        <div className={`commentContent p-2  w-full h-full`}>
-          <p className="whitespace-pre-line">{comment?.content}</p>
+        <div className={`commentContent px-2 pb-4  w-full h-full`}>
+          <Link href={`/dashboard/comment/${comment?.id}`}>
+            <p className="whitespace-pre-line">{comment?.content}</p>
+          </Link>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
               <ThemedIcon
@@ -222,14 +232,21 @@ export default function PostFlow({
       {" "}
       {/* <= temp container dimensions*/}
       <div className="grid grid-cols-[24px_minmax(0,1fr)]  sm:grid-cols-[32px_minmax(0,1fr)]">
-        <Image
-          src={comment?.author?.image || defaultProfileImage}
-          alt="Post Image"
-          width={24}
-          height={24}
-          className="rounded-full w-full h-auto"
-        />
-        <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
+        <Link href={`/dashboard/profile/${comment?.authorId}`}>
+          <Image
+            src={comment?.author?.image || defaultProfileImage}
+            alt="Post Image"
+            width={24}
+            height={24}
+            className="rounded-full w-full h-auto"
+          />
+        </Link>
+        <Link
+          href={`/dashboard/comment/${comment?.id}`}
+          className="flex items-center"
+        >
+          <h1 className="ml-4 flex items-center"> {comment?.author?.name}</h1>
+        </Link>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr] ">
         <div className=" grid grid-cols-2">
@@ -240,9 +257,11 @@ export default function PostFlow({
             </>
           )}
         </div>
-        <div className="commentContent p-2  w-full h-full">
+        <div className="commentContent px-2 pb-4  w-full h-full">
           <div className="flex flex-col grow">
-            <p className="whitespace-pre-line">{comment?.content}</p>
+            <Link href={`/dashboard/comment/${comment?.id}`}>
+              <p className="whitespace-pre-line">{comment?.content}</p>
+            </Link>
             <div className="flex items-center gap-4 mt-2 justify-between">
               <div className="flex">
                 <ThemedIcon

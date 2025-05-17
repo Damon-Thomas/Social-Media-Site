@@ -70,6 +70,7 @@ export type User = {
   createdNotifications?: Notification[];
   likedPosts?: Post[];
   likedComments?: Comment[];
+  theme?: string | null;
 } | null;
 
 export type SimpleUser = {
@@ -79,6 +80,7 @@ export type SimpleUser = {
   _count?: {
     followers: number;
   };
+  theme: string | null;
 };
 
 export type Post = {

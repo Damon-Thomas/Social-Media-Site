@@ -59,6 +59,7 @@ export const getUser = cache(async () => {
             name: true,
           },
         },
+        theme: true,
       },
     });
 

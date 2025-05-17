@@ -3,19 +3,30 @@ import sun from "@public/sun.svg";
 import moon from "@public/moon.svg";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useCurrentUser } from "@/app/context/UserContext";
+import { setUserTheme } from "@/app/actions/userActions";
 
 export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [isSpinning, setIsSpinning] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const user = useCurrentUser();
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Set the theme based on user preference
+  useEffect(() => {
+    if (user?.theme) {
+      setTheme(user.theme);
+    }
+  }, [user?.theme, setTheme]);
+
   const handleThemeChange = () => {
     setIsSpinning(true);
+    setUserTheme(theme === "dark" ? "light" : "dark", user?.id || "");
     setTheme(theme === "dark" ? "light" : "dark");
 
     // Reset animation state after animation completes

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 
 import PostCreator from "../ui/posts/PostCreator";
 import type { SimpleUser } from "../lib/definitions";
@@ -11,7 +12,13 @@ import PostContent from "../ui/posts/PostContent";
 
 export default function DashboardClient({ user }: { user: SimpleUser }) {
   const [selectedFeed, setSelectedFeed] = useState("global");
-  // Determine the default profile image based on the theme
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    if (user?.theme) {
+      setTheme(user.theme);
+    }
+  }, [user?.theme, setTheme]);
 
   return (
     <div className="flex grow w-full h-full justify-center">

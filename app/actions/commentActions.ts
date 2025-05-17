@@ -1,7 +1,11 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { CommentUnested, EssentialComment } from "../lib/definitions";
+import {
+  BasicComment,
+  CommentUnested,
+  EssentialComment,
+} from "../lib/definitions";
 import { z } from "zod";
 import DOMPurify from "isomorphic-dompurify";
 
@@ -117,7 +121,7 @@ export async function getCommentReplies(
   commentId: string,
   cursor?: string,
   limit: number = 10
-): Promise<{ replies: CommentUnested[]; nextCursor: string | null }> {
+): Promise<{ replies: EssentialComment[]; nextCursor: string | null }> {
   const replies = await prisma.comment.findMany({
     where: { parentId: commentId },
     take: limit,
@@ -128,19 +132,11 @@ export async function getCommentReplies(
       id: true,
       content: true,
       authorId: true,
-      postId: true,
-      createdAt: true,
-      updatedAt: true,
-      parentId: true,
       author: {
         select: {
           id: true,
           name: true,
-          email: true,
           image: true,
-          createdAt: true,
-          updatedAt: true,
-          bio: true,
         },
       },
       likedBy: {
@@ -150,12 +146,40 @@ export async function getCommentReplies(
           image: true,
         },
       },
+      replies: {
+        select: {
+          id: true,
+          content: true,
+          authorId: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          postId: true,
+          _count: {
+            select: {
+              likedBy: true,
+              replies: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+          parentId: true,
+        },
+      },
+      postId: true,
       _count: {
         select: {
           likedBy: true,
           replies: true,
         },
       },
+      createdAt: true,
+      updatedAt: true,
+      parentId: true,
     },
   });
 

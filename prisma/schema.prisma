@@ -14,13 +14,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String  @id @default(uuid())
-  name     String
-  email    String? @unique
-  password String?
-  bio      String? @default("")
+enum Theme {
+  light
+  dark
+}
 
+model User {
+  id                     String         @id @default(uuid())
+  name                   String
+  email                  String?        @unique
+  password               String?
+  bio                    String?        @default("")
+  theme                  Theme?         @default(light)
   createdAt              DateTime       @default(now())
   updatedAt              DateTime       @updatedAt
   image                  String?        @default("")

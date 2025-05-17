@@ -27,6 +27,24 @@ export default function SettingsPage() {
       >
         Toggle Modal
       </button>
+      <div className="themeButtons flex gap-0">
+        <button
+          className="bg-[var(--dmono)] py-2 px-4 rounded text-[var(--rdmono)] mt-4"
+          onClick={() => {
+            document.documentElement.setAttribute("data-theme", "light");
+          }}
+        >
+          Light
+        </button>
+        <button
+          className="bg-[var(--dmono)] py-2 px-4 rounded text-[var(--rdmono)] mt-4"
+          onClick={() => {
+            document.documentElement.setAttribute("data-theme", "dark");
+          }}
+        >
+          Dark
+        </button>
+      </div>
     </div>
   );
 }

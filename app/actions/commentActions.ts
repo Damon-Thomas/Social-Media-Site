@@ -193,7 +193,6 @@ export async function createComment(
   userId: string
 ): Promise<FormState | ReturnType<typeof getEssentialComment>> {
   const content = payload.get("content")?.toString();
-  console.log("Creating comment with content:", content);
   if (!content) {
     return {
       errors: {
@@ -204,18 +203,15 @@ export async function createComment(
   }
 
   const sanitizedContent = DOMPurify.sanitize(content);
-  console.log("Sanitized content:", sanitizedContent);
   try {
     // Validate the sanitized content
     const parsedContent = CommentFormSchema.parse({
       content: sanitizedContent,
     });
-    console.log("Parsed content:", parsedContent);
     // Extract postId and parentId
     const postId = payload.get("postId")?.toString();
     const parentId = payload.get("parentId")?.toString();
     let comment: EssentialComment | null = null;
-    console.log("Post ID:", postId, "Parent ID:", parentId, "User ID:", userId);
     // Validate parentId if provided
     if (parentId) {
       const parentExists = await prisma.comment.findUnique({
@@ -262,7 +258,6 @@ export async function createComment(
         },
       });
     }
-    console.log("Comment created successfully:", comment);
     const processedComment = await getEssentialComment(comment.id);
 
     return processedComment;
@@ -312,7 +307,6 @@ export async function likeComment(
     throw new Error(`Comment with ID ${commentId} does not exist`);
   }
 
-  console.log("Liking comment", commentId, "by user", userId);
   try {
     // Check if the comment is already liked by this user
     const user = await prisma.user.findUnique({
@@ -342,7 +336,6 @@ export async function likeComment(
       const joinTableState = await prisma.$queryRaw`
         SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
       `;
-      console.log("Join table state after unlike:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },
@@ -367,7 +360,6 @@ export async function likeComment(
       const joinTableState = await prisma.$queryRaw`
         SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
       `;
-      console.log("Join table state after like:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },
@@ -396,7 +388,6 @@ export async function likeComment(
       },
     });
 
-    console.log("Comment like status toggled successfully", updatedComment);
     return updatedComment;
   } catch (error) {
     console.error("Error toggling comment like status:", error);

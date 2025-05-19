@@ -8,11 +8,16 @@ export async function setUserTheme(theme: "light" | "dark", userId: string) {
     throw new Error("Invalid theme value");
   }
 
-  // Update the user's theme
-  const updatedUser = await prisma.user.update({
-    where: { id: userId },
-    data: { theme: theme }, // Prisma will enforce enum values
-  });
-
-  return updatedUser;
+  try {
+    console.log("Updating user theme in DB:", theme);
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { theme: theme },
+    });
+    console.log("Theme updated in DB:", updatedUser.theme);
+    return updatedUser;
+  } catch (error) {
+    console.error("Failed to update user theme:", error);
+    throw error;
+  }
 }

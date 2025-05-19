@@ -61,7 +61,6 @@ export default function Post({
     }
     checkIfLiked();
   }, [post, userData]);
-  console.log("Post:", post?.author?.image);
   useEffect(() => {
     setLikeCount(post?._count?.likedBy || 0);
   }, [post?._count?.likedBy]);

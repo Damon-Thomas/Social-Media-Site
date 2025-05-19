@@ -23,12 +23,10 @@ export default async function middleware(req: NextRequest) {
 
   if (cookie) {
     if (cache.has(cookie)) {
-      console.log("Cache hit for session");
       const session = cache.get(cookie);
       isAuthenticated = !!session?.userId;
     } else {
       try {
-        console.log("Cache miss for session");
         const session = await decrypt(cookie);
         isAuthenticated = !!session?.userId;
         // Cache the session for 5 minutes (300 seconds)

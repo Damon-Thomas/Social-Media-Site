@@ -4,8 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
-import ThemeHydrationGuard from "./ui/tools/ThemeHydrationGuard";
-import DebugTheme from "./ui/tools/DebugTheme";
 import Head from "./head";
 import { UserProvider } from "./context/UserContext";
 
@@ -27,23 +25,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <Head />
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <UserProvider>
-          <ThemeHydrationGuard theme="light">
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem={false}
-              value={{ light: "light", dark: "dark" }}
-            >
-              <DebugTheme />
-              <ThemeSwitcher />
-              <main className="transition-colors duration-300">{children}</main>
-            </ThemeProvider>
-          </ThemeHydrationGuard>
-        </UserProvider>
+        <ThemeProvider
+          attribute="class"
+          // defaultTheme="light"
+          enableSystem={false}
+          // value={{ light: "light", dark: "dark" }}
+        >
+          <UserProvider>
+            {/* <DebugTheme /> */}
+            <ThemeSwitcher />
+            <main className="transition-colors duration-300">{children}</main>
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

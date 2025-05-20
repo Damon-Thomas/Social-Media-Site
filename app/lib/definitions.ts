@@ -80,7 +80,7 @@ export type SimpleUser = {
   _count?: {
     followers: number;
   };
-  theme: string | null;
+  theme?: string | null;
 };
 
 export type Post = {

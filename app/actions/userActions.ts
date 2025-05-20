@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { Prisma } from "@prisma/client"; // Import the generated enums
+// import { Prisma } from "@prisma/client"; // Import the generated enums
 
 export async function setUserTheme(theme: "light" | "dark", userId: string) {
   if (theme !== "light" && theme !== "dark") {

@@ -100,9 +100,9 @@ body {
 }
 
 /* Temporarily hide content during hydration */
-html:not(.theme-hydrated) body {
+/* html:not(.theme-hydrated) body {
   visibility: hidden;
-}
+} */
 
 button {
   transition: filter 0.2s ease-in-out;

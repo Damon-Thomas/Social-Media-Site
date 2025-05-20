@@ -7,11 +7,12 @@ export default function ThemeHydrationGuard({
   theme,
 }: {
   children: React.ReactNode;
-  theme: string;
+  theme: string | undefined;
 }) {
   useEffect(() => {
     document.documentElement.classList.add("theme-hydrated");
-  }, []);
+    console.log("ThemeHydrationGuard: Theme hydrated. Current theme:", theme);
+  }, [theme]);
 
   useEffect(() => {
     const root = document.documentElement;

@@ -23,6 +23,7 @@ export async function mostPopular(currentUserId?: string) {
       _count: {
         select: { followers: true },
       },
+      theme: true,
     },
   });
 
@@ -43,6 +44,7 @@ export async function getNewUsers(currentUserId?: string) {
       _count: {
         select: { followers: true },
       },
+      theme: true,
     },
   });
 
@@ -187,6 +189,7 @@ export async function fetchUserById(id: string) {
       followers: true,
       following: true,
       friends: true,
+      theme: true,
     },
   });
   return user;

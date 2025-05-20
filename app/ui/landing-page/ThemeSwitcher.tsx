@@ -1,37 +1,47 @@
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 import sun from "@public/sun.svg";
 import moon from "@public/moon.svg";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
-import { setUserTheme } from "@/app/actions/userActions";
+import React, { useState, useEffect } from "react";
+// import { useCurrentUser } from "@/app/context/UserContext";
+import { useTheme } from "next-themes";
 
 export default function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
   const [isSpinning, setIsSpinning] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const user = useCurrentUser();
-  const refreshUser = useRefreshUser();
+  // const user = useCurrentUser();
+  const { theme, setTheme } = useTheme();
+  // const refreshUser = useRefreshUser();
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Set the theme based on user preference
+  // Only set the theme from user context on first mount
+  // useEffect(() => {
+  //   if (user?.theme === "light" || user?.theme === "dark") {
+  //     setTheme(user.theme);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [setTheme]); // Only run on mount, not when user?.theme changes
+
   useEffect(() => {
-    if (user?.theme) {
-      setTheme(user.theme);
-    }
-  }, [user?.theme, setTheme]);
+    console.log("Theme changed to MASTS:", theme);
+  }, [theme]);
 
   const handleThemeChange = async () => {
-    console.log("Theme changed", theme);
     setIsSpinning(true);
-    await setUserTheme(theme === "dark" ? "light" : "dark", user?.id || "");
-    await refreshUser?.(); // <-- Refresh user context after DB update
+    // await setUserTheme(theme === "dark" ? "light" : "dark", user?.id || "");
+    console.log("theme AASHDAIUADSHUADS", theme);
     setTheme(theme === "dark" ? "light" : "dark");
-    console.log("Theme set to:", theme === "dark" ? "light" : "dark");
+    console.log(
+      "Theme changed to  alshadsjhsadkjadsh:",
+      theme === "dark" ? "light" : "dark"
+    );
+    // refreshUser?.(); // <-- Refresh user context after DB update
+
+    console.log("Theme set to:", theme === "dark" ? "dark" : "light");
     // Reset animation state after animation completes
     setTimeout(() => {
       setIsSpinning(false);

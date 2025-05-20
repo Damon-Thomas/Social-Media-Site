@@ -18,9 +18,9 @@ export default function CommentPage({
   params: Promise<{ commentId: string }>;
 }) {
   const commentId = use(params).commentId;
-  const [createCommentParentId, setCreateCommentParentId] = useState<
-    string | null
-  >(null);
+  // const [createCommentParentId, setCreateCommentParentId] = useState<
+  //   string | null
+  // >(null);
   const [comment, setComment] = useState<EssentialComment | null>(null);
   const [commentCount, setCommentCount] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
@@ -107,9 +107,9 @@ export default function CommentPage({
     fetchMoreReplies
   );
 
-  const handleAddReply = (newReply: EssentialComment) => {
-    setOptimisticReplies((prev) => [newReply, ...prev]);
-  };
+  // const handleAddReply = (newReply: EssentialComment) => {
+  //   setOptimisticReplies((prev) => [newReply, ...prev]);
+  // };
 
   function isLastReply(index: number, arr: EssentialComment[]) {
     return index === arr.length - 1;

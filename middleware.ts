@@ -6,6 +6,13 @@ const protectedRoutes = ["/dashboard"];
 const publicRoutes = ["/"];
 // const homeRoute = "/";
 
+type Session = {
+  userId: string;
+  expiresAt: string;
+  iat: number;
+  exp: number;
+};
+
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
@@ -23,8 +30,9 @@ export default async function middleware(req: NextRequest) {
 
   if (cookie) {
     if (cache.has(cookie)) {
-      const session = cache.get(cookie);
-      isAuthenticated = !!session?.userId;
+      console.log("Session found in cache");
+      const session = cache.get(cookie) as Session;
+      isAuthenticated = !!session.userId;
     } else {
       try {
         const session = await decrypt(cookie);
@@ -54,6 +62,7 @@ export default async function middleware(req: NextRequest) {
         }
       } catch (e) {
         // Clear invalid cookies
+        console.error("Error decrypting cookie:", e);
         const response = NextResponse.next();
         response.cookies.set({
           name: "session",

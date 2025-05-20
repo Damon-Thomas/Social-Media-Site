@@ -1,11 +1,7 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import {
-  BasicComment,
-  CommentUnested,
-  EssentialComment,
-} from "../lib/definitions";
+import { CommentUnested, EssentialComment } from "../lib/definitions";
 import { z } from "zod";
 import DOMPurify from "isomorphic-dompurify";
 
@@ -333,9 +329,10 @@ export async function likeComment(
       });
 
       // Verify the join table state
-      const joinTableState = await prisma.$queryRaw`
-        SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
-      `;
+      // const joinTableState = await prisma.$queryRaw`
+      //   SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
+      // `;
+      // console.log("Join table state after unlike:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },
@@ -357,9 +354,10 @@ export async function likeComment(
       });
 
       // Verify the join table state
-      const joinTableState = await prisma.$queryRaw`
-        SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
-      `;
+      // const joinTableState = await prisma.$queryRaw`
+      //   SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
+      // `;
+      // console.log("Join table state after like:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },

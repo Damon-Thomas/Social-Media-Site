@@ -21,7 +21,7 @@ export default function PostContent({
     undefined
   );
   const [hidden, setHidden] = useState(true); // State to control modal visibility
-  const [currentPostId, setCurrentPostId] = useState<string | undefined>(
+  const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
     undefined
   ); // State to store the current post ID
 
@@ -95,17 +95,25 @@ export default function PostContent({
         <div className="flex flex-col gap-4 w-full">
           <CommentModal
             hidden={hidden}
-            setHidden={setHidden}
+            setHidden={
+              setHidden as React.Dispatch<React.SetStateAction<boolean>>
+            }
             postId={currentPostId}
-            setPost={(posts) => setInitialPosts(posts as EssentialPost[])}
+            setComment={(posts) => setInitialPosts(posts as EssentialPost[])}
           />
           {initialDataLoaded ? (
             filteredPosts && filteredPosts.length > 0 ? (
               <>
-                {filteredPosts.map((post) => (
+                {filteredPosts.map((post: EssentialPost) => (
                   <Post
-                    setPostId={setCurrentPostId}
-                    setHidden={setHidden}
+                    setPostId={
+                      setCurrentPostId as React.Dispatch<
+                        React.SetStateAction<string | null | undefined>
+                      >
+                    }
+                    setHidden={
+                      setHidden as React.Dispatch<React.SetStateAction<boolean>>
+                    }
                     key={`post-${selectedFeed}-${post?.id}`}
                     post={post}
                   />

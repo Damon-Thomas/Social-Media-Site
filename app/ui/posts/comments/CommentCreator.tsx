@@ -18,7 +18,7 @@ export default function CommentCreator({
   setCommentCount,
   setTopCommentCount,
   chained = false,
-  isLast = true,
+  // isLast = true,
   hidden = false,
   noPadding = false,
 }: {
@@ -33,7 +33,7 @@ export default function CommentCreator({
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
   setTopCommentCount?: React.Dispatch<React.SetStateAction<number>>;
   chained?: boolean;
-  isLast?: boolean;
+  // isLast?: boolean;
   hidden?: boolean;
   noPadding?: boolean;
 }) {

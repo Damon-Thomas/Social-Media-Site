@@ -4,7 +4,7 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 import LongInput from "../../form/LongInput";
 import { createComment } from "@/app/actions/commentActions";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 export default function CommentCreator({
   postId,
@@ -38,6 +38,11 @@ export default function CommentCreator({
   noPadding?: boolean;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const updatePost = (newComment: EssentialComment | null) => {
     if (!newComment) {
@@ -122,6 +127,11 @@ export default function CommentCreator({
     } catch (error) {
       console.error("Error creating comment:", error);
     }
+  }
+
+  if (!mounted) {
+    // Optionally, render a minimal placeholder to avoid hydration mismatch
+    return null;
   }
 
   return (

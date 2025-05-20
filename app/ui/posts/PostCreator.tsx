@@ -1,4 +1,4 @@
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import ErrorMessage from "@/app/ui/form/ErrorMessage";
 import LongInput from "@/app/ui/form/LongInput";
@@ -12,6 +12,8 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 export default function PostCreator({ user }: { user: EssentialUser }) {
   const currentUser = useCurrentUser();
   const defaultProfile = useDefaultProfileImage();
+
+  const [mounted, setMounted] = useState(false);
 
   const createPostWrapper = async (
     state: { errors?: { content?: string[] }; message?: string } | undefined,
@@ -32,6 +34,15 @@ export default function PostCreator({ user }: { user: EssentialUser }) {
   };
 
   const [state, action, pending] = useActionState(createPostWrapper, undefined);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Optionally, render a minimal placeholder to avoid hydration mismatch
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-4">

@@ -5,12 +5,15 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 // import { useCurrentUser } from "@/app/context/UserContext";
 import { useTheme } from "next-themes";
+import { setUserTheme } from "@/app/actions/userActions";
+import { useCurrentUser } from "@/app/context/UserContext";
 
 export default function ThemeSwitcher() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [mounted, setMounted] = useState(false);
   // const user = useCurrentUser();
   const { theme, setTheme } = useTheme();
+  const user = useCurrentUser();
   // const refreshUser = useRefreshUser();
 
   // Add useEffect to handle client-side mounting
@@ -32,20 +35,11 @@ export default function ThemeSwitcher() {
 
   const handleThemeChange = async () => {
     setIsSpinning(true);
-    // await setUserTheme(theme === "dark" ? "light" : "dark", user?.id || "");
-    console.log("theme AASHDAIUADSHUADS", theme);
-    setTheme(theme === "dark" ? "light" : "dark");
-    console.log(
-      "Theme changed to  alshadsjhsadkjadsh:",
-      theme === "dark" ? "light" : "dark"
-    );
-    // refreshUser?.(); // <-- Refresh user context after DB update
-
-    console.log("Theme set to:", theme === "dark" ? "dark" : "light");
-    // Reset animation state after animation completes
-    setTimeout(() => {
-      setIsSpinning(false);
-    }, 700); // Match the animation duration (0.7s)
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    console.log("Switching to theme:", nextTheme);
+    await setUserTheme(nextTheme, user?.id ?? ""); // Pass the user ID
+    setTheme(nextTheme);
+    setTimeout(() => setIsSpinning(false), 700);
   };
 
   // Render a placeholder while not mounted to prevent hydration mismatch

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 
 import PostCreator from "../ui/posts/PostCreator";
@@ -13,10 +13,12 @@ import PostContent from "../ui/posts/PostContent";
 export default function DashboardClient({ user }: { user: SimpleUser }) {
   const [selectedFeed, setSelectedFeed] = useState("global");
   const { setTheme } = useTheme();
+  const didSetTheme = useRef(false);
 
   useEffect(() => {
-    if (user?.theme) {
+    if (!didSetTheme.current && user?.theme) {
       setTheme(user.theme);
+      didSetTheme.current = true;
     }
   }, [user?.theme, setTheme]);
 

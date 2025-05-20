@@ -46,7 +46,8 @@ export default function CommentOnly({
         setCommentCount(comment?.replies?.length ?? 0);
       }
     }
-  }, [comment, user, setLikeCount, setCommentCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comment, user, setCommentCount]);
 
   async function handleLike() {
     if (!user) {

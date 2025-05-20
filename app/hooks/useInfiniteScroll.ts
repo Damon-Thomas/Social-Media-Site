@@ -55,9 +55,13 @@ export function useInfiniteScroll<T>(
   }, [hasMore, loading, loadMore]);
 
   useEffect(() => {
-    setItems(initialItems);
-    setCursor(initialCursor);
-    setHasMore(!!initialCursor);
+    setItems((prev) =>
+      JSON.stringify(prev) === JSON.stringify(initialItems)
+        ? prev
+        : initialItems
+    );
+    setCursor((prev) => (prev === initialCursor ? prev : initialCursor));
+    setHasMore((prev) => (prev === !!initialCursor ? prev : !!initialCursor));
   }, [initialItems, initialCursor]);
 
   useEffect(() => {

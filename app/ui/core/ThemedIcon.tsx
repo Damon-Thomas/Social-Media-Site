@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export default function ThemedIcon({
   src,
   alt,
@@ -17,26 +19,34 @@ export default function ThemedIcon({
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   noTransition?: boolean;
 }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <button
       onClick={onClick}
       className="flex items-center justify-start gap-0.5 h-5 min-w-12"
     >
-      <div
-        className={`${liked ? "bg-[var(--primary)]" : "bg-[var(--dull)]"} ${
-          !noTransition ? "transition-colors duration-200" : ""
-        } group-hover:bg-[var(--primary)] ${className}`}
-        style={{
-          WebkitMaskImage: `url(${src})`,
-          maskImage: `url(${src})`,
-          WebkitMaskSize: "cover",
-          maskSize: "cover",
-          width: size,
-          height: size,
-        }}
-        aria-label={alt}
-        role="img"
-      />
+      {mounted ? (
+        <div
+          className={`${liked ? "bg-[var(--primary)]" : "bg-[var(--dull)]"} ${
+            !noTransition ? "transition-colors duration-200" : ""
+          } group-hover:bg-[var(--primary)] ${className}`}
+          style={{
+            WebkitMaskImage: `url(${src})`,
+            maskImage: `url(${src})`,
+            WebkitMaskSize: "cover",
+            maskSize: "cover",
+            width: size,
+            height: size,
+          }}
+          aria-label={alt}
+          role="img"
+        />
+      ) : (
+        <div style={{ width: size, height: size }} />
+      )}
       <div className="flex grow items-end h-full">
         <p
           className={`text-sm leading-none ${

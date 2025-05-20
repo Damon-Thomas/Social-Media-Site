@@ -13,12 +13,6 @@ export default function Footer() {
   const [mounted, setMounted] = useState(false);
   const footerRef = useRef(null);
 
-  // const chevron = "/chevron-up.svg";
-  // const pchevron = "/chevron-primary.svg";
-  // const linkedIn = "/linkedIn.svg";
-  // const githubWhite = "/github-mark-white.svg";
-  // const githubBlack = "/github-mark.svg";
-
   // Add useEffect to handle client-side mounting
   useEffect(() => {
     setMounted(true);
@@ -59,19 +53,23 @@ export default function Footer() {
               style={{ perspective: "1000px" }}
               onClick={() => setOpen(!open)}
             >
-              <Image
-                src={theme === "light" ? chevron : pchevron}
-                alt="Footer indicator"
-                width={16}
-                height={16}
-                className={open ? "flip-vertical-active" : ""}
-                style={{
-                  transition: "transform 0.5s ease-in-out",
-                  transformStyle: "preserve-3d",
-                  backfaceVisibility: "visible",
-                  transform: open ? "rotateX(180deg)" : "rotateX(0deg)",
-                }}
-              />
+              {mounted ? (
+                <Image
+                  src={theme === "light" ? chevron : pchevron}
+                  alt="Footer indicator"
+                  width={16}
+                  height={16}
+                  className={open ? "flip-vertical-active" : ""}
+                  style={{
+                    transition: "transform 0.5s ease-in-out",
+                    transformStyle: "preserve-3d",
+                    backfaceVisibility: "visible",
+                    transform: open ? "rotateX(180deg)" : "rotateX(0deg)",
+                  }}
+                />
+              ) : (
+                <div style={{ width: 16, height: 16 }} />
+              )}
             </div>
           </div>
           <div className="flex flex-col justify-between items-center w-full">
@@ -97,16 +95,20 @@ export default function Footer() {
                         "https://www.linkedin.com/in/damon-thomas-445a39126/";
                     }}
                   />
-                  <Image
-                    src={theme === "light" ? githubWhite : githubBlack}
-                    alt="GitHub"
-                    width={24}
-                    height={24}
-                    className="mx-2 cursor-pointer"
-                    onClick={() => {
-                      location.href = "https://github.com/Damon-Thomas";
-                    }}
-                  />
+                  {mounted ? (
+                    <Image
+                      src={theme === "light" ? githubWhite : githubBlack}
+                      alt="GitHub"
+                      width={24}
+                      height={24}
+                      className="mx-2 cursor-pointer"
+                      onClick={() => {
+                        location.href = "https://github.com/Damon-Thomas";
+                      }}
+                    />
+                  ) : (
+                    <div style={{ width: 24, height: 24 }} />
+                  )}
                 </div>
               </div>
             </div>

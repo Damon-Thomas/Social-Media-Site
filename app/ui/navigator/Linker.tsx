@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useTheme } from "next-themes";
 
 export default function Linker({
   children,
@@ -16,11 +15,7 @@ export default function Linker({
   onClick?: () => void;
   type?: "logout";
 }) {
-  const { setTheme } = useTheme();
-
   const handleLogout = () => {
-    setTheme("light"); // Reset theme to light
-    document.documentElement.classList.remove("dark"); // Remove dark class from html
     if (onClick) {
       onClick();
     }

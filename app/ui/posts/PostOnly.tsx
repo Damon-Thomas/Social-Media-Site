@@ -25,12 +25,15 @@ export default function PostOnly({
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [liked, setLiked] = useState(false);
-  // const [likeCount, setLikeCount] = useState(0);
-  // const [commentCount, setCommentCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const user = useCurrentUser(); // Get the current user
   const defaultProfile = useDefaultProfileImage();
   // Format the date
   const formattedDate = formatDate(post?.createdAt);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -85,14 +88,17 @@ export default function PostOnly({
           href={`/dashboard/profile/${post?.author?.id}`}
           className="flex mb-4"
         >
-          <Image
-            src={post?.author?.image || defaultProfile}
-            alt="User profile picture"
-            width={40}
-            height={40}
-            className="rounded-full flex-shrink-0 h-12 w-12"
-          />
-
+          {mounted ? (
+            <Image
+              src={post?.author?.image || defaultProfile}
+              alt="User profile picture"
+              width={40}
+              height={40}
+              className="rounded-full flex-shrink-0 h-12 w-12"
+            />
+          ) : (
+            <div style={{ width: 40, height: 40 }} />
+          )}
           <h6 className="ml-4 font-bold text-lg">
             {post?.author?.name || "Unknown Name"}
           </h6>

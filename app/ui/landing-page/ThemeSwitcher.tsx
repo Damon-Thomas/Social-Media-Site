@@ -11,27 +11,13 @@ import { useCurrentUser } from "@/app/context/UserContext";
 export default function ThemeSwitcher() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // const user = useCurrentUser();
   const { theme, setTheme } = useTheme();
   const user = useCurrentUser();
-  // const refreshUser = useRefreshUser();
 
   // Add useEffect to handle client-side mounting
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Only set the theme from user context on first mount
-  // useEffect(() => {
-  //   if (user?.theme === "light" || user?.theme === "dark") {
-  //     setTheme(user.theme);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [setTheme]); // Only run on mount, not when user?.theme changes
-
-  useEffect(() => {
-    console.log("Theme changed to MASTS:", theme);
-  }, [theme]);
 
   const handleThemeChange = async () => {
     setIsSpinning(true);

@@ -22,11 +22,16 @@ export default function Post({
   setHidden: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const iconSize = 20;
   const userData = useCurrentUser();
   const [liked, setLiked] = useState(false); // Default to false instead of null
   const [likeCount, setLikeCount] = useState(post?._count?.likedBy || 0);
   const [iconLoading, setIconLoading] = useState(true); // Create a loading state specifically for the icon
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function likePostHandler() {
     const willBeLiked = !liked;
@@ -69,19 +74,23 @@ export default function Post({
     <div className="flex w-full pb-2 border-b-1 border-[var(--borderc)] ">
       <div className="flex-shrink-0 mr-2">
         <Link href={`/dashboard/profile/${post?.authorId}`}>
-          <Image
-            src={
-              post?.author?.image && post.author.image.trim() !== ""
-                ? post.author.image
-                : theme === "light"
-                ? "/defaultProfileLight.svg"
-                : "/defaultProfileDark.svg"
-            }
-            alt="Profile"
-            className="w-8 h-8 rounded-full"
-            width={32}
-            height={32}
-          />
+          {mounted ? (
+            <Image
+              src={
+                post?.author?.image && post.author.image.trim() !== ""
+                  ? post.author.image
+                  : theme === "light"
+                  ? "/defaultProfileLight.svg"
+                  : "/defaultProfileDark.svg"
+              }
+              alt="Profile"
+              className="w-8 h-8 rounded-full"
+              width={32}
+              height={32}
+            />
+          ) : (
+            <div style={{ width: 32, height: 32 }} />
+          )}
         </Link>
       </div>
 

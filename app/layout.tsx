@@ -8,7 +8,6 @@ import ThemeHydrationGuard from "./ui/tools/ThemeHydrationGuard";
 import DebugTheme from "./ui/tools/DebugTheme";
 import Head from "./head";
 import { UserProvider } from "./context/UserContext";
-import { useEffect } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,43 +24,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Monitor and log hydration issues
-  useEffect(() => {
-    console.log("Root layout mounted");
-    document.documentElement.classList.add("js-loaded");
-
-    // Log any theme-related classes
-    console.log("HTML classes:", document.documentElement.className);
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <Head />
-      <style jsx global>{`
-        /* Debug outline to see what's rendering */
-        .debug-outline * {
-          outline: 1px solid rgba(255, 0, 0, 0.2);
-        }
-        /* Show hydration status */
-        html.js-loaded .hydration-indicator {
-          background-color: green;
-        }
-      `}</style>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased debug-outline`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        {/* Hydration status indicator */}
-        <div className="hydration-indicator fixed top-0 left-0 w-2 h-2 bg-red-500 z-[9999]"></div>
         <UserProvider>
-          <ThemeHydrationGuard>
+          <ThemeHydrationGuard theme="light">
             <ThemeProvider
               attribute="class"
               defaultTheme="light"
               enableSystem={false}
-              storageKey="theme"
-              disableTransitionOnChange={
-                false
-              } /* Enable smoother transitions */
+              value={{ light: "light", dark: "dark" }}
             >
               <DebugTheme />
               <ThemeSwitcher />

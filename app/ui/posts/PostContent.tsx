@@ -11,12 +11,16 @@ import CommentModal from "./comments/CommentModal";
 
 export default function PostContent({
   selectedFeed,
+  initialPosts,
+  setInitialPosts,
 }: {
   selectedFeed: string;
+  initialPosts: EssentialPost[];
+  setInitialPosts: React.Dispatch<React.SetStateAction<EssentialPost[]>>;
 }) {
   const user = useCurrentUser(); // This gets the current user from context
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-  const [initialPosts, setInitialPosts] = useState<EssentialPost[]>([]);
+
   const [initialCursor, setInitialCursor] = useState<string | undefined>(
     undefined
   );

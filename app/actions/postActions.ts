@@ -25,6 +25,8 @@ type FormState =
     }
   | undefined;
 
+type PostOrState = EssentialPost | FormState;
+
 export async function createPost({
   // state,
   payload,
@@ -33,7 +35,7 @@ export async function createPost({
   // state: FormState;
   payload: FormData;
   userId: string | undefined;
-}): Promise<FormState> {
+}): Promise<PostOrState> {
   // Sanitize the content
   const content = payload.get("content");
   if (!content) {
@@ -68,7 +70,11 @@ export async function createPost({
       },
     });
 
-    return undefined; // No errors
+    const newPost = await getEssentialPost({
+      postId: post.id,
+    });
+
+    return newPost;
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors: Record<string, string[]> = {};
@@ -228,6 +234,36 @@ export async function getGlobalFeedPosts(
 
   const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
   return { posts, nextCursor };
+}
+
+export async function getEssentialPost({
+  postId,
+}: {
+  postId: string;
+}): Promise<EssentialPost | null> {
+  return await prisma.post.findUnique({
+    where: { id: postId },
+    select: {
+      id: true,
+      content: true,
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          likedBy: true,
+        },
+      },
+    },
+  });
 }
 
 // export async function getFollowingActivities(

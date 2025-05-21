@@ -5,11 +5,17 @@ import LongInput from "@/app/ui/form/LongInput";
 import Button from "@/app/ui/core/Button";
 import { useCurrentUser, useUserLoading } from "@/app/context/UserContext";
 import { createPost } from "@/app/actions/postActions";
-import { EssentialUser } from "@/app/lib/definitions";
+import { EssentialPost, EssentialUser } from "@/app/lib/definitions";
 
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
-export default function PostCreator({ user }: { user: EssentialUser }) {
+export default function PostCreator({
+  user,
+  setInitialPosts,
+}: {
+  user: EssentialUser;
+  setInitialPosts: React.Dispatch<React.SetStateAction<EssentialPost[]>>;
+}) {
   const currentUser = useCurrentUser();
   const defaultProfile = useDefaultProfileImage();
   const isUserLoading = useUserLoading();
@@ -31,7 +37,30 @@ export default function PostCreator({ user }: { user: EssentialUser }) {
       userId,
     };
 
-    return createPost(postPayload); // Pass the adjusted payload
+    const post = await createPost(postPayload); // Pass the adjusted payload
+
+    if (
+      post &&
+      typeof post === "object" &&
+      ("errors" in post || "message" in post)
+    ) {
+      if (post?.errors) {
+        // Handle errors if any
+        throw new Error(
+          post.errors.content ? post.errors.content.join(", ") : "Unknown error"
+        );
+      }
+      if (post?.message) {
+        // Handle message if any
+        throw new Error(post.message);
+      }
+    } else {
+      const newPost = post as EssentialPost; // Type assertion
+      setInitialPosts((prevPosts) => [newPost, ...prevPosts]); // Update the initial posts state
+      return post;
+    }
+    // Handle the case where post is not an object
+    throw new Error("Unexpected response from createPost");
   };
 
   const [state, action, pending] = useActionState(createPostWrapper, undefined);

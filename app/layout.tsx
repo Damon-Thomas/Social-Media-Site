@@ -31,15 +31,11 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          // defaultTheme="light"
+          defaultTheme="light"
           enableSystem={false}
-          // value={{ light: "light", dark: "dark" }}
         >
-          <UserProvider>
-            {/* <DebugTheme /> */}
-            <ThemeSwitcher />
-            <main className="transition-colors duration-300">{children}</main>
-          </UserProvider>
+          <ThemeSwitcher />
+          <main className="transition-colors duration-300">{children}</main>
         </ThemeProvider>
       </body>
     </html>

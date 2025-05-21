@@ -20,14 +20,14 @@ function OAuthCallbackInner() {
       }).then(async (res) => {
         if (res.redirected) {
           // If the server responded with a redirect, follow it
-          window.location.href = res.url;
+          window.location.replace(res.url);
           return;
         }
         // Only try to parse JSON if not redirected
         try {
           const data = await res.json();
           if (data.success) {
-            router.push("/dashboard");
+            window.location.replace("/dashboard");
           } else {
             // Show a user-friendly error if no email was found
             if (data.errors?.login?.includes("no email found")) {
@@ -35,12 +35,12 @@ function OAuthCallbackInner() {
                 "We couldn't get your email from GitHub. Please make sure your GitHub account has a verified email address, or try another login method."
               );
             }
-            router.push("/auth?error=oauth");
+            window.location.replace("/auth?error=oauth");
           }
         } catch (e) {
           // If parsing fails, fallback to auth page
           console.log("Error parsing response:", e);
-          router.push("/auth?error=oauth");
+          window.location.replace("/auth?error=oauth");
         }
       });
     }

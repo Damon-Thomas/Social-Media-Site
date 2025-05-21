@@ -1,5 +1,7 @@
 "use client";
 
+import { UserProvider } from "../context/UserContext";
+// import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
 import Navigator from "../ui/navigator/Navigator";
 
 export default function DashboardLayout({
@@ -8,16 +10,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
-    >
-      <Navigator />
+    <UserProvider>
       <div
-        id="dashboard-scroll-container"
-        className="grow flex justify-center overflow-y-auto h-full"
+        className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
       >
-        {children}
+        <Navigator />
+        <div
+          id="dashboard-scroll-container"
+          className="grow flex justify-center overflow-y-auto h-full"
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </UserProvider>
   );
 }

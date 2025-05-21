@@ -3,7 +3,7 @@ import Image from "next/image";
 import ErrorMessage from "@/app/ui/form/ErrorMessage";
 import LongInput from "@/app/ui/form/LongInput";
 import Button from "@/app/ui/core/Button";
-import { useCurrentUser } from "@/app/context/UserContext";
+import { useCurrentUser, useUserLoading } from "@/app/context/UserContext";
 import { createPost } from "@/app/actions/postActions";
 import { EssentialUser } from "@/app/lib/definitions";
 
@@ -12,6 +12,7 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 export default function PostCreator({ user }: { user: EssentialUser }) {
   const currentUser = useCurrentUser();
   const defaultProfile = useDefaultProfileImage();
+  const isUserLoading = useUserLoading();
 
   const [mounted, setMounted] = useState(false);
 
@@ -39,7 +40,7 @@ export default function PostCreator({ user }: { user: EssentialUser }) {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
+  if (!mounted || isUserLoading) {
     // Optionally, render a minimal placeholder to avoid hydration mismatch
     return null;
   }

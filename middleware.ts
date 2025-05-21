@@ -21,6 +21,11 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Skip authentication for /api/me route to allow our retry logic to work
+  if (path === "/api/me") {
+    return NextResponse.next();
+  }
+
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 

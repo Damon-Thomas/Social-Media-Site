@@ -19,6 +19,9 @@ export async function createSession(userId: string) {
     sameSite: "lax",
     path: "/",
   });
+
+  // Add a delay to ensure the cookie is properly set before continuing
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 export async function deleteSession() {

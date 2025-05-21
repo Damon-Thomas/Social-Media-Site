@@ -36,7 +36,7 @@ export default function PostOnly({
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && mounted) {
       const currentUserId = user.id;
       const isLiked = post?.likedBy?.some(
         (likedUser) => likedUser?.id === currentUserId
@@ -49,7 +49,7 @@ export default function PostOnly({
         setCommentCount(post?.comments?.length ?? 0);
       }
     }
-  }, [post, user, setLikeCount, setCommentCount]);
+  }, [post, user, setLikeCount, setCommentCount, mounted]);
 
   async function handleLike() {
     if (!user) {

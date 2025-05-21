@@ -8,17 +8,24 @@ export const verifySession = cache(async () => {
   try {
     const cookie = (await cookies()).get("session")?.value;
     if (!cookie) {
+      console.log("No session cookie found");
       return null;
     }
 
+    console.log("Session cookie exists, attempting to decrypt");
     const session = await decrypt(cookie);
     if (!session) {
+      console.log("Failed to decrypt session cookie");
       return null;
     }
 
-    if (!session?.userId) return null;
+    if (!session?.userId) {
+      console.log("Session decrypted but no userId found");
+      return null;
+    }
 
     // Verify the user actually exists in the database
+    console.log(`Looking up user with ID: ${session.userId}`);
     const user = await prisma.user.findUnique({
       where: { id: session.userId.toString() },
       select: { id: true },
@@ -30,6 +37,7 @@ export const verifySession = cache(async () => {
       return null;
     }
 
+    console.log("Valid session found for user", user.id);
     return { isAuth: true, userId: session.userId };
   } catch (error) {
     console.error("Failed to verify session:", error);
@@ -39,7 +47,11 @@ export const verifySession = cache(async () => {
 
 export const getUser = cache(async () => {
   const session = await verifySession();
-  if (!session) return null;
+  console.log("Session in getUser:", session);
+  if (!session) {
+    console.log("No valid session found in getUser");
+    return null;
+  }
 
   try {
     const data = await prisma.user.findUnique({

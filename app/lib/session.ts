@@ -11,7 +11,7 @@ export async function logout() {
     }
 
     // Redirect the user to the login page
-    window.location.href = "/";
+    window.location.replace("/"); // Forces a full reload, ensuring cookies are sent
   } catch (error) {
     console.error("Failed to logout:", error);
   }

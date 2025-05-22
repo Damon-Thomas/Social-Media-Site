@@ -57,6 +57,13 @@ export default function AuthForm() {
     }
   }, [state]);
 
+  useEffect(() => {
+    if (state && state.success && !pending) {
+      // If state is undefined and not pending, assume successful login
+      window.location.replace("/dashboard");
+    }
+  }, [state, pending]);
+
   return (
     <div className="auth-form-container min-w-[300px] flex justify-center">
       <form

@@ -4,6 +4,8 @@ import prisma from "../lib/prisma";
 // import { Prisma } from "@prisma/client"; // Import the generated enums
 
 export async function setUserTheme(theme: "light" | "dark", userId: string) {
+  console.log("Setting user theme:", theme, "for user ID:", userId);
+
   if (theme !== "light" && theme !== "dark") {
     throw new Error("Invalid theme value");
   }

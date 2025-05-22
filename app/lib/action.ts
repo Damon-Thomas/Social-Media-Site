@@ -57,6 +57,7 @@ export type State = {
     confirmpassword?: string;
   };
   message?: string | null;
+  success?: boolean;
 };
 
 type AuthState =
@@ -75,10 +76,12 @@ type AuthState =
         confirmpassword?: string;
       };
       message?: string;
+      success?: boolean;
     }
   | {
       errors: { login: string };
       message?: string;
+      success?: boolean;
     }
   | undefined;
 
@@ -166,8 +169,8 @@ export async function authenticate(state: AuthState, payload: FormData) {
       });
     }
     await createSession(user.id);
-    redirect("/dashboard");
-    return;
+
+    return { success: true };
   }
 
   // 2. Only run form validation if not OAuth

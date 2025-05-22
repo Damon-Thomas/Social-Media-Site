@@ -87,6 +87,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">Loading...</div>
+    );
+  }
+
   return (
     <UserContext.Provider value={{ user, refreshUser, isLoading }}>
       {children}

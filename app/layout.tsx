@@ -5,7 +5,6 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 import Head from "./head";
-import { UserProvider } from "./context/UserContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +33,6 @@ export default function RootLayout({
           defaultTheme="light"
           enableSystem={false}
         >
-          <ThemeSwitcher />
           <main className="transition-colors duration-300">{children}</main>
         </ThemeProvider>
       </body>

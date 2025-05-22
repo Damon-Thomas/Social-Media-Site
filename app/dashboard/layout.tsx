@@ -3,6 +3,7 @@
 import { UserProvider } from "../context/UserContext";
 // import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
 import Navigator from "../ui/navigator/Navigator";
+import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,7 @@ export default function DashboardLayout({
 }) {
   return (
     <UserProvider>
+      <ThemeSwitcher />
       <div
         className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
       >

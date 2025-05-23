@@ -9,7 +9,6 @@ import yellowRemoveBgPreview from "../public/yellow-removebg-preview.png";
 import yellowmobile from "../public/mobileyellow.png";
 import blackmobile from "../public/blackmobile.png";
 import Footer from "./ui/landing-page/Footer";
-import { Theme } from "@/generated/prisma";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 // import { validateSessionOrClear } from "@/app/actions/auth";
 // import { verify } from "crypto";

@@ -6,15 +6,6 @@ import bcrypt from "bcryptjs";
 import { createSession } from "@/app/lib/session.server";
 import { google } from "googleapis";
 import { Octokit } from "@octokit/rest";
-// import { AuthError } from "next-auth";
-
-// interface FormSchemaType {
-//   login: string;
-//   name?: string;
-//   email: string;
-//   password: string;
-//   confirmpassword?: string;
-// }
 
 const FormSchema = z
   .object({
@@ -60,7 +51,7 @@ export type State = {
   success?: boolean;
 };
 
-type AuthState =
+export type AuthState =
   | {
       errors: {
         login?: string;
@@ -76,20 +67,20 @@ type AuthState =
         confirmpassword?: string;
       };
       message?: string;
-      success?: boolean;
+      success: false;
     }
   | {
-      errors: { login: string };
+      errors?: undefined;
+      serverFormData?: undefined;
       message?: string;
-      success?: boolean;
+      success: true;
     }
   | undefined;
 
-// export async function serverAction(formData: FormData) {
-//   const session = await verifySession();
-// }
-
-export async function authenticate(state: AuthState, payload: FormData) {
+export async function authenticate(
+  state: AuthState,
+  payload: FormData
+): Promise<AuthState> {
   // 1. Check for OAuth login first
   const oauthProvider = payload.get("oauthProvider");
   const oauthCode = payload.get("oauthCode");
@@ -126,7 +117,7 @@ export async function authenticate(state: AuthState, payload: FormData) {
       const data = await res.json();
       const { access_token } = data;
       if (!access_token) {
-        return { errors: { login: "GitHub OAuth failed." } };
+        return { errors: { login: "GitHub OAuth failed." }, success: false };
       }
       // Get user info
       const { data: user } = await octokit.request("GET /user", {
@@ -153,7 +144,10 @@ export async function authenticate(state: AuthState, payload: FormData) {
     }
 
     if (!oauthEmail) {
-      return { errors: { login: "OAuth login failed: no email found." } };
+      return {
+        errors: { login: "OAuth login failed: no email found." },
+        success: false,
+      };
     }
 
     // Find or create user
@@ -170,7 +164,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
     }
     await createSession(user.id);
 
-    return { success: true };
+    return {
+      success: true,
+      message: undefined,
+      errors: undefined,
+      serverFormData: undefined,
+    };
   }
 
   // 2. Only run form validation if not OAuth
@@ -200,7 +199,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
     }
     await createSession(guestUser.id);
     redirect("/dashboard");
-    return;
+    return {
+      success: true,
+      message: undefined,
+      errors: undefined,
+      serverFormData: undefined,
+    };
   }
 
   // Create serverFormData once to reuse throughout the function
@@ -215,11 +219,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
   const returnWithError = (
     errors: Record<string, string>,
     message = "Validation failed. Please check your input."
-  ) => {
+  ): AuthState => {
     return {
       errors,
       serverFormData,
       message,
+      success: false,
     };
   };
 
@@ -267,7 +272,12 @@ export async function authenticate(state: AuthState, payload: FormData) {
     }
 
     await createSession(newUser.id);
-    redirect("/dashboard");
+    return {
+      success: true,
+      message: undefined,
+      errors: undefined,
+      serverFormData: undefined,
+    };
   } else {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -281,6 +291,11 @@ export async function authenticate(state: AuthState, payload: FormData) {
     }
 
     await createSession(user.id);
-    redirect("/dashboard");
+    return {
+      success: true,
+      message: undefined,
+      errors: undefined,
+      serverFormData: undefined,
+    };
   }
 }

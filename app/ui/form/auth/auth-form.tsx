@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState, useEffect } from "react";
-import { authenticate } from "../../../lib/action";
+import { authenticate, AuthState } from "../../../lib/action";
 import InputWrapper from "../InputWrapper";
 import Input from "../Input";
 import ErrorMessage from "../ErrorMessage";
@@ -9,7 +9,10 @@ import GoogleButton from "./GoogleButton";
 import GithubButton from "./GithubButton";
 
 export default function AuthForm() {
-  const [state, action, pending] = useActionState(authenticate, undefined);
+  const [state, action, pending] = useActionState(
+    authenticate,
+    undefined as AuthState | undefined
+  );
   const [login, setLogin] = useState(true);
 
   // Form state to persist values

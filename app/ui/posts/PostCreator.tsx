@@ -23,44 +23,36 @@ export default function PostCreator({
   const [mounted, setMounted] = useState(false);
 
   const createPostWrapper = async (
-    state: { errors?: { content?: string[] }; message?: string } | undefined,
+    state:
+      | EssentialPost
+      | { errors?: { content?: string[] }; message?: string }
+      | null
+      | undefined,
     payload: FormData
-  ) => {
+  ): Promise<
+    EssentialPost | { errors?: { content?: string[] }; message?: string } | null
+  > => {
     const userId = currentUser?.id;
     if (!userId) {
-      throw new Error("User ID is required");
+      return { message: "User ID is required" };
     }
 
-    // Adjust the payload to match the expected structure of createPost
-    const postPayload = {
-      payload,
-      userId,
-    };
+    const postPayload = { payload, userId };
+    const post = await createPost(postPayload);
 
-    const post = await createPost(postPayload); // Pass the adjusted payload
-
+    // add error handling for empty post
     if (
       post &&
       typeof post === "object" &&
       ("errors" in post || "message" in post)
     ) {
-      if (post?.errors) {
-        // Handle errors if any
-        throw new Error(
-          post.errors.content ? post.errors.content.join(", ") : "Unknown error"
-        );
-      }
-      if (post?.message) {
-        // Handle message if any
-        throw new Error(post.message);
-      }
-    } else {
-      const newPost = post as EssentialPost; // Type assertion
-      setInitialPosts((prevPosts) => [newPost, ...prevPosts]); // Update the initial posts state
       return post;
+    } else if (post) {
+      const newPost = post as EssentialPost;
+      setInitialPosts((prevPosts) => [newPost, ...prevPosts]);
+      return newPost;
     }
-    // Handle the case where post is not an object
-    throw new Error("Unexpected response from createPost");
+    return { message: "Unexpected response from createPost" };
   };
 
   const [state, action, pending] = useActionState(createPostWrapper, undefined);
@@ -103,7 +95,12 @@ export default function PostCreator({
         </div>
         <div className="flex gap-4 w-full no-wrap my-2 pt-2 border-t-1 border-[var(--borderc)] h-fit px-4">
           <ErrorMessage className="grow flex flex-wrap">
-            {state?.errors?.content ? state.errors.content.join(", ") : ""}
+            {state &&
+            typeof state === "object" &&
+            "errors" in state &&
+            state.errors?.content
+              ? state.errors.content.join(", ")
+              : ""}
           </ErrorMessage>
           <Button type="submit" className="" disabled={pending}>
             {pending ? "Posting..." : "Post"}

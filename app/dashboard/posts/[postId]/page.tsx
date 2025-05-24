@@ -66,7 +66,7 @@ export default function PostPage({
       <div className="flex flex-col w-full h-full overflow-hidden px-2 md:px-4">
         <PostOnly
           post={post}
-          setHidden={setModalHidden}
+          // setHidden={setModalHidden}
           likeCount={likeCount}
           setLikeCount={setLikeCount}
           commentCount={commentCount}
@@ -144,13 +144,13 @@ export default function PostPage({
             <p className="text-[var(--dull)]">No comments yet.</p>
           )}
         </div>
-        <CommentModal
+        {/* <CommentModal
           postId={postId}
           setComment={setCommentsInOrder}
           hidden={modalHidden}
           setHidden={setModalHidden}
           parentId={parentId || undefined}
-        ></CommentModal>
+        ></CommentModal> */}
       </div>
     </div>
   );

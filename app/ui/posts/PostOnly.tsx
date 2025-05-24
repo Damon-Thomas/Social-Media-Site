@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 export default function PostOnly({
   post,
   className = "",
-  setHidden,
+  // setHidden,
   likeCount = 0,
   setLikeCount,
   commentCount = 0,
@@ -18,7 +18,7 @@ export default function PostOnly({
 }: {
   post: FullPost | null; // Update to accept FullPost
   className?: string;
-  setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
+  // setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   likeCount?: number;
   setLikeCount?: React.Dispatch<React.SetStateAction<number>>;
   commentCount?: number;
@@ -73,13 +73,13 @@ export default function PostOnly({
     }
   }
 
-  function commentHandler() {
-    // Handle comment action here
-    console.log("Comment button clicked");
-    if (setHidden) {
-      setHidden(false);
-    }
-  }
+  // function commentHandler() {
+  //   // Handle comment action here
+  //   console.log("Comment button clicked");
+  //   if (setHidden) {
+  //     setHidden(false);
+  //   }
+  // }
 
   return (
     <div className={`max-w-3xl flex flex-col w-full mx-auto ${className}`}>
@@ -133,8 +133,9 @@ export default function PostOnly({
             <p className="">{likeCount}</p>
           </div>
           <div
-            onClick={commentHandler}
-            className="flex gap-1 text-[var(--dull)] hover:cursor-pointer hover:text-[var(--primary)]"
+            // onClick={commentHandler}
+            // className="flex gap-1 text-[var(--dull)] hover:cursor-pointer hover:text-[var(--primary)]"
+            className="flex gap-1 text-[var(--dull)]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

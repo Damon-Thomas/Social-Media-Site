@@ -192,7 +192,7 @@ export default function CommentCreator({
           />
           <button
             type="submit"
-            className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md my-1"
+            className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md my-1 mr-1"
             disabled={pending}
           >
             {pending ? "Sending..." : "Send"}
@@ -231,7 +231,7 @@ export default function CommentCreator({
               />
               <button
                 type="submit"
-                className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md my-1"
+                className="self-end px-4 py-2 w-28 text-[var(--aBlack)] font-bold bg-[var(--primary)] rounded-md my-1 mr-1"
                 disabled={pending}
               >
                 {pending ? "Sending..." : "Send"}

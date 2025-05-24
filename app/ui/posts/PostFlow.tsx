@@ -68,7 +68,11 @@ function ReplyFlow({
 
   const handleReply = () => {
     setParentId?.(comment?.id || "");
-    setExpandedCommentId?.(comment?.id || "");
+    if (expandedCommentId !== comment?.id) {
+      setExpandedCommentId?.(comment?.id || "");
+    } else {
+      setExpandedCommentId?.("");
+    }
   };
 
   return (
@@ -187,6 +191,7 @@ export default function PostFlow({
   const [replyCount, setReplyCount] = useState(comment?._count?.replies || 0);
   const [isLiked, setIsLiked] = useState(false);
   const defaultProfileImage = useDefaultProfileImage();
+  const [activeCommentId, setActiveCommentId] = useState<boolean>(false);
 
   useEffect(() => {
     if (!comment || !user) return; // Early exit if dependencies are null
@@ -203,6 +208,10 @@ export default function PostFlow({
     setLikeCount(comment?._count?.likedBy || 0);
     setReplyCount(comment?._count?.replies || 0);
   }, [comment]);
+
+  useEffect(() => {
+    setActiveCommentId(expandedCommentId === comment?.id);
+  }, [expandedCommentId, comment?.id]);
 
   if (!comment) {
     return null; // Handle the case where comment is null or undefined
@@ -249,8 +258,10 @@ export default function PostFlow({
         </Link>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr] ">
-        <div className=" grid grid-cols-2">
-          {(comment?.replies?.length ?? 0) > 0 && (
+        <div
+          className={`grid grid-cols-2 HERERER ${expandedCommentId === postId}`}
+        >
+          {((comment?.replies?.length ?? 0) > 0 || activeCommentId) && (
             <>
               <div className=""></div>
               <div className="border-l-[1px] border-[var(--dull)]"></div>

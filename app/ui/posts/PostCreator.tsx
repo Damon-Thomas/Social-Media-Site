@@ -21,6 +21,8 @@ export default function PostCreator({
   const isUserLoading = useUserLoading();
 
   const [mounted, setMounted] = useState(false);
+  // Add state for the textarea value
+  const [content, setContent] = useState("");
 
   const createPostWrapper = async (
     state:
@@ -50,6 +52,7 @@ export default function PostCreator({
     } else if (post) {
       const newPost = post as EssentialPost;
       setInitialPosts((prevPosts) => [newPost, ...prevPosts]);
+      setContent(""); // Reset textarea after successful post
       return newPost;
     }
     return { message: "Unexpected response from createPost" };
@@ -86,6 +89,8 @@ export default function PostCreator({
             name="content" // Name attribute for form submission
             placeholder="Broadcast Now"
             className="p-2 rounded"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           />
           <input
             type="hidden"

@@ -4,7 +4,7 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 import LongInput from "../../form/LongInput";
 import { createComment } from "@/app/actions/commentActions";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useRef } from "react";
 
 export default function CommentCreator({
   postId,
@@ -44,6 +44,8 @@ export default function CommentCreator({
   const [, action, pending] = useActionState(actionWrapper, null);
   const [mounted, setMounted] = useState(false);
   const [iconSize, setIconSize] = useState(40);
+  const [commentContent, setCommentContent] = useState("");
+  const longInputRef = useRef<{ reset?: () => void }>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -113,6 +115,7 @@ export default function CommentCreator({
         console.error("User must be logged in to create a comment.");
         return;
       }
+      payload.set("content", commentContent); // Ensure controlled value is submitted
       payload.append("postId", postId);
       payload.append("parentId", parentId || "");
       payload.append("userId", user.id);
@@ -135,6 +138,8 @@ export default function CommentCreator({
         if (setOpenPostComment) {
           setOpenPostComment("");
         }
+        setCommentContent(""); // Clear input after success
+        longInputRef.current?.reset?.(); // Reset textarea height
       } else {
         console.error("Unexpected response from createComment:", newComment);
         alert("An unexpected error occurred. Please try again later.");
@@ -182,6 +187,7 @@ export default function CommentCreator({
         )} */}
           </div>
           <LongInput
+            ref={longInputRef}
             label=""
             id="comment"
             name="content"
@@ -189,6 +195,8 @@ export default function CommentCreator({
             className="flex-grow rounded-md  "
             disabled={pending}
             noPadding={noPadding}
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
           />
           <button
             type="submit"
@@ -220,6 +228,7 @@ export default function CommentCreator({
               className={`flex w-full justify-between items-start gap-2 pb-4 z-10 `}
             >
               <LongInput
+                ref={longInputRef}
                 label=""
                 id="comment"
                 name="content"
@@ -228,6 +237,8 @@ export default function CommentCreator({
                 text="text-base"
                 disabled={pending}
                 noPadding={noPadding}
+                value={commentContent}
+                onChange={(e) => setCommentContent(e.target.value)}
               />
               <button
                 type="submit"

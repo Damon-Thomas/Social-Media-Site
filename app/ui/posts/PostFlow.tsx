@@ -112,7 +112,7 @@ function ReplyFlow({
         </div>
         <div className={`commentContent px-2 pb-4  w-full h-full`}>
           <Link href={`/dashboard/comment/${comment?.id}`}>
-            <p className="whitespace-pre-line">{comment?.content}</p>
+            <p className="whitespace-pre">{comment?.content}</p>
           </Link>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
@@ -140,11 +140,7 @@ function ReplyFlow({
         </div>
       </div>
       <div className="grid grid-cols-[24px_1fr] relative sm:grid-cols-[32px_1fr]">
-        <div className={` relative   grid grid-cols-2  `}>
-          {/* {expandedCommentId === comment?.id && (
-            <div className="absolute top-0 z-20 left-1/2 w-full h-5 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>
-          )} */}
-        </div>
+        <div className={` relative   grid grid-cols-2  `}></div>
         <div className="commentContent  z-10 w-full h-full">
           <PopDownComment
             setComment={setCommentsInOrder}
@@ -231,8 +227,11 @@ export default function PostFlow({
 
   const handleReply = () => {
     setParentId?.(comment.id);
-    setExpandedCommentId?.(comment.id);
-    console.log("Reply button clicked for comment", comment.id);
+    if (expandedCommentId !== comment?.id) {
+      setExpandedCommentId?.(comment?.id || "");
+    } else {
+      setExpandedCommentId?.("");
+    }
     // Add reply functionality here
   };
 
@@ -271,7 +270,7 @@ export default function PostFlow({
         <div className="commentContent px-2 pb-4  w-full h-full">
           <div className="flex flex-col grow">
             <Link href={`/dashboard/comment/${comment?.id}`}>
-              <p className="whitespace-pre-line">{comment?.content}</p>
+              <p className="whitespace-pre">{comment?.content}</p>
             </Link>
             <div className="flex items-center gap-4 mt-2 justify-between">
               <div className="flex">

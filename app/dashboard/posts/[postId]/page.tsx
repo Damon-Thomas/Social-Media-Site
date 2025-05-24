@@ -3,7 +3,6 @@
 import { getfullPost } from "@/app/actions/postActions";
 import { EssentialComment, FullPost } from "@/app/lib/definitions";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
-import CommentModal from "@/app/ui/posts/comments/CommentModal";
 import PostFlow from "@/app/ui/posts/PostFlow";
 import PostOnly from "@/app/ui/posts/PostOnly";
 import { useEffect, useState } from "react";
@@ -19,8 +18,8 @@ export default function PostPage({
   const [post, setPost] = useState<FullPost | null>(null);
   const [commentCount, setCommentCount] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
-  const [modalHidden, setModalHidden] = useState(true);
-  const [parentId, setParentId] = useState<string | null>(null); // Update parentId to use null for compatibility
+  // const [modalHidden, setModalHidden] = useState(true);
+  // const [parentId, setParentId] = useState<string | null>(null); // Update parentId to use null for compatibility
   const [commentsInOrder, setCommentsInOrder] = useState<EssentialComment[]>(
     []
   );
@@ -77,7 +76,7 @@ export default function PostPage({
           postId={postId}
           setComment={setCommentsInOrder}
           parentId={undefined}
-          setHidden={setModalHidden}
+          // setHidden={setModalHidden}
           className="border-b border-b-[var(--borderc)]"
           setCommentCount={setCommentCount}
         />
@@ -87,7 +86,7 @@ export default function PostPage({
             commentsInOrder.map((comment: EssentialComment) => (
               <div className="flex flex-col" key={comment?.id}>
                 <PostFlow
-                  setParentId={setParentId}
+                  // setParentId={setParentId}
                   comment={comment}
                   setCommentsInOrder={setCommentsInOrder}
                   setExpandedCommentId={setExpandedCommentId} // Pass the setter

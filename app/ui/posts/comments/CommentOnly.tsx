@@ -100,7 +100,9 @@ export default function CommentOnly({
         </Link>
       </div>
 
-      <p className=" mb-4">{comment?.content || "comment content here."}</p>
+      <p className="whitespace-pre mb-4">
+        {comment?.content || "comment content here."}
+      </p>
 
       <div className="flex items-center justify-between gap-4 border-y-1 border-[var(--dull)] w-full mt-2 h-10">
         <p className="flex text-[var(--dull)]">{formattedDate}</p>

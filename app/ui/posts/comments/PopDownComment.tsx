@@ -13,6 +13,8 @@ export default function PopDownComment({
   setCommentCount,
   setTopCommentCount,
   chained = false,
+  narrow = false,
+  setOpenPostComment,
 }: {
   postId: string | null | undefined;
   setComment?: React.Dispatch<React.SetStateAction<EssentialComment[]>>;
@@ -25,6 +27,8 @@ export default function PopDownComment({
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
   setTopCommentCount?: React.Dispatch<React.SetStateAction<number>>;
   chained?: boolean;
+  narrow?: boolean;
+  setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   if (!postId) {
     console.error("Post ID is required to create a comment.");
@@ -36,7 +40,7 @@ export default function PopDownComment({
       {!chained ? (
         <div
           className={`${hidden && "hidden"} ${className} ${
-            chained ? "" : "py-2 px-4"
+            chained ? "" : narrow ? "" : "py-2 px-4"
           } grow flex relative `}
         >
           <CommentCreator
@@ -50,6 +54,8 @@ export default function PopDownComment({
             setCommentCount={setCommentCount}
             setTopCommentCount={setTopCommentCount}
             chained={chained}
+            narrow={narrow}
+            setOpenPostComment={setOpenPostComment}
           ></CommentCreator>
         </div>
       ) : (
@@ -65,6 +71,7 @@ export default function PopDownComment({
           setCommentCount={setCommentCount}
           setTopCommentCount={setTopCommentCount}
           chained={chained}
+          setOpenPostComment={setOpenPostComment}
         ></CommentCreator>
       )}
     </>

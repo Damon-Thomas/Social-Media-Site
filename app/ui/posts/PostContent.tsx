@@ -98,7 +98,7 @@ export default function PostContent({
         </h1>
       </div> */}
       <div className="flex gap-4 w-full no-wrap my-2 pt-2 border-t-1 border-[var(--borderc)] min-h-full h-fit px-4">
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-0 w-full">
           {/* <CommentModal
             hidden={hidden}
             setHidden={

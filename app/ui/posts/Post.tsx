@@ -30,6 +30,7 @@ export default function Post({
   const userData = useCurrentUser();
   const [liked, setLiked] = useState(false); // Default to false instead of null
   const [likeCount, setLikeCount] = useState(post?._count?.likedBy || 0);
+  const [commentCount, setCommentCount] = useState(post?._count?.comments || 0); // Initialize comment count
   const [iconLoading, setIconLoading] = useState(true); // Create a loading state specifically for the icon
 
   useEffect(() => {
@@ -78,8 +79,8 @@ export default function Post({
   }, [post?._count?.likedBy]);
 
   return (
-    <>
-      <div className="flex w-full pb-2 border-b-1 border-[var(--borderc)] ">
+    <div className="py-2 md:py-4 border-b-1 border-[var(--borderc)]">
+      <div className="flex w-full  ">
         <div className="flex-shrink-0 mr-2">
           <Link href={`/dashboard/profile/${post?.authorId}`}>
             {mounted ? (
@@ -132,7 +133,7 @@ export default function Post({
 
             <div onClick={commentHandler} className="flex items-center gap-1">
               <ThemedIcon
-                count={post?._count?.comments}
+                count={commentCount}
                 src={commentText.src}
                 alt="Comments"
                 size={iconSize}
@@ -144,8 +145,11 @@ export default function Post({
       <PopDownComment
         postId={post?.id}
         hidden={openPostComment !== post?.id}
-        creatorClassName="min-h-15 ml-8 pl-2"
+        creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--dull)]"
+        narrow={true}
+        setOpenPostComment={setOpenPostComment}
+        setCommentCount={setCommentCount}
       />
-    </>
+    </div>
   );
 }

@@ -21,6 +21,8 @@ export default function CommentCreator({
   // isLast = true,
   hidden = false,
   noPadding = false,
+  narrow = false,
+  setOpenPostComment,
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
@@ -36,13 +38,27 @@ export default function CommentCreator({
   // isLast?: boolean;
   hidden?: boolean;
   noPadding?: boolean;
+  narrow?: boolean;
+  setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
   const [mounted, setMounted] = useState(false);
+  const [iconSize, setIconSize] = useState(40);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setIconSize(24);
+      } else {
+        setIconSize(40);
+      }
+    };
+    handleResize(); // Set initial size
+    if (narrow) {
+      setIconSize(24);
+    }
+  }, [narrow]);
 
   const updatePost = (newComment: EssentialComment | null) => {
     if (!newComment) {
@@ -116,6 +132,9 @@ export default function CommentCreator({
         if (setTopCommentCount) {
           setTopCommentCount((prevCount) => (prevCount || 0) + 1);
         }
+        if (setOpenPostComment) {
+          setOpenPostComment("");
+        }
       } else {
         console.error("Unexpected response from createComment:", newComment);
         alert("An unexpected error occurred. Please try again later.");
@@ -139,15 +158,21 @@ export default function CommentCreator({
       {!chained ? (
         <form
           action={action}
-          className={`flex w-full items-start gap-2 py-2 z-10 ${className}  `}
+          className={`flex w-full items-start gap-2 ${
+            narrow ? "mt-2" : "py-2"
+          } z-10 ${className}  `}
         >
-          <div className="relative flex-shrink-0 h-10 w-10 my-0.5">
+          <div
+            className={`relative flex-shrink-0 ${
+              narrow ? "pt-1" : ""
+            } h-10 w-10 my-0.5`}
+          >
             <Image
               src={user?.image || defaultProfile}
               alt="User profile picture"
-              width={40}
-              height={40}
-              className="rounded-full  h-10 w-10 "
+              width={iconSize}
+              height={iconSize}
+              className={`rounded-full  ${narrow ? "h-8 w-8" : "h-10 w-10"}`}
             />
             {/* {continueLink && (
           <div className="z-0 absolute -bottom-12 -left-3 h-18 w-5 border-l-1  border-[var(--dull)] "></div>

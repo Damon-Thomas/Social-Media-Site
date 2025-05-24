@@ -24,7 +24,7 @@ export default function PostContent({
   const [initialCursor, setInitialCursor] = useState<string | undefined>(
     undefined
   );
-  const [hidden, setHidden] = useState(true); // State to control modal visibility
+  const [openPostComment, setOpenPostComment] = useState("");
   const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
     undefined
   ); // State to store the current post ID
@@ -71,7 +71,7 @@ export default function PostContent({
     }
 
     loadInitialData();
-  }, [selectedFeed, user]);
+  }, [selectedFeed, user, setInitialPosts]);
 
   // Ensure useInfiniteScroll passes null for undefined cursors
   const {
@@ -92,21 +92,21 @@ export default function PostContent({
 
   return (
     <div className="flex flex-col gap-2 ">
-      <div className="flex gap-4 items-start pt-4 px-4">
+      {/* <div className="flex gap-4 items-start pt-4 px-4">
         <h1 className="text-[var(--dmono)] font-extrabold">
           {selectedFeed === "global" ? "Global Feed" : "Following Feed"}
         </h1>
-      </div>
+      </div> */}
       <div className="flex gap-4 w-full no-wrap my-2 pt-2 border-t-1 border-[var(--borderc)] min-h-full h-fit px-4">
         <div className="flex flex-col gap-4 w-full">
-          <CommentModal
+          {/* <CommentModal
             hidden={hidden}
             setHidden={
               setHidden as React.Dispatch<React.SetStateAction<boolean>>
             }
             postId={currentPostId}
             setComment={(posts) => setInitialPosts(posts as EssentialPost[])}
-          />
+          /> */}
           {initialDataLoaded ? (
             filteredPosts && filteredPosts.length > 0 ? (
               <>
@@ -117,9 +117,8 @@ export default function PostContent({
                         React.SetStateAction<string | null | undefined>
                       >
                     }
-                    setHidden={
-                      setHidden as React.Dispatch<React.SetStateAction<boolean>>
-                    }
+                    openPostComment={openPostComment}
+                    setOpenPostComment={setOpenPostComment}
                     key={`post-${selectedFeed}-${post?.id}`}
                     post={post}
                   />

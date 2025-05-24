@@ -26,8 +26,8 @@ export default function PopDownComment({
   setTopCommentCount?: React.Dispatch<React.SetStateAction<number>>;
   chained?: boolean;
 }) {
-  if (!postId || !parentId) {
-    console.error("Post ID and Parent Id is required to create a comment.");
+  if (!postId) {
+    console.error("Post ID is required to create a comment.");
     return null;
   }
 

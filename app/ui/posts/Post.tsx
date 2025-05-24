@@ -11,15 +11,18 @@ import ThemedIcon from "@/app/ui/core/ThemedIcon";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { doesUserLikePost, likePost } from "@/app/actions/postActions";
 import { useEffect, useState } from "react";
+import PopDownComment from "./comments/PopDownComment";
 
 export default function Post({
   post,
   setPostId,
-  setHidden,
+  openPostComment,
+  setOpenPostComment,
 }: {
   post: EssentialPost;
   setPostId: React.Dispatch<React.SetStateAction<string | null | undefined>>;
-  setHidden: React.Dispatch<React.SetStateAction<boolean>>;
+  openPostComment: string;
+  setOpenPostComment: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -47,7 +50,11 @@ export default function Post({
 
   function commentHandler() {
     setPostId(post?.id);
-    setHidden(false);
+    if (openPostComment === post?.id) {
+      setOpenPostComment("");
+      return;
+    }
+    setOpenPostComment(post?.id || "");
     return;
   }
 
@@ -71,67 +78,74 @@ export default function Post({
   }, [post?._count?.likedBy]);
 
   return (
-    <div className="flex w-full pb-2 border-b-1 border-[var(--borderc)] ">
-      <div className="flex-shrink-0 mr-2">
-        <Link href={`/dashboard/profile/${post?.authorId}`}>
-          {mounted ? (
-            <Image
-              src={
-                post?.author?.image && post.author.image.trim() !== ""
-                  ? post.author.image
-                  : theme === "light"
-                  ? "/defaultProfileLight.svg"
-                  : "/defaultProfileDark.svg"
-              }
-              alt="Profile"
-              className="w-8 h-8 rounded-full"
-              width={32}
-              height={32}
-            />
-          ) : (
-            <div style={{ width: 32, height: 32 }} />
-          )}
-        </Link>
-      </div>
-
-      <div className="flex flex-col flex-grow min-w-0">
-        <Link href={`dashboard/posts/${post?.id}`}>
-          {" "}
-          <div className="flex items-start justify-between gap-2">
-            <span className="font-extrabold">{post?.author?.name}</span>
-            <p className="text-sm text-[var(--dull)] ">
-              {post?.createdAt && formatRelativeTime(post.createdAt, true)}
-            </p>
-          </div>
-          <p className="">{post?.content}</p>
-        </Link>
-        <div className="flex items-center gap-4 mt-0.5">
-          <div className="flex items-center gap-1">
-            {iconLoading ? (
-              <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
-            ) : (
-              <ThemedIcon
-                count={likeCount}
-                src={flame.src}
-                alt="Likes"
-                size={iconSize}
-                liked={liked}
-                onClick={likePostHandler}
-                noTransition={true} // Disable transitions for initial render
+    <>
+      <div className="flex w-full pb-2 border-b-1 border-[var(--borderc)] ">
+        <div className="flex-shrink-0 mr-2">
+          <Link href={`/dashboard/profile/${post?.authorId}`}>
+            {mounted ? (
+              <Image
+                src={
+                  post?.author?.image && post.author.image.trim() !== ""
+                    ? post.author.image
+                    : theme === "light"
+                    ? "/defaultProfileLight.svg"
+                    : "/defaultProfileDark.svg"
+                }
+                alt="Profile"
+                className="w-8 h-8 rounded-full"
+                width={32}
+                height={32}
               />
+            ) : (
+              <div style={{ width: 32, height: 32 }} />
             )}
-          </div>
+          </Link>
+        </div>
 
-          <div onClick={commentHandler} className="flex items-center gap-1">
-            <ThemedIcon
-              count={post?._count?.comments}
-              src={commentText.src}
-              alt="Comments"
-              size={iconSize}
-            />
+        <div className="flex flex-col flex-grow min-w-0">
+          <Link href={`dashboard/posts/${post?.id}`}>
+            {" "}
+            <div className="flex items-start justify-between gap-2">
+              <span className="font-extrabold">{post?.author?.name}</span>
+              <p className="text-sm text-[var(--dull)] ">
+                {post?.createdAt && formatRelativeTime(post.createdAt, true)}
+              </p>
+            </div>
+            <p className="">{post?.content}</p>
+          </Link>
+          <div className="flex items-center gap-4 mt-0.5">
+            <div className="flex items-center gap-1">
+              {iconLoading ? (
+                <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
+              ) : (
+                <ThemedIcon
+                  count={likeCount}
+                  src={flame.src}
+                  alt="Likes"
+                  size={iconSize}
+                  liked={liked}
+                  onClick={likePostHandler}
+                  noTransition={true} // Disable transitions for initial render
+                />
+              )}
+            </div>
+
+            <div onClick={commentHandler} className="flex items-center gap-1">
+              <ThemedIcon
+                count={post?._count?.comments}
+                src={commentText.src}
+                alt="Comments"
+                size={iconSize}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <PopDownComment
+        postId={post?.id}
+        hidden={openPostComment !== post?.id}
+        creatorClassName="min-h-15 ml-8 pl-2"
+      />
+    </>
   );
 }

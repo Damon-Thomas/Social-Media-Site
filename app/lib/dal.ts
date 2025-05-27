@@ -71,6 +71,12 @@ export const getUser = cache(async () => {
             name: true,
           },
         },
+        friends: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         theme: true,
       },
     });

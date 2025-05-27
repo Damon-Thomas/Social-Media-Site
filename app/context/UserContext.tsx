@@ -4,12 +4,14 @@ import type { User } from "@/app/lib/definitions";
 
 const UserContext = createContext<{
   user: User | null;
+  fullUser: User | null;
   refreshUser: () => void;
   isLoading: boolean;
 } | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [fullUser, setFullUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = async (isInitialLoad = false) => {
@@ -22,11 +24,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }
 
       const res = await fetch("/api/me");
+      const res2 = await fetch("/api/fullUser");
       const data = await res.json();
-      if (res.ok) {
+      const data2 = await res2.json();
+      if (res.ok && res2.ok) {
         setUser(data);
+        setFullUser(data2);
         setIsLoading(false);
-      } else if (res.status === 401) {
+      } else if (res.status === 401 || res2.status === 401) {
         // If first attempt fails with 401, try again with exponential backoff
         // This handles the race condition during login
         let retryCount = 0;
@@ -53,9 +58,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                   Pragma: "no-cache",
                 },
               });
+              const retryRes2 = await fetch("/api/fullUser", {
+                headers: {
+                  "Cache-Control": "no-cache",
+                  Pragma: "no-cache",
+                },
+              });
               const retryData = await retryRes.json();
-              if (retryRes.ok) {
+              const retryData2 = await retryRes2.json();
+              if (retryRes.ok && retryRes2.ok) {
                 setUser(retryData);
+                setFullUser(retryData2);
                 setIsLoading(false);
               } else if (retryRes.status === 401 && retryCount < maxRetries) {
                 retryFetch();
@@ -94,7 +107,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <UserContext.Provider value={{ user, refreshUser, isLoading }}>
+    <UserContext.Provider value={{ user, refreshUser, fullUser, isLoading }}>
       {children}
     </UserContext.Provider>
   );

@@ -14,6 +14,7 @@ const LongInput = forwardRef(function LongInput(
     text = "text-xl",
     disabled = false,
     noPadding = false,
+    rows = 1,
   }: Readonly<{
     label?: string | null;
     id: string;
@@ -25,6 +26,7 @@ const LongInput = forwardRef(function LongInput(
     text?: string;
     disabled?: boolean;
     noPadding?: boolean;
+    rows?: number;
   }>,
   ref
 ) {
@@ -63,7 +65,7 @@ const LongInput = forwardRef(function LongInput(
   };
 
   return (
-    <div className="flex flex-col justify-center items-center grow gap-1 w-full h-full">
+    <div className="flex flex-col justify-center items-start grow gap-1 w-full h-full">
       {label && (
         <label htmlFor={id} className="block text-sm">
           {label}
@@ -76,7 +78,7 @@ const LongInput = forwardRef(function LongInput(
         placeholder={placeholder}
         value={value}
         onChange={handleInput}
-        rows={1}
+        rows={rows}
         disabled={disabled}
         className={`w-full h-full flex items-center justify-center ${
           noPadding ? "p-0" : "px-4 py-1 md:py-2"

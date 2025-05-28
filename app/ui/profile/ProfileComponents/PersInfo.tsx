@@ -4,7 +4,7 @@ import BioText from "./BioText";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import EditProfileModal from "./EditProfileModal"; // Update the path to the correct location
 import Button from "../../core/Button";
-import { useFullUser, useRefreshUser } from "@/app/context/UserContext";
+import { useFullUser } from "@/app/context/UserContext";
 import {
   acceptFriendRequest,
   cancelFriendRequest,

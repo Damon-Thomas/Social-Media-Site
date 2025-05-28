@@ -1,25 +1,40 @@
 import { useState } from "react";
-import Image from "next/image"; // Import Image for rendering the icon
 import Modal from "@/app/ui/core/Modal";
-import editIcon from "@public/square-edit-outline.svg";
+import { useTheme } from "next-themes";
 import EditProfileForm from "@/app/ui/form/editProfile/EditProfileForm";
 
 export default function EditProfileModal() {
-  const [hidden, setHidden] = useState(true); // State to control modal visibility
+  const [hidden, setHidden] = useState(true);
+  const { theme } = useTheme();
+
   return (
     <>
-      <Image
-        src={editIcon.src}
-        className="bg-[var(--rdmono)] hover:scale-110 transition-transform duration-300 rounded-full cursor-pointer"
-        alt="Edit Profile"
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         width={24}
         height={24}
-        onClick={() => {
-          setHidden(!hidden);
-        }}
-      />
+        className={`w-6 h-6 rounded-full cursor-pointer transition-transform duration-300
+          ${
+            theme === "dark"
+              ? "text-[var(--aWhite)] bg-[var(--rdmono)]"
+              : "text-[var(--aBlack)] bg-[var(--rdmono)]"
+          }
+          hover:scale-110
+        `}
+        onClick={() => setHidden(!hidden)}
+      >
+        <path
+          fill="currentColor"
+          d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19H5V5H12V3H5M17.78,4C17.61,4 17.43,4.07 17.3,4.2L16.08,5.41L18.58,7.91L19.8,6.7C20.06,6.44 20.06,6 19.8,5.75L18.25,4.2C18.12,4.07 17.95,4 17.78,4M15.37,6.12L8,13.5V16H10.5L17.87,8.62L15.37,6.12Z"
+        />
+      </svg>
 
-      <Modal hidden={hidden} setHidden={setHidden}>
+      <Modal
+        hidden={hidden}
+        setHidden={setHidden}
+        className="bg-[var(--grey)] min-w-[300px]"
+      >
         <EditProfileForm />
       </Modal>
     </>

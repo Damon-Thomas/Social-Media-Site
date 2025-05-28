@@ -4,10 +4,12 @@ export default function Modal({
   children,
   hidden = true,
   setHidden,
+  className = "",
 }: {
   children: ReactNode;
   hidden: boolean;
   setHidden?: React.Dispatch<React.SetStateAction<boolean>>; // Optional setHidden for modal control
+  className?: string; // Optional className for additional styling
 }) {
   return (
     <div
@@ -21,7 +23,7 @@ export default function Modal({
     >
       {/* Background overlay */}
       <div
-        className="absolute inset-0 bg-[var(--rdmono-90)]  transition-opacity duration-300"
+        className="absolute inset-0 bg-[var(--rdmono-70)]  transition-opacity duration-300"
         onClick={() => {
           if (setHidden) {
             setHidden(!hidden);
@@ -30,7 +32,9 @@ export default function Modal({
       />
 
       {/* Modal content */}
-      <div className="relative bg-[var(--dmono)] text-[var(--rdmono)] rounded-lg shadow-lg p-10 z-10 w-full max-w-xl m-4">
+      <div
+        className={`relative text-[var(--rdmono)] rounded-md  z-10 w-full max-w-xl m-2  ${className}`}
+      >
         {/* Close button */}
         {setHidden && (
           <button
@@ -39,7 +43,7 @@ export default function Modal({
                 setHidden(!hidden);
               }
             }}
-            className="absolute top-3 right-3 text-[var(--rdmono)] bg-[var(--dmono)] bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+            className="absolute top-3 right-3 leading-none text-[var(--aWhite)] text-2xl font-extrabold bg-transparent hover:scale-110 transition-transform duration-200 "
             aria-label="Close modal"
           >
             ✕

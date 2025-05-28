@@ -118,6 +118,11 @@ export function useCurrentUser() {
   return ctx?.user;
 }
 
+export function useFullUser() {
+  const ctx = useContext(UserContext);
+  return ctx?.fullUser;
+}
+
 export function useRefreshUser() {
   const ctx = useContext(UserContext);
   return ctx?.refreshUser;

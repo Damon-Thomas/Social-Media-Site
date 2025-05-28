@@ -572,3 +572,224 @@ export async function unfollowUser(userId: string, unfollowId: string) {
   }
   return true;
 }
+
+export async function sendFriendRequest(userId: string, friendId: string) {
+  console.log("sendFriendRequest", userId, friendId);
+  if (userId === friendId) {
+    throw new Error("Cannot send friend request to yourself");
+  }
+  // Check if the friend request already exists
+  const existingRequest = await prisma.user.findFirst({
+    where: {
+      id: userId,
+      friendRequestsSent: {
+        some: { id: friendId },
+      },
+    },
+    select: { id: true },
+  });
+  if (existingRequest) {
+    throw new Error("Friend request already sent");
+  }
+  // Check if already friends
+  const alreadyFriends = await prisma.user.findFirst({
+    where: {
+      id: userId,
+      friends: {
+        some: { id: friendId },
+      },
+    },
+    select: { id: true },
+  });
+  if (alreadyFriends) {
+    throw new Error("You are already friends with this user");
+  }
+  // Check if the friend request is already received
+  const existingReceivedRequest = await prisma.user.findFirst({
+    where: {
+      id: friendId,
+      friendRequestsReceived: {
+        some: { id: userId },
+      },
+    },
+    select: { id: true },
+  });
+  // if received request exists, accept it
+  if (existingReceivedRequest) {
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          friends: {
+            connect: { id: friendId },
+          },
+          friendRequestsReceived: {
+            disconnect: { id: userId },
+          },
+          friendRequestsSent: {
+            disconnect: { id: friendId },
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      throw new Error("Failed to accept friend request");
+    }
+
+    try {
+      await prisma.user.update({
+        where: { id: friendId },
+        data: {
+          friends: {
+            connect: { id: userId },
+          },
+          friendRequestsSent: {
+            disconnect: { id: friendId },
+          },
+          friendRequestsReceived: {
+            disconnect: { id: userId },
+          },
+        },
+      });
+      return true; // Successfully accepted the request
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      //undo one sided friendship to handle error
+      await prisma.user.update({
+        where: { id: friendId },
+        data: {
+          friends: {
+            disconnect: { id: userId },
+          },
+          friendRequestsSent: {
+            connect: { id: friendId },
+          },
+        },
+      });
+
+      throw new Error("Failed to accept already received friend request");
+    }
+  }
+  // If no existing request, proceed to send a new friend request
+  console.log("Sending new friend request");
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friendRequestsSent: {
+          connect: { id: friendId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friendRequestsReceived: {
+          connect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error sending friend request:", error);
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friendRequestsSent: {
+          disconnect: { id: friendId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friendRequestsReceived: {
+          disconnect: { id: userId },
+        },
+      },
+    }); // Disconnect if failed at some point
+    throw new Error("Failed to send friend request");
+  }
+  console.log("Friend request sent successfully");
+  return true; // Successfully sent the friend request
+}
+
+export async function cancelFriendRequest(userId: string, friendId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friendRequestsSent: {
+          disconnect: { id: friendId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friendRequestsReceived: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error canceling friend request:", error);
+    throw new Error("Failed to cancel friend request");
+  }
+
+  return true;
+}
+
+export async function acceptFriendRequest(userId: string, friendId: string) {
+  //verify if the friend request exists
+  try {
+    const requestExists = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        friendRequestsReceived: {
+          some: { id: friendId },
+        },
+      },
+      select: { id: true },
+    });
+    if (!requestExists) {
+      throw new Error("Friend request does not exist");
+    }
+  } catch (error) {
+    console.error("Error checking friend request:", error);
+    throw new Error("Failed to check friend request");
+  }
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friends: {
+          connect: { id: friendId },
+        },
+        friendRequestsReceived: {
+          disconnect: { id: friendId },
+        },
+        friendRequestsSent: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friends: {
+          connect: { id: userId },
+        },
+        friendRequestsSent: {
+          disconnect: { id: userId },
+        },
+        friendRequestsReceived: {
+          disconnect: { id: friendId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error accepting friend request:", error);
+    throw new Error("Failed to accept friend request");
+  }
+  return true;
+}

@@ -4,8 +4,15 @@ import BioText from "./BioText";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import EditProfileModal from "./EditProfileModal"; // Update the path to the correct location
 import Button from "../../core/Button";
-import { useCurrentUser } from "@/app/context/UserContext";
-import { unfollowUser } from "@/app/actions/fetch";
+import { useFullUser, useRefreshUser } from "@/app/context/UserContext";
+import {
+  acceptFriendRequest,
+  cancelFriendRequest,
+  followUser,
+  sendFriendRequest,
+  unfollowUser,
+} from "@/app/actions/fetch";
+import { useEffect, useState } from "react";
 
 export default function PersInfo({
   userData,
@@ -15,40 +22,119 @@ export default function PersInfo({
   ownProfile?: boolean;
 }) {
   const defaultProfile = useDefaultProfileImage();
-  const user = useCurrentUser();
+  const fullUser = useFullUser();
+  const [friendCount, setFriendCount] = useState(0);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [areFriends, setAreFriends] = useState<
+    "friend" | "none" | "pending" | "received"
+  >("none");
+
+  useEffect(() => {
+    if (userData) {
+      setFriendCount(userData?.friends?.length || 0);
+      setFollowerCount(userData?.followers?.length || 0);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (!fullUser || !userData) return;
+    const isFriend = fullUser?.friends?.some(
+      (friendUser: User) => friendUser?.id === userData.id
+    );
+    const isPending = fullUser?.friendRequestsSent?.some(
+      (requestUser: User) => requestUser?.id === userData.id
+    );
+    const isReceived = fullUser?.friendRequestsReceived?.some(
+      (requestUser: User) => requestUser?.id === userData.id
+    );
+    if (isFriend) {
+      setAreFriends("friend");
+    } else if (isPending) {
+      setAreFriends("pending");
+    } else if (isReceived) {
+      setAreFriends("received");
+    } else {
+      setAreFriends("none");
+    }
+  }, [fullUser, userData]);
+
+  useEffect(() => {
+    if (fullUser && userData) {
+      setIsFollowing(
+        fullUser?.following?.some(
+          (followingUser: User) => followingUser?.id === userData.id
+        ) || false
+      );
+    }
+  }, [fullUser, userData]);
 
   if (!userData) {
     return null;
   }
 
-  const isFollowing = user?.following?.some(
-    (followingUser: User) => followingUser?.id === userData.id
-  );
-
-  const isFriend = user?.friends?.some(
-    (friendUser: User) => friendUser?.id === userData.id
-  );
-
   async function follow() {
-    if (!userData || !user) return;
+    if (!userData || !fullUser) return;
     try {
       if (isFollowing) {
-        await unfollowUser(user.id, userData.id);
+        await unfollowUser(fullUser.id, userData.id);
+        setIsFollowing(false);
         // Optimistically decrement
-        if (user._count) selectedData._count.followers--;
+        setFollowerCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
       } else {
-        await followUser(userData.id, selectedData.id);
+        await followUser(fullUser.id, userData.id);
+        setIsFollowing(true);
         // Optimistically increment
-        if (selectedData._count) selectedData._count.followers++;
+        setFollowerCount((prevCount) => prevCount + 1);
       }
     } catch (error) {
       console.error("Error following/unfollowing user:", error);
       throw new Error("Failed to follow/unfollow user");
     }
-
-    if (refreshUser) refreshUser();
-    // Optionally skip refreshList for faster UI
   }
+
+  async function handleFriendRequest() {
+    console.log("Handling friend request for user:", userData.name);
+    if (!userData || !fullUser) return;
+    const isPending = areFriends === "pending";
+    const isReceived = areFriends === "received";
+    const isFriend = areFriends === "friend";
+    console.log("isPending:", isPending);
+    console.log("isReceived:", isReceived);
+    console.log("isFriend:", isFriend);
+    try {
+      if (isPending) {
+        // Cancel friend request
+        await cancelFriendRequest(fullUser.id, userData.id);
+        setAreFriends("none");
+      } else if (isReceived) {
+        // Accept friend request
+        await acceptFriendRequest(fullUser.id, userData.id);
+        setAreFriends("friend");
+        setFriendCount((prevCount) => prevCount + 1);
+      } else if (isFriend) {
+        // Unfriend
+        await cancelFriendRequest(fullUser.id, userData.id);
+        setAreFriends("none");
+        setFriendCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
+      } else {
+        // Send friend request
+        console.log("Sending friend request to:", userData.name);
+        await sendFriendRequest(fullUser.id, userData.id);
+        console.log("Friend request sent to:", userData.name);
+        setAreFriends("pending");
+      }
+    } catch (error) {
+      console.error("Error handling friend request:", error);
+      throw new Error("Failed to handle friend request");
+    }
+  }
+
+  const handleFollowClick = async () => {
+    if (!ownProfile) {
+      await follow();
+    }
+  };
 
   const profileImage =
     userData.image && userData.image.trim() !== ""
@@ -70,12 +156,28 @@ export default function PersInfo({
             <h1 className="text-2xl font-bold">{userData.name}</h1>
             {ownProfile && <EditProfileModal></EditProfileModal>}
             {!ownProfile && (
-              <div>
-                <Button style={!isFollowing ? "default" : "bordered"}>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleFollowClick}
+                  style={!isFollowing ? "default" : "bordered"}
+                >
                   {isFollowing ? "Unfollow" : "Follow"}
                 </Button>
-                <Button style={!isFriend ? "default" : "bordered"}>
-                  {!isFriend ? "Unfriend" : "Add Friend"}
+                <Button
+                  onClick={handleFriendRequest}
+                  style={
+                    areFriends === "none" || areFriends === "received"
+                      ? "default"
+                      : "bordered"
+                  }
+                >
+                  {areFriends === "friend"
+                    ? "Unfriend"
+                    : areFriends === "none"
+                    ? "Befriend"
+                    : areFriends === "received"
+                    ? "Accept"
+                    : "Pending"}
                 </Button>
               </div>
             )}
@@ -92,12 +194,8 @@ export default function PersInfo({
                 })}`}
             </p>
             <div className="flex gap-4 w-fit">
-              <p className="whitespace-nowrap">
-                {userData.followers?.length} followers
-              </p>
-              <p className="whitespace-nowrap">
-                {userData.friends?.length} friends
-              </p>
+              <p className="whitespace-nowrap">{followerCount} followers</p>
+              <p className="whitespace-nowrap">{friendCount} friends</p>
             </div>
           </div>
         </div>

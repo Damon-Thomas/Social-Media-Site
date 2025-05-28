@@ -144,6 +144,7 @@ export default function PersInfo({
         width={100}
         height={100}
         className="self-center rounded-full w-20 h-20 md:w-40 md:h-40 object-cover mb-4 shrink-0"
+        priority
       />
       <div className="flex grow">
         <div className="grow flex flex-col gap-2">

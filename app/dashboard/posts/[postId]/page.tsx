@@ -33,14 +33,13 @@ export default function PostPage({
         const data = await getfullPost(postId);
         setPost(data);
         const comments = data?.comments || [];
-        for (const comment of comments) {
-          if (comment?.replies) {
-            for (const reply of comment.replies) {
-              console.log("Reply:", reply);
-            }
-          }
-        }
-        console.log("Comments:", comments);
+        // for (const comment of comments) {
+        //   if (comment?.replies) {
+        //     for (const reply of comment.replies) {
+        //       // console.error("Reply:", reply);
+        //     }
+        //   }
+        // }
         const filteredComments = comments.filter(
           (comment: EssentialComment) => comment?.parentId === null
         ); // Filter out comments with parentId

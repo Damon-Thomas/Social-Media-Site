@@ -90,7 +90,7 @@
 //   const handleReply = () => {
 //     setParentId?.(comment.id);
 //     setExpandedCommentId?.(comment.id);
-//     console.log("Reply button clicked for comment", comment.id);
+//     console.error("Reply button clicked for comment", comment.id);
 //     // Add reply functionality here
 //   };
 

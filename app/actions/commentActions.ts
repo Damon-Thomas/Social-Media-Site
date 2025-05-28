@@ -332,7 +332,7 @@ export async function likeComment(
       // const joinTableState = await prisma.$queryRaw`
       //   SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
       // `;
-      // console.log("Join table state after unlike:", joinTableState);
+      // console.error("Join table state after unlike:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },
@@ -357,7 +357,7 @@ export async function likeComment(
       // const joinTableState = await prisma.$queryRaw`
       //   SELECT * FROM "_UserLikedComments" WHERE "A" = ${commentId} AND "B" = ${userId};
       // `;
-      // console.log("Join table state after like:", joinTableState);
+      // console.error("Join table state after like:", joinTableState);
 
       await prisma.user.update({
         where: { id: userId },

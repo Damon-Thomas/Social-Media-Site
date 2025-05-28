@@ -73,7 +73,6 @@ export default function CommentOnly({
 
   function commentHandler() {
     // Handle comment action here
-    console.log("Comment button clicked");
     if (setHidden) {
       setHidden(false);
     }

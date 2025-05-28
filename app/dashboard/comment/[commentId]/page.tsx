@@ -61,7 +61,6 @@ export default function CommentPage({
     async function fetchInitialReplies() {
       try {
         const { replies, nextCursor } = await getCommentReplies(commentId);
-        console.log("Initial replies:", replies);
         if (isMounted) {
           setInitialReplies((prev) =>
             JSON.stringify(prev) === JSON.stringify(replies) ? prev : replies
@@ -80,12 +79,10 @@ export default function CommentPage({
 
   const fetchMoreReplies = useCallback(
     async (cursor: string | null) => {
-      console.log("Fetching more replies with cursor:", cursor);
       const { replies, nextCursor } = await getCommentReplies(
         commentId,
         cursor ?? undefined
       );
-      console.log("Fetched replies:", replies);
       return { items: replies, nextCursor };
     },
     [commentId]

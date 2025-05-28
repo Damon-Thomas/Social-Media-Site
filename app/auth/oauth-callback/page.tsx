@@ -39,7 +39,7 @@ function OAuthCallbackInner() {
           }
         } catch (e) {
           // If parsing fails, fallback to auth page
-          console.log("Error parsing response:", e);
+          console.error("Error parsing response:", e);
           window.location.replace("/auth?error=oauth");
         }
       });

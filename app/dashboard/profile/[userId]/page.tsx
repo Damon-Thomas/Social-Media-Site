@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Fetch initial data on the client
-    console.log("Fetching profile data for userId:", userId);
+    console.error("Fetching profile data for userId:", userId);
     getData(userId || user?.id || "")
       .then((data) => {
         setInitialData(data);

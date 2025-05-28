@@ -56,7 +56,6 @@ export default function SideItem({
 
   const isCurrentUser = userData?.id === selectedData.id;
   if (isCurrentUser) {
-    console.log("isCurrentUser", selectedData.name);
     return null; // Don't render the current user's profile
   }
 

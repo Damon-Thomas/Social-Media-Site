@@ -11,7 +11,6 @@ export default function ThemeHydrationGuard({
 }) {
   useEffect(() => {
     document.documentElement.classList.add("theme-hydrated");
-    console.log("ThemeHydrationGuard: Theme hydrated. Current theme:", theme);
   }, [theme]);
 
   useEffect(() => {

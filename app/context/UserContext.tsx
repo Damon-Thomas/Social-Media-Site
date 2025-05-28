@@ -45,7 +45,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
           retryCount++;
           const delay = 1000 * Math.pow(1.5, retryCount - 1); // Adjusted backoff strategy
-          console.log(
+          console.error(
             `Retrying user fetch (${retryCount}/${maxRetries}) after ${delay}ms`
           );
 

@@ -12,7 +12,6 @@ export default function ConnectCard({ user }: { user: EssentialUser }) {
     setMounted(true);
   }, []);
 
-  console.log("User in ConnectItem:", user, theme);
   if (!user) {
     return null; // add fallback UI
   }

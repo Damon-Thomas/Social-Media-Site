@@ -21,14 +21,11 @@ export default function ThemeSwitcher() {
 
   const handleThemeChange = async () => {
     setIsSpinning(true);
-    console.log("Switching from theme:", theme, user);
     const nextTheme = theme === "dark" ? "light" : "dark";
 
     if (user?.id) {
-      console.log("User ID:", user.id);
       await setUserTheme(nextTheme, user?.id); // Pass the user ID
     }
-    console.log("Setting theme:", nextTheme);
     setTheme(nextTheme);
     setTimeout(() => setIsSpinning(false), 700);
   };

@@ -16,7 +16,6 @@ export default function PostsSection({
   initialCursor: string | null;
 }) {
   const fetchMore = async (cursor: string | null) => {
-    console.log("Fetching more posts with cursor:", cursor);
     const { posts, nextCursor } = await fetchPaginatedPosts(
       userId,
       cursor ?? undefined,

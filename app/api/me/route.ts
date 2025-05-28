@@ -16,26 +16,26 @@ export async function GET() {
     // If no user but a session cookie exists, this might be right after login
     // where the session is still being established
     if (!user && (await hasSessionCookie())) {
-      console.log(
+      console.error(
         "Session cookie exists but no user found. Starting retry sequence..."
       );
 
       // Try multiple times with increasing delays
       const retryDelays = [150, 300, 600];
       for (const delay of retryDelays) {
-        console.log(`Retrying getUser after ${delay}ms delay...`);
+        console.error(`Retrying getUser after ${delay}ms delay...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
         user = await getUser();
 
         if (user) {
-          console.log("User successfully retrieved on retry");
+          console.error("User successfully retrieved on retry");
           break;
         }
       }
     }
 
     if (!user) {
-      console.log("All retries failed. Returning 401 Unauthorized");
+      console.error("All retries failed. Returning 401 Unauthorized");
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 

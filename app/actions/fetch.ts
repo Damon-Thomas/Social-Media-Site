@@ -574,7 +574,6 @@ export async function unfollowUser(userId: string, unfollowId: string) {
 }
 
 export async function sendFriendRequest(userId: string, friendId: string) {
-  console.log("sendFriendRequest", userId, friendId);
   if (userId === friendId) {
     throw new Error("Cannot send friend request to yourself");
   }
@@ -671,7 +670,6 @@ export async function sendFriendRequest(userId: string, friendId: string) {
     }
   }
   // If no existing request, proceed to send a new friend request
-  console.log("Sending new friend request");
   try {
     await prisma.user.update({
       where: { id: userId },
@@ -709,7 +707,6 @@ export async function sendFriendRequest(userId: string, friendId: string) {
     }); // Disconnect if failed at some point
     throw new Error("Failed to send friend request");
   }
-  console.log("Friend request sent successfully");
   return true; // Successfully sent the friend request
 }
 

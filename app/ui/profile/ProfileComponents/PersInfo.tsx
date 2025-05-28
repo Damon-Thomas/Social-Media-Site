@@ -94,14 +94,11 @@ export default function PersInfo({
   }
 
   async function handleFriendRequest() {
-    console.log("Handling friend request for user:", userData.name);
     if (!userData || !fullUser) return;
     const isPending = areFriends === "pending";
     const isReceived = areFriends === "received";
     const isFriend = areFriends === "friend";
-    console.log("isPending:", isPending);
-    console.log("isReceived:", isReceived);
-    console.log("isFriend:", isFriend);
+
     try {
       if (isPending) {
         // Cancel friend request
@@ -119,9 +116,7 @@ export default function PersInfo({
         setFriendCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
       } else {
         // Send friend request
-        console.log("Sending friend request to:", userData.name);
         await sendFriendRequest(fullUser.id, userData.id);
-        console.log("Friend request sent to:", userData.name);
         setAreFriends("pending");
       }
     } catch (error) {

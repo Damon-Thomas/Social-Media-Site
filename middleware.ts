@@ -35,7 +35,6 @@ export default async function middleware(req: NextRequest) {
 
   if (cookie) {
     if (cache.has(cookie)) {
-      console.log("Session found in cache");
       const session = cache.get(cookie) as Session;
       isAuthenticated = !!session.userId;
     } else {

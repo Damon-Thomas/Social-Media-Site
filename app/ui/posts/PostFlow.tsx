@@ -41,7 +41,6 @@ function ReplyFlow({
   const [replyCount, setReplyCount] = useState(comment?._count?.replies || 0);
   const [isLiked, setIsLiked] = useState(false);
   const defaultProfileImage = useDefaultProfileImage();
-  console.log("ReplyFlow comment:", comment?.content, isLast);
 
   useEffect(() => {
     if (!comment || !user) return; // Early exit if dependencies are null

@@ -8,24 +8,21 @@ export const verifySession = cache(async () => {
   try {
     const cookie = (await cookies()).get("session")?.value;
     if (!cookie) {
-      console.log("No session cookie found");
       return null;
     }
 
-    console.log("Session cookie exists, attempting to decrypt");
     const session = await decrypt(cookie);
     if (!session) {
-      console.log("Failed to decrypt session cookie");
+      console.error("Failed to decrypt session cookie");
       return null;
     }
 
     if (!session?.userId) {
-      console.log("Session decrypted but no userId found");
+      console.error("Session decrypted but no userId found");
       return null;
     }
 
     // Verify the user actually exists in the database
-    console.log(`Looking up user with ID: ${session.userId}`);
     const user = await prisma.user.findUnique({
       where: { id: session.userId.toString() },
       select: { id: true },
@@ -33,11 +30,10 @@ export const verifySession = cache(async () => {
 
     // If user doesn't exist in DB, return null
     if (!user) {
-      console.log("User not found in database");
+      console.error("User not found in database");
       return null;
     }
 
-    console.log("Valid session found for user", user.id);
     return { isAuth: true, userId: session.userId };
   } catch (error) {
     console.error("Failed to verify session:", error);
@@ -47,9 +43,8 @@ export const verifySession = cache(async () => {
 
 export const getUser = cache(async () => {
   const session = await verifySession();
-  console.log("Session in getUser:", session);
   if (!session) {
-    console.log("No valid session found in getUser");
+    console.error("No valid session found in getUser");
     return null;
   }
 
@@ -85,7 +80,7 @@ export const getUser = cache(async () => {
 
     return user;
   } catch (error) {
-    console.log("Failed to fetch user", error);
+    console.error("Failed to fetch user", error);
     return null;
   }
 });
@@ -126,7 +121,7 @@ export const getUserFull = cache(async () => {
 
     return data;
   } catch (error) {
-    console.log("Failed to fetch user", error);
+    console.error("Failed to fetch user", error);
     return null;
   }
 });

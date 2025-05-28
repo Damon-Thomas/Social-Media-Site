@@ -37,7 +37,6 @@ export default function PostContent({
       );
       return { items: posts ?? [], nextCursor };
     } else {
-      console.log("user", user);
       const { posts, nextCursor } = await getFollowingPosts(
         user?.id,
         cursor || undefined
@@ -55,10 +54,8 @@ export default function PostContent({
         if (selectedFeed === "global") {
           response = await getGlobalFeedPosts();
         } else {
-          console.log("user", user);
           response = await getFollowingPosts(user?.id);
         }
-        console.log("Initial posts:", response.posts);
         setInitialPosts(response.posts);
         setInitialCursor(response.nextCursor ?? undefined);
       } catch (error) {

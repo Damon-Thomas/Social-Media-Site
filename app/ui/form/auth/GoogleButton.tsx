@@ -32,9 +32,10 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<"svg">) {
 
 export default function GoogleButton() {
   const handleGoogleLogin = () => {
+    const currentOrigin = window.location.origin;
     const params = new URLSearchParams({
       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-      redirect_uri: "http://localhost:3000/auth/oauth-callback?provider=google",
+      redirect_uri: `${currentOrigin}/auth/oauth-callback?provider=google`,
       response_type: "code",
       scope: "openid email profile",
       access_type: "offline",

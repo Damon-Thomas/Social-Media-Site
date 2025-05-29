@@ -17,9 +17,11 @@ import { useEffect, useState } from "react";
 export default function PersInfo({
   userData,
   ownProfile = false,
+  refreshProfileData,
 }: {
   userData: User;
   ownProfile?: boolean;
+  refreshProfileData?: () => Promise<void>;
 }) {
   const defaultProfile = useDefaultProfileImage();
   const fullUser = useFullUser();
@@ -150,7 +152,12 @@ export default function PersInfo({
         <div className="grow flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">{userData.name}</h1>
-            {ownProfile && <EditProfileModal></EditProfileModal>}
+            {ownProfile && (
+              <EditProfileModal
+                bio={userData?.bio || ""}
+                refreshProfileData={refreshProfileData}
+              ></EditProfileModal>
+            )}
             {!ownProfile && (
               <div className="flex gap-2">
                 <Button

@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/app/ui/core/Modal";
 import { useTheme } from "next-themes";
 import EditProfileForm from "@/app/ui/form/editProfile/EditProfileForm";
 
-export default function EditProfileModal() {
+export default function EditProfileModal({
+  bio,
+  refreshProfileData,
+}: {
+  bio?: string;
+  refreshProfileData?: () => Promise<void>;
+}) {
   const [hidden, setHidden] = useState(true);
   const { theme } = useTheme();
-  const [longText, setLongText] = useState("");
+  const [longText, setLongText] = useState(bio || "");
+
+  useEffect(() => {
+    setLongText(bio || "");
+  }, [bio]);
 
   return (
     <>
@@ -25,7 +35,6 @@ export default function EditProfileModal() {
         `}
         onClick={() => {
           setHidden(!hidden);
-          setLongText("");
         }}
       >
         <path
@@ -39,7 +48,12 @@ export default function EditProfileModal() {
         setHidden={setHidden}
         className="bg-[var(--grey)] min-w-[300px]"
       >
-        <EditProfileForm longText={longText} setLongText={setLongText} />
+        <EditProfileForm
+          longText={longText}
+          setLongText={setLongText}
+          onSuccess={() => setHidden(true)}
+          refreshProfileData={refreshProfileData}
+        />
       </Modal>
     </>
   );

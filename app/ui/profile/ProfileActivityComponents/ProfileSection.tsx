@@ -23,6 +23,7 @@ export interface ProfileProps {
   activeTab: ActiveProfileTab;
   setActiveTab: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
   ownProfile?: boolean; // Optional prop to indicate if it's the user's own profile
+  refreshProfileData?: () => Promise<void>; // Optional refresh function
 }
 
 export default function ProfileSection({
@@ -40,6 +41,7 @@ export default function ProfileSection({
   activeTab,
   setActiveTab,
   ownProfile = false, // Default to false if not provided
+  refreshProfileData,
 }: ProfileProps) {
   const NAVIGATOR_HEIGHT = 64;
 
@@ -57,7 +59,11 @@ export default function ProfileSection({
   return (
     <div className="grid grid-cols-[1fr] gap-6 w-full ">
       <div className="flex flex-col min-w-0">
-        <PersInfo ownProfile={ownProfile} userData={userData} />
+        <PersInfo
+          ownProfile={ownProfile}
+          userData={userData}
+          refreshProfileData={refreshProfileData}
+        />
         <ProfileRemote
           userData={userData}
           initialActivity={initialActivity}

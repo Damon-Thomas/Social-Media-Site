@@ -1,7 +1,7 @@
 import LongInput from "../LongInput";
 import InputWrapper from "../InputWrapper";
 import Button from "../../core/Button";
-import { useCurrentUser } from "@/app/context/UserContext";
+import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { useActionState } from "react";
 import Image from "next/image";
 import defaultProfileWhite from "@/public/defaultProfileDark.svg";
@@ -11,11 +11,16 @@ import type { formState } from "@/app/actions/profileActions";
 export default function EditProfileForm({
   longText,
   setLongText,
+  onSuccess,
+  refreshProfileData,
 }: {
   longText?: string;
   setLongText?: React.Dispatch<React.SetStateAction<string>>;
+  onSuccess?: () => void;
+  refreshProfileData?: () => Promise<void>;
 }) {
   const user = useCurrentUser();
+  const refreshUser = useRefreshUser();
 
   const [state, action, isPending] = useActionState(
     actionHandler,
@@ -40,8 +45,29 @@ export default function EditProfileForm({
 
       // The saveBio function returns an actionState with prevState property
       if (response?.prevState) {
+        // Check if the update was successful
+        if (response.prevState.success) {
+          // Refresh user data to update the UI immediately
+          if (refreshUser) {
+            await refreshUser();
+          }
+          // Refresh profile data to update the userData
+          if (refreshProfileData) {
+            await refreshProfileData();
+          }
+          // Close the modal
+          onSuccess?.();
+        }
         return response.prevState;
       } else {
+        // Fallback success case
+        if (refreshUser) {
+          await refreshUser();
+        }
+        if (refreshProfileData) {
+          await refreshProfileData();
+        }
+        onSuccess?.();
         return {
           success: true,
           errors: undefined,

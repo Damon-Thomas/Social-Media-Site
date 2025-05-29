@@ -58,6 +58,7 @@ export const getUser = cache(async () => {
         name: true,
         email: true,
         image: true,
+        bio: true,
         createdAt: true,
         updatedAt: true,
         following: {

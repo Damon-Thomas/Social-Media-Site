@@ -68,6 +68,16 @@ export default function Profile() {
   // const SIDEBAR_TOP_OFFSET_PX = 20; // Your original top-5 offset
   // const initialTop = NAVIGATOR_HEIGHT_PX + SIDEBAR_TOP_OFFSET_PX;
 
+  const refreshProfileData = async () => {
+    if (!user?.id) return;
+    try {
+      const data = await getData(user.id);
+      setInitialData(data);
+    } catch (error) {
+      console.error("Failed to refresh profile data:", error);
+    }
+  };
+
   useEffect(() => {
     // Fetch initial data on the client
     getData(user?.id || "")
@@ -125,6 +135,7 @@ export default function Profile() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           ownProfile={true} // Pass the ownProfile prop
+          refreshProfileData={refreshProfileData}
         />
       </div>
       {/* Right Sidebar - Use sticky positioning */}

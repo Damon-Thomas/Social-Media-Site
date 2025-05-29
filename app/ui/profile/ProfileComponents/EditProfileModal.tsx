@@ -6,6 +6,7 @@ import EditProfileForm from "@/app/ui/form/editProfile/EditProfileForm";
 export default function EditProfileModal() {
   const [hidden, setHidden] = useState(true);
   const { theme } = useTheme();
+  const [longText, setLongText] = useState("");
 
   return (
     <>
@@ -22,7 +23,10 @@ export default function EditProfileModal() {
           }
           hover:scale-110
         `}
-        onClick={() => setHidden(!hidden)}
+        onClick={() => {
+          setHidden(!hidden);
+          setLongText("");
+        }}
       >
         <path
           fill="currentColor"
@@ -35,7 +39,7 @@ export default function EditProfileModal() {
         setHidden={setHidden}
         className="bg-[var(--grey)] min-w-[300px]"
       >
-        <EditProfileForm />
+        <EditProfileForm longText={longText} setLongText={setLongText} />
       </Modal>
     </>
   );

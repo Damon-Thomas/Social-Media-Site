@@ -23,7 +23,7 @@ export default function Modal({
     >
       {/* Background overlay */}
       <div
-        className="absolute inset-0 bg-[var(--rdmono-70)]  transition-opacity duration-300"
+        className="absolute inset-0 bg-[var(--rdmono-90)]  transition-opacity duration-300"
         onClick={() => {
           if (setHidden) {
             setHidden(!hidden);

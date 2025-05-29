@@ -7,7 +7,6 @@ import { EssentialPost } from "@/app/lib/definitions";
 import { useCurrentUser } from "@/app/context/UserContext";
 import Post from "@/app/ui/posts/Post";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
-import CommentModal from "./comments/CommentModal";
 
 export default function PostContent({
   selectedFeed,
@@ -25,9 +24,6 @@ export default function PostContent({
     undefined
   );
   const [openPostComment, setOpenPostComment] = useState("");
-  const [currentPostId, setCurrentPostId] = useState<string | null | undefined>(
-    undefined
-  ); // State to store the current post ID
 
   // Adjust fetchMore to accept string | null
   const fetchMore = async (cursor: string | null) => {
@@ -109,11 +105,7 @@ export default function PostContent({
               <>
                 {filteredPosts.map((post: EssentialPost) => (
                   <Post
-                    setPostId={
-                      setCurrentPostId as React.Dispatch<
-                        React.SetStateAction<string | null | undefined>
-                      >
-                    }
+                    setPostId={() => {}} // Placeholder function since it's not really used
                     openPostComment={openPostComment}
                     setOpenPostComment={setOpenPostComment}
                     key={`post-${selectedFeed}-${post?.id}`}

@@ -77,7 +77,7 @@ export default function CombinedLikedSection({
   );
 
   return (
-    <div className="space-y-4 overflow-y-auto grow pr-2">
+    <div className="space-y-4 overflow-y-auto grow ">
       {items.map((item) => {
         const when = item?.createdAt?.toLocaleDateString("en-US", {
           month: "short",

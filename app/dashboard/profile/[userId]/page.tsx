@@ -108,7 +108,7 @@ export default function ProfilePage() {
 
   return (
     // Adjust parent layout: Use flex, items-start, gap-6. Remove justify-end and large right padding.
-    <div className="max-w-5xl flex items-start gap-6 p-2 w-full">
+    <div className="max-w-5xl flex items-start gap-6 p-2 pt-6 w-full">
       {/* Main Profile Content Area - Takes available space */}
       {/* Added max-width constraint to prevent overlap on medium screens */}
       <div className="flex-1 min-w-0 max-w-full ">

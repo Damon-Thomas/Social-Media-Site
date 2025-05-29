@@ -148,46 +148,48 @@ export default function PersInfo({
         className="self-center rounded-full w-20 h-20 md:w-40 md:h-40 object-cover mb-4 shrink-0"
         priority
       />
-      <div className="flex grow">
+      <div className="flex grow min-h-full">
         <div className="grow flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">{userData.name}</h1>
-            {ownProfile && (
-              <EditProfileModal
-                bio={userData?.bio || ""}
-                refreshProfileData={refreshProfileData}
-              ></EditProfileModal>
-            )}
-            {!ownProfile && (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleFollowClick}
-                  style={!isFollowing ? "default" : "bordered"}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </Button>
-                <Button
-                  onClick={handleFriendRequest}
-                  style={
-                    areFriends === "none" || areFriends === "received"
-                      ? "default"
-                      : "bordered"
-                  }
-                >
-                  {areFriends === "friend"
-                    ? "Unfriend"
-                    : areFriends === "none"
-                    ? "Befriend"
-                    : areFriends === "received"
-                    ? "Accept"
-                    : "Pending"}
-                </Button>
-              </div>
-            )}
+          <div className="flex flex-col justify-start gap-2 h-full">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold">{userData.name}</h1>
+              {ownProfile && (
+                <EditProfileModal
+                  bio={userData?.bio || ""}
+                  refreshProfileData={refreshProfileData}
+                ></EditProfileModal>
+              )}
+              {!ownProfile && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleFollowClick}
+                    style={!isFollowing ? "default" : "bordered"}
+                  >
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </Button>
+                  <Button
+                    onClick={handleFriendRequest}
+                    style={
+                      areFriends === "none" || areFriends === "received"
+                        ? "default"
+                        : "bordered"
+                    }
+                  >
+                    {areFriends === "friend"
+                      ? "Unfriend"
+                      : areFriends === "none"
+                      ? "Befriend"
+                      : areFriends === "received"
+                      ? "Accept"
+                      : "Pending"}
+                  </Button>
+                </div>
+              )}
+            </div>
+            <BioText>{userData.bio}</BioText>
           </div>
-          <BioText>{userData.bio}</BioText>
 
-          <div className="flex gap-8 font-bold justify-between wrap">
+          <div className="flex font-bold gap-4 gap-y-0 justify-between flex-wrap">
             <p className="whitespace-nowrap w-fit">
               {`Joined:
                 ${userData.createdAt.toLocaleDateString("en-US", {

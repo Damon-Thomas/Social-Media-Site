@@ -55,7 +55,7 @@ export default function CommentsSection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto pr-2">
+    <div className="space-y-4 grow overflow-y-auto ">
       {comments.map((comment) => (
         <div key={comment?.id} className="p-4 border rounded-lg">
           <Link

@@ -41,7 +41,7 @@ export default function ActivitySection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto pr-2">
+    <div className="space-y-4 grow overflow-y-auto ">
       {activities.map((act) => {
         const when = act?.createdAt.toLocaleDateString("en-US", {
           month: "short",

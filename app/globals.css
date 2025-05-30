@@ -32,6 +32,7 @@ body {
   --rmono: #f0f0f0;
   --dmono: #0a0a0a;
   --rdmono: #e6e9ea;
+  --rdmonoh: #f8f8f8;
   --dmono-90: #0a0a0ae6; /* 90% opacity */
   --doverlay: #0a0a0ae6;
   --rdmono-90: #e6e9eae6; /* 90% opacity */
@@ -69,6 +70,8 @@ body {
   --rmono: #171717;
   --dmono: #e6e9ea;
   --rdmono: #0a0a0a;
+  --rdmonoh: #040404;
+
   --dmono-90: #e6e9eae6; /* 90% opacity */
   --rdmono-90: #0a0a0ae6; /* 90% opacity */
   --dmono-70: #e6e9eab3; /* 70% opacity */

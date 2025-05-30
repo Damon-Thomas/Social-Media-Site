@@ -60,7 +60,7 @@ export default function CommentsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="">
       {comments.map((comment, index) => {
         if (!comment) return null;
 

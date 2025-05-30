@@ -60,7 +60,7 @@ export default function LikedCommentsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="">
       {likedComments.map((comment) => {
         if (!comment) return null;
 

@@ -46,7 +46,7 @@ export default function ActivitySection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto ">
+    <div className=" grow overflow-y-auto ">
       {activities.map((act) => {
         switch (act?.type) {
           case "post": {

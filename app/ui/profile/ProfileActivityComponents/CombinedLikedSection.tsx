@@ -77,7 +77,7 @@ export default function CombinedLikedSection({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="">
       {items.map((item) => {
         if (item?.type === "likedPost") {
           const p = item.payload;

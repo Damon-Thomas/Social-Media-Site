@@ -41,15 +41,15 @@ export default function PostsSection({
     return <div className="text-center py-4">No posts found</div>;
   }
   return (
-    <div className="space-y-4">
-      {posts.map((post) => {
+    <div className="">
+      {posts.map((post, index) => {
         if (!post) return null;
 
         return (
           <ActivityItem
             key={`posts-section-${userId}-${
               post.id
-            }-${post.createdAt.getTime()}`}
+            }-${post.createdAt.getTime()}-${index}`}
             data={{
               id: post.id,
               cOrp: "post" as const,

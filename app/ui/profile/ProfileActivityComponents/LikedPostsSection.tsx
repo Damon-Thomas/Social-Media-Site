@@ -50,7 +50,7 @@ export default function LikedPostsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="">
       {likedPosts.map((post) => {
         if (!post) return null;
 

@@ -10,7 +10,7 @@ import commentText from "@/public/comment.svg";
 import ThemedIcon from "@/app/ui/core/ThemedIcon";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { doesUserLikePost, likePost } from "@/app/actions/postActions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PopDownComment from "./comments/PopDownComment";
 
 export default function Post({
@@ -32,6 +32,9 @@ export default function Post({
   const [likeCount, setLikeCount] = useState(post?._count?.likedBy || 0);
   const [commentCount, setCommentCount] = useState(post?._count?.comments || 0); // Initialize comment count
   const [iconLoading, setIconLoading] = useState(true); // Create a loading state specifically for the icon
+  const [expanded, setExpanded] = useState(false);
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -78,6 +81,14 @@ export default function Post({
     setLikeCount(post?._count?.likedBy || 0);
   }, [post?._count?.likedBy]);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsOverflowing(
+        contentRef.current.scrollHeight > contentRef.current.clientHeight
+      );
+    }
+  }, [post?.content, expanded]);
+
   return (
     <div className="py-2 md:py-4 border-b-1 border-[var(--borderc)]">
       <div className="flex w-full  ">
@@ -105,16 +116,75 @@ export default function Post({
 
         <div className="flex flex-col flex-grow min-w-0">
           <Link href={`dashboard/posts/${post?.id}`}>
-            {" "}
             <div className="flex items-start justify-between gap-2">
               <span className="font-extrabold">{post?.author?.name}</span>
               <p className="text-sm text-[var(--dull)] ">
                 {post?.createdAt && formatRelativeTime(post.createdAt, true)}
               </p>
             </div>
-            <p className="whitespace-pre-wrap line-clamp-5 text-[var(--dmono)]">
-              {post?.content}
-            </p>
+            <div className="relative">
+              <p
+                ref={contentRef}
+                className={`whitespace-pre-wrap text-[var(--dmono)] ${
+                  expanded ? "" : "max-h-[400px] overflow-hidden"
+                } transition-all duration-300`}
+                style={{
+                  WebkitMaskImage:
+                    !expanded && isOverflowing
+                      ? "linear-gradient(180deg, #000 60%, transparent 100%)"
+                      : undefined,
+                }}
+              >
+                {post?.content}
+              </p>
+              {!expanded && isOverflowing && (
+                <div className="absolute bottom-0 left-0 w-full h-16 pointer-events-none bg-gradient-to-b from-transparent to-[var(--rdmono-70)]" />
+              )}
+            </div>
+            {!expanded && isOverflowing && (
+              <button
+                className="w-full my-2 text-xs text-[var(--dull)] hover:text-[var(--dmono)] font-bold underline underline-offset-2 decoration-[var(--primary)] opacity-80 transition-all"
+                style={{
+                  textUnderlinePosition: "under",
+                  textDecorationColor: "transparent",
+                  transition: "text-decoration-color 0.2s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.textDecorationColor = "var(--primary)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.textDecorationColor = "transparent")
+                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  setExpanded(true);
+                }}
+              >
+                Show more
+              </button>
+            )}
+            {expanded && (
+              <button
+                className="w-full my-2 text-xs text-[var(--dull)] hover:text-[var(--dmono)] font-bold underline underline-offset-2 decoration-[var(--primary)] opacity-80 transition-all"
+                style={{
+                  textUnderlinePosition: "under",
+                  textDecorationColor: "transparent",
+                  transition: "text-decoration-color 0.2s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.textDecorationColor = "var(--primary)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.textDecorationColor = "transparent")
+                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  setExpanded(false);
+                }}
+              >
+                Show less
+              </button>
+            )}
           </Link>
           <div className="flex items-center gap-4 mt-0.5">
             <div className="flex items-center gap-1">

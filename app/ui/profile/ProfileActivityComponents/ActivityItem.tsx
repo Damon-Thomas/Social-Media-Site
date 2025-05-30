@@ -7,7 +7,7 @@ import Link from "next/link";
 import ThemedIcon from "../../core/ThemedIcon";
 import flame from "@/public/flame.svg";
 import commentText from "@/public/comment.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PopDownComment from "../../posts/comments/PopDownComment";
 import { likePost, doesUserLikePost } from "@/app/actions/postActions";
 import { likeComment, isLikedByUser } from "@/app/actions/commentActions";
@@ -48,6 +48,11 @@ export default function ActivityItem({
   const [iconSize, setIconSize] = useState(20);
   const [commentCount, setCommentCount] = useState(data.commentCount || 0);
   const [mounted, setMounted] = useState(false);
+
+  // Add state and ref for overflow handling
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -97,6 +102,14 @@ export default function ActivityItem({
 
     checkIfLiked();
   }, [currentUser, data.id, pOrc, data.cOrp]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsOverflowing(
+        contentRef.current.scrollHeight > contentRef.current.clientHeight
+      );
+    }
+  }, [data.content, expanded]);
 
   const getHref = () => {
     if (pOrc === "post" || data.cOrp === "post") {
@@ -150,7 +163,24 @@ export default function ActivityItem({
   }
 
   return (
-    <div className="py-2 md:py-4 border-b-1 border-[var(--borderc)]">
+    <div
+      className="p-2 md:py-4 border-b-1 border-[var(--borderc)] hover:bg-[var(--rdmonoh)] transition-colors cursor-pointer"
+      onClick={(e) => {
+        // Prevent redirect if:
+        // - a link was clicked
+        // - a like/comment icon was clicked
+        // - the popup is open for this item
+        const target = e.target as HTMLElement;
+        if (
+          target.closest("a") ||
+          target.closest('[data-interactive="true"]') ||
+          openPostComment === data.id
+        ) {
+          return;
+        }
+        window.location.href = getHref();
+      }}
+    >
       <div className="flex w-full">
         <div className="flex-shrink-0 mr-2">
           <Link href={`/dashboard/profile/${activityUser?.id}`}>
@@ -165,7 +195,7 @@ export default function ActivityItem({
                     : "/defaultProfileDark.svg"
                 }
                 alt={`${activityUser?.name || "User"}'s profile picture`}
-                className="rounded-full h-8 w-8 flex-shrink-0"
+                className="rounded-full h-8 w-8 flex-shrink-0 hover:opacity-80 transition-opacity"
                 width={32}
                 height={32}
                 loading="lazy"
@@ -180,7 +210,7 @@ export default function ActivityItem({
         <div className="flex flex-col flex-grow min-w-0">
           <div className="flex items-start justify-between gap-2">
             <Link href={`/dashboard/profile/${activityUser?.id}`}>
-              <span className="inline-block font-extrabold hover:underline underline-offset-1 decoration-[var(--primary)] decoration-2 hover:scale-105 transition-transform">
+              <span className="inline-block font-extrabold hover:underline underline-offset-1 decoration-[var(--primary)] decoration-2 ">
                 {activityUser?.name}
               </span>
             </Link>
@@ -190,13 +220,72 @@ export default function ActivityItem({
               {showAsLiked ? pOrc : pOrc ? capitalize(pOrc) : ""}
             </p>
           </div>
-          <Link href={getHref()}>
-            <p className="whitespace-pre-wrap  text-[var(--dmono)]">
-              {data.content || "Content not available."}
-            </p>
-          </Link>
+
+          <p
+            ref={contentRef}
+            className={`whitespace-pre-wrap text-[var(--dmono)] ${
+              expanded ? "" : "max-h-[400px] overflow-hidden"
+            } transition-all duration-300`}
+            style={{
+              WebkitMaskImage:
+                !expanded && isOverflowing
+                  ? "linear-gradient(180deg, #000 60%, transparent 100%)"
+                  : undefined,
+            }}
+          >
+            {data.content || "Content not available."}
+          </p>
+          {!expanded && isOverflowing && (
+            <div className="absolute bottom-0 left-0 w-full h-16 pointer-events-none bg-gradient-to-b from-transparent to-[var(--rdmono-70)]" />
+          )}
+          {!expanded && isOverflowing && (
+            <button
+              className="my-2 text-xs text-[var(--dull)] hover:text-[var(--dmono)] font-bold underline underline-offset-2 decoration-[var(--primary)] opacity-80 transition-all"
+              style={{
+                textUnderlinePosition: "under",
+                textDecorationColor: "transparent",
+                transition: "text-decoration-color 0.2s",
+              }}
+              data-interactive="true"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.textDecorationColor = "var(--primary)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.textDecorationColor = "transparent")
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                setExpanded(true);
+              }}
+            >
+              Show more
+            </button>
+          )}
+          {expanded && (
+            <button
+              className="my-2 text-xs text-[var(--dull)] hover:text-[var(--dmono)] font-bold underline underline-offset-2 decoration-[var(--primary)] opacity-80 transition-all"
+              style={{
+                textUnderlinePosition: "under",
+                textDecorationColor: "transparent",
+                transition: "text-decoration-color 0.2s",
+              }}
+              data-interactive="true"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.textDecorationColor = "var(--primary)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.textDecorationColor = "transparent")
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                setExpanded(false);
+              }}
+            >
+              Show less
+            </button>
+          )}
           <div className="flex items-center gap-4 mt-0.5 md:mt-1 pt-1 -translate-x-2 ">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" data-interactive="true">
               {iconLoading ? (
                 <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
               ) : (
@@ -212,7 +301,11 @@ export default function ActivityItem({
               )}
             </div>
 
-            <div onClick={commentHandler} className="flex items-center gap-1">
+            <div
+              onClick={commentHandler}
+              className="flex items-center gap-1"
+              data-interactive="true"
+            >
               <ThemedIcon
                 count={commentCount}
                 src={commentText.src}

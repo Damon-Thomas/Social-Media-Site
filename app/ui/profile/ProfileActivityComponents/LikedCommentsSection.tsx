@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedComments } from "@/app/actions/fetch";
 import type { Comment } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 10;
@@ -11,10 +12,14 @@ export default function LikedCommentsSection({
   userId,
   initialComments = [],
   initialCursor = null,
+  openPostComment,
+  setOpenPostComment,
 }: {
   userId: string;
   initialComments: Comment[];
   initialCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { comments, nextCursor } = await fetchPaginatedLikedComments(
@@ -55,7 +60,7 @@ export default function LikedCommentsSection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto ">
+    <div className="space-y-4">
       {likedComments.map((comment) => {
         if (!comment) return null;
 
@@ -69,6 +74,7 @@ export default function LikedCommentsSection({
               likeCount: comment.likedBy?.length || 0,
               commentCount: comment.replies?.length || 0,
               createdAt: comment.createdAt.toISOString(),
+              postId: comment.postId || undefined, // Add postId for comments
             }}
             user={{
               id: comment.authorId || "",
@@ -77,6 +83,8 @@ export default function LikedCommentsSection({
             }}
             pOrc="comment"
             showAsLiked={true}
+            openPostComment={openPostComment}
+            setOpenPostComment={setOpenPostComment}
           />
         );
       })}

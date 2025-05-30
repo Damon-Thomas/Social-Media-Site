@@ -1,4 +1,5 @@
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import InfoContainer from "./InfoContainer";
 import ActivitySection from "./ActivitySection";
 import PostsSection from "../ProfileActivityComponents/PostsSection";
@@ -12,34 +13,44 @@ type ProfileInfoProps =
       userData: User;
       initialContent: ActivityItem[];
       cursor: string | null;
+      openPostComment?: string;
+      setOpenPostComment?: Dispatch<SetStateAction<string>>;
     }
   | {
       type: "posts";
       userData: User;
       initialContent: Post[];
       cursor: string | null;
+      openPostComment?: string;
+      setOpenPostComment?: Dispatch<SetStateAction<string>>;
     }
   | {
       type: "comments";
       userData: User;
       initialContent: Comment[];
       cursor: string | null;
+      openPostComment?: string;
+      setOpenPostComment?: Dispatch<SetStateAction<string>>;
     }
   | {
       type: "likedPosts";
       userData: User;
       initialContent: Post[];
       cursor: string | null;
+      openPostComment?: string;
+      setOpenPostComment?: Dispatch<SetStateAction<string>>;
     }
   | {
       type: "likedComments";
       userData: User;
       initialContent: Comment[];
       cursor: string | null;
+      openPostComment?: string;
+      setOpenPostComment?: Dispatch<SetStateAction<string>>;
     };
 
 export default function ProfileInfo(props: ProfileInfoProps) {
-  const { type, userData, cursor } = props;
+  const { type, userData, cursor, openPostComment, setOpenPostComment } = props;
 
   let content;
   switch (type) {
@@ -49,6 +60,8 @@ export default function ProfileInfo(props: ProfileInfoProps) {
           userId={userData?.id || ""}
           initialActivities={props.initialContent}
           initialCursor={cursor}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       );
       break;
@@ -58,6 +71,8 @@ export default function ProfileInfo(props: ProfileInfoProps) {
           userId={userData?.id || ""}
           initialPosts={props.initialContent}
           initialCursor={cursor}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       );
       break;
@@ -67,6 +82,8 @@ export default function ProfileInfo(props: ProfileInfoProps) {
           userId={userData?.id || ""}
           initialComments={props.initialContent}
           initialCursor={cursor}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       );
       break;
@@ -76,6 +93,8 @@ export default function ProfileInfo(props: ProfileInfoProps) {
           userId={userData?.id || ""}
           initialPosts={props.initialContent}
           initialCursor={cursor}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       );
       break;
@@ -85,6 +104,8 @@ export default function ProfileInfo(props: ProfileInfoProps) {
           userId={userData?.id || ""}
           initialComments={props.initialContent}
           initialCursor={cursor}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       );
       break;

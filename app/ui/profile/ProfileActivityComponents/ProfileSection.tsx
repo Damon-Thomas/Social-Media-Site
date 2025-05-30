@@ -2,6 +2,7 @@
 
 import type { User, Post, Comment, ActivityItem } from "@/app/lib/definitions";
 import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import PersInfo from "@/app/ui/profile/ProfileComponents/PersInfo";
 import ProfileRemote from "@/app/ui/profile/ProfileRemote/ProfileRemote";
 
@@ -45,6 +46,9 @@ export default function ProfileSection({
 }: ProfileProps) {
   const NAVIGATOR_HEIGHT = 64;
 
+  // Shared state for managing which comment dropdown is open across all sections
+  const [openPostComment, setOpenPostComment] = useState("");
+
   if (!userData) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
@@ -79,6 +83,8 @@ export default function ProfileSection({
           navigatorHeight={NAVIGATOR_HEIGHT}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          openPostComment={openPostComment}
+          setOpenPostComment={setOpenPostComment}
         />
       </div>
     </div>

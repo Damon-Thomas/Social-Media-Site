@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedActivity } from "@/app/actions/fetch";
 import type { ActivityItem, Post, Comment } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItemComponent from "../ProfileActivityComponents/ActivityItem";
 
 const ITEMS_PER_PAGE = 10;
@@ -11,10 +12,14 @@ export default function ActivitySection({
   userId,
   initialActivities = [],
   initialCursor = null,
+  openPostComment,
+  setOpenPostComment,
 }: {
   userId: string;
   initialActivities: ActivityItem[];
   initialCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { activities, nextCursor } = await fetchPaginatedActivity(
@@ -72,6 +77,8 @@ export default function ActivitySection({
                     : undefined
                 }
                 pOrc="post"
+                openPostComment={openPostComment}
+                setOpenPostComment={setOpenPostComment}
               />
             );
           }
@@ -88,6 +95,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
+              postId: c?.postId || undefined, // Add postId for comments
             };
             return (
               <ActivityItemComponent
@@ -103,6 +111,8 @@ export default function ActivitySection({
                     : undefined
                 }
                 pOrc="comment"
+                openPostComment={openPostComment}
+                setOpenPostComment={setOpenPostComment}
               />
             );
           }
@@ -134,6 +144,8 @@ export default function ActivitySection({
                     : undefined
                 }
                 pOrc="post"
+                openPostComment={openPostComment}
+                setOpenPostComment={setOpenPostComment}
               />
             );
           }
@@ -150,6 +162,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
+              postId: c?.postId || undefined, // Add postId for comments
             };
             return (
               <ActivityItemComponent
@@ -165,6 +178,8 @@ export default function ActivitySection({
                     : undefined
                 }
                 pOrc="comment"
+                openPostComment={openPostComment}
+                setOpenPostComment={setOpenPostComment}
               />
             );
           }

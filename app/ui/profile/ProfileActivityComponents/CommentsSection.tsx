@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedComments } from "@/app/actions/fetch";
 import type { Comment } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 5;
@@ -11,10 +12,14 @@ export default function CommentsSection({
   userId,
   initialComments = [],
   initialCursor = null,
+  openPostComment,
+  setOpenPostComment,
 }: {
   userId: string;
   initialComments: Comment[];
   initialCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { comments, nextCursor } = await fetchPaginatedComments(
@@ -55,7 +60,7 @@ export default function CommentsSection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto ">
+    <div className="space-y-4">
       {comments.map((comment, index) => {
         if (!comment) return null;
 
@@ -69,6 +74,7 @@ export default function CommentsSection({
               likeCount: comment.likedBy?.length || 0,
               commentCount: comment.replies?.length || 0,
               createdAt: comment.createdAt.toISOString(),
+              postId: comment.postId || undefined, // Add postId for comments
             }}
             user={{
               id: comment.authorId || "",
@@ -76,6 +82,8 @@ export default function CommentsSection({
               profileImage: comment.author?.image || undefined,
             }}
             pOrc="comment"
+            openPostComment={openPostComment}
+            setOpenPostComment={setOpenPostComment}
           />
         );
       })}

@@ -20,6 +20,7 @@ export type ActivityItem = {
   likeCount: number;
   commentCount: number;
   createdAt: string;
+  postId?: string; // Added to support comments that need parent post ID
 };
 
 export default function ActivityItem({
@@ -27,11 +28,15 @@ export default function ActivityItem({
   user: activityUser,
   pOrc,
   showAsLiked = false, // New prop to indicate this item is in a "liked" section
+  openPostComment,
+  setOpenPostComment,
 }: {
   data: ActivityItem;
   user?: { id: string; name: string; profileImage?: string };
   pOrc?: "post" | "comment";
   showAsLiked?: boolean; // Optional prop to show "Liked Post/Comment" text
+  openPostComment?: string;
+  setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { theme } = useTheme();
   const currentUser = useCurrentUser();
@@ -42,7 +47,6 @@ export default function ActivityItem({
   const [iconLoading, setIconLoading] = useState(true);
   const [iconSize, setIconSize] = useState(20);
   const [commentCount, setCommentCount] = useState(data.commentCount || 0);
-  const [openPostComment, setOpenPostComment] = useState("");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -134,6 +138,9 @@ export default function ActivityItem({
   }
 
   function commentHandler() {
+    // Only proceed if we have the shared state management functions
+    if (!setOpenPostComment) return;
+
     // Toggle comment visibility like in the dashboard
     if (openPostComment === data.id) {
       setOpenPostComment("");
@@ -171,19 +178,24 @@ export default function ActivityItem({
         </div>
 
         <div className="flex flex-col flex-grow min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <Link href={`/dashboard/profile/${activityUser?.id}`}>
+              <span className="inline-block font-extrabold hover:underline underline-offset-1 decoration-[var(--primary)] decoration-2 hover:scale-105 transition-transform">
+                {activityUser?.name}
+              </span>
+            </Link>
+
+            <p className="text-sm text-[var(--dull)]">
+              {showAsLiked && "Liked "}
+              {showAsLiked ? pOrc : pOrc ? capitalize(pOrc) : ""}
+            </p>
+          </div>
           <Link href={getHref()}>
-            <div className="flex items-start justify-between gap-2">
-              <span className="font-extrabold">{activityUser?.name}</span>
-              <p className="text-sm text-[var(--dull)]">
-                {showAsLiked && "Liked "}
-                {showAsLiked ? pOrc : pOrc ? capitalize(pOrc) : ""}
-              </p>
-            </div>
-            <p className="whitespace-pre-wrap line-clamp-5 text-[var(--dmono)]">
+            <p className="whitespace-pre-wrap  text-[var(--dmono)]">
               {data.content || "Content not available."}
             </p>
           </Link>
-          <div className="flex items-center gap-4 mt-0.5">
+          <div className="flex items-center gap-4 mt-0.5 md:mt-1 pt-1 -translate-x-2 ">
             <div className="flex items-center gap-1">
               {iconLoading ? (
                 <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
@@ -211,9 +223,17 @@ export default function ActivityItem({
           </div>
         </div>
       </div>
-      {(pOrc === "post" || data.cOrp === "post") && (
+      {/* Show PopDownComment for both posts and comments when shared state is available */}
+      {setOpenPostComment && (
         <PopDownComment
-          postId={data.id}
+          postId={
+            pOrc === "post" || data.cOrp === "post"
+              ? data.id
+              : data.postId || data.id
+          }
+          parentId={
+            pOrc === "comment" || data.cOrp === "comment" ? data.id : undefined
+          }
           hidden={openPostComment !== data.id}
           creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--dull)]"
           narrow={true}

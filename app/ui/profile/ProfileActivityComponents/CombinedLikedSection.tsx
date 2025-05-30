@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedActivity } from "@/app/actions/fetch";
 import type { Post, Comment } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItemComponent from "./ActivityItem";
 
 export type LikedItem =
@@ -15,6 +16,8 @@ export default function CombinedLikedSection({
   userId,
   initialLikedPosts,
   initialLikedComments,
+  openPostComment,
+  setOpenPostComment,
 }: // likedPostsCursor,
 // likedCommentsCursor,
 {
@@ -23,6 +26,8 @@ export default function CombinedLikedSection({
   initialLikedComments: Comment[];
   likedPostsCursor: string | null;
   likedCommentsCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   // Merge initial data into a combined array sorted descending by createdAt.
   const initialItems: LikedItem[] = [
@@ -72,7 +77,7 @@ export default function CombinedLikedSection({
   );
 
   return (
-    <div className="space-y-4 overflow-y-auto grow ">
+    <div className="space-y-4">
       {items.map((item) => {
         if (item?.type === "likedPost") {
           const p = item.payload;
@@ -104,6 +109,8 @@ export default function CombinedLikedSection({
               }
               pOrc="post"
               showAsLiked={true}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           );
         } else {
@@ -120,6 +127,7 @@ export default function CombinedLikedSection({
                 day: "numeric",
                 year: "numeric",
               }) || "",
+            postId: c?.postId || undefined, // Add postId for comments
           };
           return (
             <ActivityItemComponent
@@ -136,6 +144,8 @@ export default function CombinedLikedSection({
               }
               pOrc="comment"
               showAsLiked={true}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           );
         }

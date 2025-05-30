@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 5;
@@ -11,10 +12,14 @@ export default function LikedPostsSection({
   userId,
   initialPosts = [],
   initialCursor = null,
+  openPostComment,
+  setOpenPostComment,
 }: {
   userId: string;
   initialPosts: Post[];
   initialCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedLikedPosts(
@@ -45,7 +50,7 @@ export default function LikedPostsSection({
   }
 
   return (
-    <div className="space-y-4 grow overflow-y-auto">
+    <div className="space-y-4">
       {likedPosts.map((post) => {
         if (!post) return null;
 
@@ -67,6 +72,8 @@ export default function LikedPostsSection({
             }}
             pOrc="post"
             showAsLiked={true}
+            openPostComment={openPostComment}
+            setOpenPostComment={setOpenPostComment}
           />
         );
       })}

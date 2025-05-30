@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
+import type { Dispatch, SetStateAction } from "react";
 import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 5;
@@ -11,10 +12,14 @@ export default function PostsSection({
   userId,
   initialPosts = [],
   initialCursor = null,
+  openPostComment,
+  setOpenPostComment,
 }: {
   userId: string;
   initialPosts: Post[];
   initialCursor: string | null;
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedPosts(
@@ -36,7 +41,7 @@ export default function PostsSection({
     return <div className="text-center py-4">No posts found</div>;
   }
   return (
-    <div className="space-y-4 grow overflow-y-auto ">
+    <div className="space-y-4">
       {posts.map((post) => {
         if (!post) return null;
 
@@ -59,6 +64,8 @@ export default function PostsSection({
               profileImage: post.author?.image || undefined,
             }}
             pOrc="post"
+            openPostComment={openPostComment}
+            setOpenPostComment={setOpenPostComment}
           />
         );
       })}

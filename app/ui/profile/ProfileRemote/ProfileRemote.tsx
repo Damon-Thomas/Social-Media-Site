@@ -25,6 +25,8 @@ interface ProfileRemoteProps {
   navigatorHeight: number;
   activeTab: ActiveProfileTab;
   setActiveTab: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
+  openPostComment?: string;
+  setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }
 
 export default function ProfileRemote({
@@ -41,6 +43,8 @@ export default function ProfileRemote({
   likedCommentsCursor = null,
   activeTab,
   setActiveTab,
+  openPostComment,
+  setOpenPostComment,
 }: ProfileRemoteProps) {
   useEffect(() => {
     const scrollContainer = document.getElementById(
@@ -70,6 +74,8 @@ export default function ProfileRemote({
               userData={userData}
               initialContent={initialActivity}
               cursor={activityCursor}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           )}
           {activeTab === "posts" && (
@@ -78,6 +84,8 @@ export default function ProfileRemote({
               userData={userData}
               initialContent={initialPosts}
               cursor={postsCursor}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           )}
           {activeTab === "comments" && (
@@ -86,6 +94,8 @@ export default function ProfileRemote({
               userData={userData}
               initialContent={initialComments}
               cursor={commentsCursor}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           )}
           {activeTab === "liked" && (
@@ -95,6 +105,8 @@ export default function ProfileRemote({
               initialLikedComments={initialLikedComments}
               likedPostsCursor={likedPostsCursor}
               likedCommentsCursor={likedCommentsCursor}
+              openPostComment={openPostComment}
+              setOpenPostComment={setOpenPostComment}
             />
           )}
         </div>

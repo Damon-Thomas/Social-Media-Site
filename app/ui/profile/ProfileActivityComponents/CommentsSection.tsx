@@ -3,7 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedComments } from "@/app/actions/fetch";
 import type { Comment } from "@/app/lib/definitions";
-import Link from "next/link";
+import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -30,7 +30,7 @@ export default function CommentsSection({
       return {
         id: comment.id,
         content: comment.content,
-        // author: comment.author || undefined,
+        author: comment.author || undefined,
         authorId: comment.authorId || undefined,
         createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
@@ -56,29 +56,29 @@ export default function CommentsSection({
 
   return (
     <div className="space-y-4 grow overflow-y-auto ">
-      {comments.map((comment) => (
-        <div key={comment?.id} className="p-4 border rounded-lg">
-          <Link
-            href={`/dashboard/posts/${comment?.post?.id}`}
-            className="text-blue-600 hover:underline"
-          >
-            <p className="text-sm font-medium">
-              On post: {comment?.post?.content?.substring(0, 50)}...
-            </p>
-          </Link>
+      {comments.map((comment, index) => {
+        if (!comment) return null;
 
-          <p className="mt-2">{comment?.content}</p>
-
-          <p className="text-sm text-gray-500 mt-2">
-            {comment?.createdAt &&
-              new Date(comment.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-          </p>
-        </div>
-      ))}
+        return (
+          <ActivityItem
+            key={`comments-section-${comment.id}-${index}`}
+            data={{
+              id: comment.id,
+              cOrp: "comment" as const,
+              content: comment.content || "",
+              likeCount: comment.likedBy?.length || 0,
+              commentCount: comment.replies?.length || 0,
+              createdAt: comment.createdAt.toISOString(),
+            }}
+            user={{
+              id: comment.authorId || "",
+              name: comment.author?.name || "Unknown User",
+              profileImage: comment.author?.image || undefined,
+            }}
+            pOrc="comment"
+          />
+        );
+      })}
 
       {/* Observer element */}
       <div ref={observerTarget} className="h-10" />

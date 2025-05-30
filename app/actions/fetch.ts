@@ -209,6 +209,7 @@ export async function fetchPaginatedPosts(
     include: {
       comments: { include: { author: true } },
       author: true,
+      likedBy: true, // Include likedBy to get the count
     },
   });
 
@@ -229,7 +230,10 @@ export async function fetchPaginatedComments(
     cursor: cursor ? { id: cursor } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
+      author: true,
       post: { select: { id: true, content: true, author: true } },
+      likedBy: true, // Include likedBy to get the count
+      replies: true, // Include replies to get the count
     },
   });
 
@@ -257,6 +261,7 @@ export async function fetchPaginatedLikedPosts(
     include: {
       author: true,
       comments: { include: { author: true } },
+      likedBy: true, // Include likedBy to get the count
     },
   });
 
@@ -284,6 +289,8 @@ export async function fetchPaginatedLikedComments(
     include: {
       author: true,
       post: { select: { id: true, content: true } },
+      likedBy: true, // Include likedBy to get the count
+      replies: true, // Include replies to get the count
     },
   });
 
@@ -316,12 +323,8 @@ export async function fetchPaginatedActivity(
             image: true,
           },
         },
-        _count: {
-          select: {
-            comments: true,
-            likedBy: true,
-          },
-        },
+        likedBy: true, // Include likedBy array for proper count
+        comments: true, // Include comments array for proper count
       },
     }),
     prisma.comment.findMany({
@@ -339,6 +342,8 @@ export async function fetchPaginatedActivity(
             image: true,
           },
         },
+        likedBy: true, // Include likedBy array for proper count
+        replies: true, // Include replies array for proper count
       },
     }),
     prisma.post.findMany({
@@ -355,12 +360,8 @@ export async function fetchPaginatedActivity(
             image: true,
           },
         },
-        _count: {
-          select: {
-            comments: true,
-            likedBy: true,
-          },
-        },
+        likedBy: true, // Include likedBy array for proper count
+        comments: true, // Include comments array for proper count
       },
     }),
     prisma.comment.findMany({
@@ -378,6 +379,8 @@ export async function fetchPaginatedActivity(
             image: true,
           },
         },
+        likedBy: true, // Include likedBy array for proper count
+        replies: true, // Include replies array for proper count
       },
     }),
   ]);
@@ -395,7 +398,8 @@ export async function fetchPaginatedActivity(
         createdAt: p.createdAt,
         updatedAt: p.createdAt, // Assuming updatedAt is same as createdAt for simplicity
         author: p.author,
-        _count: p._count,
+        likedBy: p.likedBy, // Include likedBy array
+        comments: p.comments, // Include comments array
       },
     })),
     ...comments.map((c) => ({
@@ -410,6 +414,8 @@ export async function fetchPaginatedActivity(
         createdAt: c.createdAt,
         updatedAt: c.createdAt, // Assuming updatedAt is same as createdAt for simplicity
         author: c.author,
+        likedBy: c.likedBy, // Include likedBy array
+        replies: c.replies, // Include replies array
       },
     })),
     ...likedPosts.map((p) => ({
@@ -423,7 +429,8 @@ export async function fetchPaginatedActivity(
         createdAt: p.createdAt,
         updatedAt: p.createdAt, // Assuming updatedAt is same as createdAt for simplicity
         author: p.author,
-        _count: p._count,
+        likedBy: p.likedBy, // Include likedBy array
+        comments: p.comments, // Include comments array
       },
     })),
     ...likedComments.map((c) => ({
@@ -438,6 +445,8 @@ export async function fetchPaginatedActivity(
         createdAt: c.createdAt,
         updatedAt: c.createdAt, // Assuming updatedAt is same as createdAt for simplicity
         author: c.author,
+        likedBy: c.likedBy, // Include likedBy array
+        replies: c.replies, // Include replies array
       },
     })),
   ];
@@ -479,7 +488,7 @@ export async function fetchPaginatedLikedActivity(
         skip: postsCursor ? 1 : 0,
         cursor: postsCursor ? { id: postsCursor } : undefined,
         orderBy: { createdAt: "desc" },
-        include: { author: true, comments: true },
+        include: { author: true, comments: true, likedBy: true },
       });
       const nextCursor =
         posts.length === limit ? posts[posts.length - 1].id : null;
@@ -492,7 +501,7 @@ export async function fetchPaginatedLikedActivity(
         skip: commentsCursor ? 1 : 0,
         cursor: commentsCursor ? { id: commentsCursor } : undefined,
         orderBy: { createdAt: "desc" },
-        include: { author: true, post: true },
+        include: { author: true, post: true, likedBy: true, replies: true },
       });
       const nextCursor =
         comments.length === limit ? comments[comments.length - 1].id : null;

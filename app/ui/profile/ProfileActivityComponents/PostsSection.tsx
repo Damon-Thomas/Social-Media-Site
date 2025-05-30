@@ -3,6 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
+import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -36,15 +37,31 @@ export default function PostsSection({
   }
   return (
     <div className="space-y-4 grow overflow-y-auto ">
-      {posts.map((post) => (
-        <div key={`getPosts${post?.id}`} className="p-4 border rounded-lg">
-          <p className="font-medium">{post?.author?.name}</p>
-          <p className="mt-2">{post?.content}</p>
-          <p className="text-sm text-gray-500 mt-2">
-            {post?.createdAt && new Date(post.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      ))}
+      {posts.map((post) => {
+        if (!post) return null;
+
+        return (
+          <ActivityItem
+            key={`posts-section-${userId}-${
+              post.id
+            }-${post.createdAt.getTime()}`}
+            data={{
+              id: post.id,
+              cOrp: "post" as const,
+              content: post.content || "",
+              likeCount: post.likedBy?.length || 0,
+              commentCount: post.comments?.length || 0,
+              createdAt: post.createdAt.toISOString(),
+            }}
+            user={{
+              id: post.authorId || "",
+              name: post.author?.name || "Unknown User",
+              profileImage: post.author?.image || undefined,
+            }}
+            pOrc="post"
+          />
+        );
+      })}
 
       {/* Only show observer when there's more content to load */}
       {hasMore && <div ref={observerTarget} className="h-10" />}

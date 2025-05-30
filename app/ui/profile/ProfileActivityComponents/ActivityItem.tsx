@@ -25,23 +25,21 @@ export type ActivityItem = {
 export default function ActivityItem({
   data,
   user: activityUser,
-  liked,
   pOrc,
+  showAsLiked = false, // New prop to indicate this item is in a "liked" section
 }: {
   data: ActivityItem;
   user?: { id: string; name: string; profileImage?: string };
-  liked?: boolean;
   pOrc?: "post" | "comment";
+  showAsLiked?: boolean; // Optional prop to show "Liked Post/Comment" text
 }) {
   const { theme } = useTheme();
-  // Type assertion to extract the id from data
-  const item = data as { id?: string; postId?: string };
   const currentUser = useCurrentUser();
 
   // State management for ThemedIcon functionality
   const [likeCount, setLikeCount] = useState(data.likeCount || 0);
-  const [isLiked, setIsLiked] = useState(liked || false);
-  const [iconLoading, setIconLoading] = useState(true); // Start with loading state
+  const [isLiked, setIsLiked] = useState(false);
+  const [iconLoading, setIconLoading] = useState(true);
   const [iconSize, setIconSize] = useState(20);
   const [commentCount, setCommentCount] = useState(data.commentCount || 0);
   const [openPostComment, setOpenPostComment] = useState("");
@@ -97,10 +95,10 @@ export default function ActivityItem({
   }, [currentUser, data.id, pOrc, data.cOrp]);
 
   const getHref = () => {
-    if (pOrc === "post") {
-      return `/dashboard/posts/${item.id}`;
-    } else if (pOrc === "comment") {
-      return `/dashboard/comment/${item.id}`;
+    if (pOrc === "post" || data.cOrp === "post") {
+      return `/dashboard/posts/${data.id}`;
+    } else if (pOrc === "comment" || data.cOrp === "comment") {
+      return `/dashboard/comment/${data.id}`;
     }
     return "#"; // fallback
   };
@@ -177,8 +175,8 @@ export default function ActivityItem({
             <div className="flex items-start justify-between gap-2">
               <span className="font-extrabold">{activityUser?.name}</span>
               <p className="text-sm text-[var(--dull)]">
-                {liked && "Liked "}
-                {liked ? pOrc : pOrc ? capitalize(pOrc) : ""}
+                {showAsLiked && "Liked "}
+                {showAsLiked ? pOrc : pOrc ? capitalize(pOrc) : ""}
               </p>
             </div>
             <p className="whitespace-pre-wrap line-clamp-5 text-[var(--dmono)]">
@@ -213,14 +211,16 @@ export default function ActivityItem({
           </div>
         </div>
       </div>
-      <PopDownComment
-        postId={data.id}
-        hidden={openPostComment !== data.id}
-        creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--dull)]"
-        narrow={true}
-        setOpenPostComment={setOpenPostComment}
-        setCommentCount={setCommentCount}
-      />
+      {(pOrc === "post" || data.cOrp === "post") && (
+        <PopDownComment
+          postId={data.id}
+          hidden={openPostComment !== data.id}
+          creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--dull)]"
+          narrow={true}
+          setOpenPostComment={setOpenPostComment}
+          setCommentCount={setCommentCount}
+        />
+      )}
     </div>
   );
 }

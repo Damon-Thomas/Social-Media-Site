@@ -3,7 +3,9 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
-import Link from "next/link";
+import ActivityItem from "./ActivityItem";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function LikedPostsSection({
   userId,
@@ -14,8 +16,6 @@ export default function LikedPostsSection({
   initialPosts: Post[];
   initialCursor: string | null;
 }) {
-  const ITEMS_PER_PAGE = 5;
-
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedLikedPosts(
       userId,
@@ -45,32 +45,31 @@ export default function LikedPostsSection({
   }
 
   return (
-    <div className="space-y-4 overflow-auto grow">
-      {likedPosts.map((post) => (
-        <div
-          key={`likedpost-post-${post?.id}`}
-          className="p-4 border rounded-lg"
-        >
-          <Link
-            href={`/dashboard/posts/${post?.id}`}
-            className="block hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex justify-between items-start">
-              <p className="font-medium">By: {post?.author?.name}</p>
-              <span className="text-red-500">❤</span>
-            </div>
-            <p className="mt-2">{post?.content}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              {post?.createdAt &&
-                new Date(post.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-            </p>
-          </Link>
-        </div>
-      ))}
+    <div className="space-y-4 grow overflow-y-auto">
+      {likedPosts.map((post) => {
+        if (!post) return null;
+
+        return (
+          <ActivityItem
+            key={`liked-posts-section-${post.id}`}
+            data={{
+              id: post.id,
+              cOrp: "post" as const,
+              content: post.content || "",
+              likeCount: post.likedBy?.length || 0,
+              commentCount: post.comments?.length || 0,
+              createdAt: post.createdAt.toISOString(),
+            }}
+            user={{
+              id: post.authorId || "",
+              name: post.author?.name || "Unknown User",
+              profileImage: post.author?.image || undefined,
+            }}
+            pOrc="post"
+            showAsLiked={true}
+          />
+        );
+      })}
 
       {/* Observer element */}
       <div ref={observerTarget} className="h-10" />

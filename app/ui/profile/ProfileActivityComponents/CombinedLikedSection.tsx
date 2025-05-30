@@ -2,17 +2,12 @@
 
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedActivity } from "@/app/actions/fetch";
-import type {
-  Post,
-  Comment,
-  EssentialPost,
-  EssentialComment,
-} from "@/app/lib/definitions";
-import Link from "next/link";
+import type { Post, Comment } from "@/app/lib/definitions";
+import ActivityItemComponent from "./ActivityItem";
 
 export type LikedItem =
-  | { type: "likedPost"; payload: EssentialPost; createdAt: Date }
-  | { type: "likedComment"; payload: EssentialComment; createdAt: Date };
+  | { type: "likedPost"; payload: Post; createdAt: Date }
+  | { type: "likedComment"; payload: Comment; createdAt: Date };
 
 const ITEMS_PER_PAGE = 10;
 
@@ -79,40 +74,69 @@ export default function CombinedLikedSection({
   return (
     <div className="space-y-4 overflow-y-auto grow ">
       {items.map((item) => {
-        const when = item?.createdAt?.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
         if (item?.type === "likedPost") {
           const p = item.payload;
+          const activityData = {
+            id: p?.id || "",
+            cOrp: "post" as const,
+            content: p?.content || "",
+            likeCount: p?.likedBy?.length ?? 0,
+            commentCount: p?.comments?.length ?? 0,
+            createdAt:
+              item?.createdAt?.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }) || "",
+          };
           return (
-            <Link
-              key={`likedPost-${userId}-${p?.id}`}
-              href={`/dashboard/posts/${p?.id}`}
-            >
-              <div className="p-4 border rounded-lg hover:bg-gray-50">
-                <p className="font-medium">
-                  Liked post: {p?.content?.slice(0, 50)}…
-                </p>
-                <p className="text-sm text-gray-500 mt-2">{when}</p>
-              </div>
-            </Link>
+            <ActivityItemComponent
+              key={`combined-liked-section-post-${userId}-${p?.id}`}
+              data={activityData}
+              user={
+                p?.author
+                  ? {
+                      id: p.author.id,
+                      name: p.author.name || "",
+                      profileImage: p.author.image || undefined,
+                    }
+                  : undefined
+              }
+              pOrc="post"
+              showAsLiked={true}
+            />
           );
         } else {
           const c = item?.payload;
+          const activityData = {
+            id: c?.id || "",
+            cOrp: "comment" as const,
+            content: c?.content || "",
+            likeCount: c?.likedBy?.length ?? 0,
+            commentCount: c?.replies?.length ?? 0,
+            createdAt:
+              item?.createdAt?.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }) || "",
+          };
           return (
-            <Link
-              key={`likedComment-${userId}-${c?.id}`}
-              href={`/dashboard/posts/${c?.postId}`}
-            >
-              <div className="p-4 border rounded-lg hover:bg-gray-50">
-                <p className="font-medium">
-                  Liked comment: {c?.content?.slice(0, 50)}…
-                </p>
-                <p className="text-sm text-gray-500 mt-2">{when}</p>
-              </div>
-            </Link>
+            <ActivityItemComponent
+              key={`combined-liked-section-comment-${userId}-${c?.id}`}
+              data={activityData}
+              user={
+                c?.author
+                  ? {
+                      id: c.author.id,
+                      name: c.author.name || "",
+                      profileImage: c.author.image || undefined,
+                    }
+                  : undefined
+              }
+              pOrc="comment"
+              showAsLiked={true}
+            />
           );
         }
       })}

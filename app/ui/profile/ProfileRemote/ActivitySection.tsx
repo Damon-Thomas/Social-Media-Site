@@ -3,7 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedActivity } from "@/app/actions/fetch";
 import type { ActivityItem, Post, Comment } from "@/app/lib/definitions";
-import Link from "next/link";
+import ActivityItemComponent from "../ProfileActivityComponents/ActivityItem";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -43,71 +43,129 @@ export default function ActivitySection({
   return (
     <div className="space-y-4 grow overflow-y-auto ">
       {activities.map((act) => {
-        const when = act?.createdAt.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-
         switch (act?.type) {
           case "post": {
             const p = act.payload as Post;
+            const activityData = {
+              id: p?.id || "",
+              cOrp: "post" as const,
+              content: p?.content || "",
+              likeCount: p?.likedBy?.length ?? 0,
+              commentCount: p?.comments?.length ?? 0,
+              createdAt: act?.createdAt.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+            };
             return (
-              <Link key={act.id} href={`/dashboard/posts/${p?.id}`}>
-                <div className="p-4 border rounded-lg hover:bg-gray-50">
-                  <p className="font-medium">
-                    New post: {p?.content?.slice(0, 50)}…
-                  </p>
-                  <div className="flex justify-between mt-2 text-sm text-gray-500">
-                    <span>{when}</span>
-                    <span>
-                      💬 {p?.comments?.length ?? 0}  ❤ {p?.likedBy?.length ?? 0}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              <ActivityItemComponent
+                key={`activity-section-post-${act.id}-${p?.id}`}
+                data={activityData}
+                user={
+                  p?.author
+                    ? {
+                        id: p.author.id,
+                        name: p.author.name || "",
+                        profileImage: p.author.image || undefined,
+                      }
+                    : undefined
+                }
+                pOrc="post"
+              />
             );
           }
           case "comment": {
             const c = act.payload as Comment;
+            const activityData = {
+              id: c?.id || "",
+              cOrp: "comment" as const,
+              content: c?.content || "",
+              likeCount: c?.likedBy?.length ?? 0,
+              commentCount: c?.replies?.length ?? 0,
+              createdAt: act?.createdAt.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+            };
             return (
-              <Link key={act.id} href={`/dashboard/posts/${c?.postId}`}>
-                <div className="p-4 border rounded-lg hover:bg-gray-50">
-                  <p className="font-medium">
-                    New comment: {c?.content?.slice(0, 50)}…
-                  </p>
-                  <div className="flex justify-between mt-2 text-sm text-gray-500">
-                    <span>{when}</span>
-                    <span>❤ {c?.likedBy?.length ?? 0}</span>
-                  </div>
-                </div>
-              </Link>
+              <ActivityItemComponent
+                key={`activity-section-comment-${act.id}-${c?.id}`}
+                data={activityData}
+                user={
+                  c?.author
+                    ? {
+                        id: c.author.id,
+                        name: c.author.name || "",
+                        profileImage: c.author.image || undefined,
+                      }
+                    : undefined
+                }
+                pOrc="comment"
+              />
             );
           }
           case "likedPost": {
             const p = act.payload as Post;
+            const activityData = {
+              id: p?.id || "",
+              cOrp: "post" as const,
+              content: p?.content || "",
+              likeCount: p?.likedBy?.length ?? 0,
+              commentCount: p?.comments?.length ?? 0,
+              createdAt: act?.createdAt.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+            };
             return (
-              <Link key={act.id} href={`/dashboard/posts/${p?.id}`}>
-                <div className="p-4 border rounded-lg hover:bg-gray-50">
-                  <p className="font-medium">
-                    Liked post: {p?.content?.slice(0, 50)}…
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">{when}</p>
-                </div>
-              </Link>
+              <ActivityItemComponent
+                key={`activity-section-liked-post-${act.id}-${p?.id}`}
+                data={activityData}
+                user={
+                  p?.author
+                    ? {
+                        id: p.author.id,
+                        name: p.author.name || "",
+                        profileImage: p.author.image || undefined,
+                      }
+                    : undefined
+                }
+                pOrc="post"
+              />
             );
           }
           case "likedComment": {
             const c = act.payload as Comment;
+            const activityData = {
+              id: c?.id || "",
+              cOrp: "comment" as const,
+              content: c?.content || "",
+              likeCount: c?.likedBy?.length ?? 0,
+              commentCount: c?.replies?.length ?? 0,
+              createdAt: act?.createdAt.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+            };
             return (
-              <Link key={act.id} href={`/dashboard/posts/${c?.postId}`}>
-                <div className="p-4 border rounded-lg hover:bg-gray-50">
-                  <p className="font-medium">
-                    Liked comment: {c?.content?.slice(0, 50)}…
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">{when}</p>
-                </div>
-              </Link>
+              <ActivityItemComponent
+                key={`activity-section-liked-comment-${act.id}-${c?.id}`}
+                data={activityData}
+                user={
+                  c?.author
+                    ? {
+                        id: c.author.id,
+                        name: c.author.name || "",
+                        profileImage: c.author.image || undefined,
+                      }
+                    : undefined
+                }
+                pOrc="comment"
+              />
             );
           }
           default:

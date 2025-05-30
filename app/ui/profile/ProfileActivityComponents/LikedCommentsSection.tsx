@@ -3,7 +3,7 @@
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 import { fetchPaginatedLikedComments } from "@/app/actions/fetch";
 import type { Comment } from "@/app/lib/definitions";
-import Link from "next/link";
+import ActivityItem from "./ActivityItem";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -31,6 +31,7 @@ export default function LikedCommentsSection({
         id: comment.id,
         content: comment.content,
         authorId: comment.authorId || undefined,
+        author: comment.author || undefined,
         createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
         postId: comment.postId || undefined,
@@ -55,34 +56,30 @@ export default function LikedCommentsSection({
 
   return (
     <div className="space-y-4 grow overflow-y-auto ">
-      {likedComments.map((comment) => (
-        <div key={comment?.id} className="p-4 border rounded-lg">
-          <div className="flex justify-between items-start">
-            <p className="font-medium">By: {comment?.author?.name}</p>
-            <span className="text-red-500">❤</span>
-          </div>
+      {likedComments.map((comment) => {
+        if (!comment) return null;
 
-          <Link
-            href={`/dashboard/posts/${comment?.post?.id}`}
-            className="text-blue-600 hover:underline block mt-1"
-          >
-            <p className="text-sm">
-              On post: {comment?.post?.content?.substring(0, 30)}...
-            </p>
-          </Link>
-
-          <p className="mt-2">{comment?.content}</p>
-
-          <p className="text-sm text-gray-500 mt-2">
-            {comment?.createdAt &&
-              new Date(comment?.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-          </p>
-        </div>
-      ))}
+        return (
+          <ActivityItem
+            key={`liked-comments-section-${comment.id}`}
+            data={{
+              id: comment.id,
+              cOrp: "comment" as const,
+              content: comment.content || "",
+              likeCount: comment.likedBy?.length || 0,
+              commentCount: comment.replies?.length || 0,
+              createdAt: comment.createdAt.toISOString(),
+            }}
+            user={{
+              id: comment.authorId || "",
+              name: comment.author?.name || "Unknown User",
+              profileImage: comment.author?.image || undefined,
+            }}
+            pOrc="comment"
+            showAsLiked={true}
+          />
+        );
+      })}
 
       {/* Observer element */}
       <div ref={observerTarget} className="h-10" />

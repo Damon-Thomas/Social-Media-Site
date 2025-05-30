@@ -1,6 +1,7 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
+import { capitalize } from "@/app/utils/capitalize";
 
 export type Tab = "activity" | "posts" | "comments" | "liked";
 
@@ -29,7 +30,7 @@ export default function ProfileSelectors({
           }`}
           onClick={() => setActiveTab(tab)}
         >
-          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          {capitalize(tab)}
         </button>
       ))}
     </div>

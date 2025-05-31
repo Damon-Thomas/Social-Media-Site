@@ -302,7 +302,7 @@ export default function PostFlow({
               <div className=""></div>
               <div
                 className={`${
-                  isLast ? "" : "border-l-[1px] border-[var(--dull)]}"
+                  isLast ? "" : "border-l-[1px] border-[var(--dull)]"
                 }`}
               ></div>
               <div className="absolute top-0 z-0 left-1/2 w-full h-4 border-b-[1px] border-l-[1px] border-[var(--dull)] rounded-bl-xl"></div>

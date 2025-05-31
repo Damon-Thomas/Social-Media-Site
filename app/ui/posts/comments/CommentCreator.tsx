@@ -5,6 +5,9 @@ import Image from "next/image";
 import LongInput from "../../form/LongInput";
 import { createComment } from "@/app/actions/commentActions";
 import { useActionState, useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { mutate } from "swr";
+import { SWR_KEYS } from "@/app/lib/swr";
 
 export default function CommentCreator({
   postId,
@@ -23,6 +26,7 @@ export default function CommentCreator({
   noPadding = false,
   narrow = false,
   setOpenPostComment,
+  refreshPageAfterComment = false,
 }: {
   postId: string | null | undefined;
   setPost?: React.Dispatch<React.SetStateAction<FullPost | null>>;
@@ -40,12 +44,14 @@ export default function CommentCreator({
   noPadding?: boolean;
   narrow?: boolean;
   setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
+  refreshPageAfterComment?: boolean;
 }) {
   const [, action, pending] = useActionState(actionWrapper, null);
   const [mounted, setMounted] = useState(false);
   const [iconSize, setIconSize] = useState(40);
   const [commentContent, setCommentContent] = useState("");
   const longInputRef = useRef<{ reset?: () => void }>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -62,6 +68,7 @@ export default function CommentCreator({
     }
   }, [narrow]);
 
+  // Legacy local state update function for backward compatibility
   const updatePost = (newComment: EssentialComment | null) => {
     if (!newComment) {
       console.error("Failed to create a new comment.");
@@ -115,10 +122,125 @@ export default function CommentCreator({
         console.error("User must be logged in to create a comment.");
         return;
       }
-      payload.set("content", commentContent); // Ensure controlled value is submitted
+
+      // Get the actual content from the form payload
+      const actualContent =
+        (payload.get("content") as string) || commentContent;
+
+      payload.set("content", actualContent); // Ensure controlled value is submitted
       payload.append("postId", postId);
       payload.append("parentId", parentId || "");
       payload.append("userId", user.id);
+
+      // Create optimistic comment using the actual content
+      const optimisticComment: EssentialComment = {
+        id: `temp-${Date.now()}-${Math.random()}`, // More unique ID
+        content: actualContent,
+        author: {
+          id: user.id,
+          name: user.name || "Unknown",
+          image: user.image || null,
+        },
+        authorId: user.id,
+        postId: postId,
+        parentId: parentId || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        likedBy: [],
+        replies: [],
+        _count: {
+          likedBy: 0,
+          replies: 0,
+        },
+      };
+
+      // Optimistic update for parent comment replies
+      if (parentId) {
+        const commentKey = SWR_KEYS.COMMENT(parentId);
+        const repliesKey = SWR_KEYS.COMMENT_REPLIES(parentId);
+
+        // Update parent comment's reply count
+        mutate(
+          commentKey,
+          (currentComment: EssentialComment | undefined) => {
+            if (currentComment) {
+              return {
+                ...currentComment,
+                _count: {
+                  likedBy: currentComment._count?.likedBy || 0,
+                  replies: (currentComment._count?.replies || 0) + 1,
+                },
+              };
+            }
+            return currentComment;
+          },
+          false
+        );
+
+        // Add optimistic reply to replies list
+        mutate(
+          repliesKey,
+          (
+            currentData:
+              | { replies: EssentialComment[]; nextCursor: string | null }
+              | undefined
+          ) => {
+            if (currentData && currentData.replies) {
+              return {
+                ...currentData,
+                replies: [optimisticComment, ...currentData.replies],
+              };
+            }
+            return { replies: [optimisticComment], nextCursor: null };
+          },
+          false
+        );
+      } else {
+        // For top-level comments, update the post's SWR cache
+        if (postId) {
+          const postKey = SWR_KEYS.POST(postId);
+
+          // Update the post data to include the new comment
+          mutate(
+            postKey,
+            (currentPost: FullPost | undefined) => {
+              if (currentPost) {
+                return {
+                  ...currentPost,
+                  comments: [
+                    optimisticComment,
+                    ...(currentPost.comments || []),
+                  ],
+                  _count: {
+                    ...currentPost._count,
+                    comments: (currentPost._count?.comments || 0) + 1,
+                  },
+                };
+              }
+              return currentPost;
+            },
+            false
+          );
+        }
+      }
+
+      // Update local state optimistically only if legacy props are provided
+      // Pages using SWR will get updates automatically from cache
+      if (setPost || setComment) {
+        updatePost(optimisticComment);
+      }
+
+      setCommentCount?.((prevCount) => (prevCount || 0) + 1);
+      if (setTopCommentCount) {
+        setTopCommentCount((prevCount) => (prevCount || 0) + 1);
+      }
+      if (setOpenPostComment) {
+        setOpenPostComment("");
+      }
+      setCommentContent(""); // Clear input after optimistic update
+      longInputRef.current?.reset?.(); // Reset textarea height
+
+      // Make the actual API call
       const newComment = await createComment(payload, user?.id || "");
 
       if (newComment && "errors" in newComment) {
@@ -126,23 +248,43 @@ export default function CommentCreator({
         alert(
           "Failed to create comment. Please check your input and try again."
         );
+
+        // Rollback optimistic updates
+        if (parentId) {
+          mutate(SWR_KEYS.COMMENT(parentId));
+          mutate(SWR_KEYS.COMMENT_REPLIES(parentId));
+        } else if (postId) {
+          mutate(SWR_KEYS.POST(postId));
+        }
         return;
       }
 
       if (newComment && "id" in newComment) {
-        updatePost(newComment);
-        setCommentCount?.((prevCount) => (prevCount || 0) + 1);
-        if (setTopCommentCount) {
-          setTopCommentCount((prevCount) => (prevCount || 0) + 1);
+        // Success - revalidate to get the real data from server
+        if (parentId) {
+          mutate(SWR_KEYS.COMMENT(parentId));
+          mutate(SWR_KEYS.COMMENT_REPLIES(parentId));
         }
-        if (setOpenPostComment) {
-          setOpenPostComment("");
+        if (postId) {
+          mutate(SWR_KEYS.POST(postId));
+          mutate(SWR_KEYS.POST_COMMENTS(postId));
         }
-        setCommentContent(""); // Clear input after success
-        longInputRef.current?.reset?.(); // Reset textarea height
+
+        // Refresh the page if requested
+        if (refreshPageAfterComment) {
+          router.refresh();
+        }
       } else {
         console.error("Unexpected response from createComment:", newComment);
         alert("An unexpected error occurred. Please try again later.");
+
+        // Rollback optimistic updates
+        if (parentId) {
+          mutate(SWR_KEYS.COMMENT(parentId));
+          mutate(SWR_KEYS.COMMENT_REPLIES(parentId));
+        } else if (postId) {
+          mutate(SWR_KEYS.POST(postId));
+        }
       }
 
       if (setHidden) {
@@ -150,6 +292,16 @@ export default function CommentCreator({
       }
     } catch (error) {
       console.error("Error creating comment:", error);
+      alert("An error occurred while creating the comment. Please try again.");
+
+      // Rollback optimistic updates on error
+      if (parentId) {
+        mutate(SWR_KEYS.COMMENT(parentId));
+        mutate(SWR_KEYS.COMMENT_REPLIES(parentId));
+      } else if (postId) {
+        // Rollback post SWR cache for top-level comments
+        mutate(SWR_KEYS.POST(postId));
+      }
     }
   }
 

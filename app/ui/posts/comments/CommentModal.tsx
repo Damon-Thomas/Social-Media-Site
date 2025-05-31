@@ -24,6 +24,7 @@ export default function CommentModal({
         postId={postId}
         setComment={setComment}
         parentId={parentId}
+        refreshPageAfterComment={true}
       />
     </Modal>
   );

@@ -71,7 +71,7 @@ export async function getPostComments(
       // First level of replies with basic info
       replies: {
         take: 3, // Show first 3 replies initially
-        orderBy: { createdAt: "asc" }, // Oldest first is typical for replies
+        orderBy: { createdAt: "desc" }, // Newest first
         select: {
           id: true,
           content: true,
@@ -123,7 +123,7 @@ export async function getCommentReplies(
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
-    orderBy: { createdAt: "asc" }, // Oldest first is typical for replies
+    orderBy: { createdAt: "desc" },
     select: {
       id: true,
       content: true,
@@ -165,6 +165,7 @@ export async function getCommentReplies(
           updatedAt: true,
           parentId: true,
         },
+        orderBy: { createdAt: "desc" },
       },
       postId: true,
       _count: {
@@ -466,6 +467,7 @@ export async function getEssentialComment(commentId: string) {
           createdAt: true,
           updatedAt: true,
         },
+        orderBy: { createdAt: "desc" },
       },
       parentId: true,
       createdAt: true,

@@ -1,12 +1,12 @@
 "use client";
 
-import { getfullPost } from "@/app/actions/postActions";
-import { EssentialComment, FullPost } from "@/app/lib/definitions";
+import { EssentialComment } from "@/app/lib/definitions";
 import CommentCreator from "@/app/ui/posts/comments/CommentCreator";
 import PostFlow from "@/app/ui/posts/PostFlow";
 import PostOnly from "@/app/ui/posts/PostOnly";
-import { useEffect, useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { use } from "react";
+import { usePost } from "@/app/hooks/useSWR";
 
 export default function PostPage({
   params,
@@ -15,56 +15,62 @@ export default function PostPage({
 }) {
   const { postId } = use(params); // Unwrap the params Promise
 
-  const [post, setPost] = useState<FullPost | null>(null);
+  // Use SWR hook for post data
+  const { post, isLoading, error } = usePost(postId);
+
+  // Local state for UI interactions
   const [commentCount, setCommentCount] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
-  // const [modalHidden, setModalHidden] = useState(true);
-  // const [parentId, setParentId] = useState<string | null>(null); // Update parentId to use null for compatibility
-  const [commentsInOrder, setCommentsInOrder] = useState<EssentialComment[]>(
-    []
-  );
-
-  // State to track the currently expanded PopDownComment
   const [expandedCommentId, setExpandedCommentId] = useState<string>("");
 
+  // Derived state from SWR data
+  const commentsInOrder = useMemo(() => {
+    if (!post?.comments) return [];
+
+    const topLevelComments = post.comments.filter(
+      (comment: EssentialComment) => comment?.parentId === null
+    );
+
+    return topLevelComments.sort((a, b) => {
+      const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA; // Sort in descending order
+    });
+  }, [post?.comments]);
+
+  // Update counts when post data changes
   useEffect(() => {
-    async function fetchPost() {
-      try {
-        const data = await getfullPost(postId);
-        setPost(data);
-        const comments = data?.comments || [];
-        // for (const comment of comments) {
-        //   if (comment?.replies) {
-        //     for (const reply of comment.replies) {
-        //       // console.error("Reply:", reply);
-        //     }
-        //   }
-        // }
-        const filteredComments = comments.filter(
-          (comment: EssentialComment) => comment?.parentId === null
-        ); // Filter out comments with parentId
-        const sortedComments = filteredComments.sort((a, b) => {
-          const dateA = a && a.createdAt && new Date(a.createdAt).getTime();
-          const dateB = b && b.createdAt && new Date(b.createdAt).getTime();
-          if (!dateA || !dateB) return 0; // Handle null or undefined dates
-          return dateB - dateA; // Sort in descending order
-        });
-        setCommentsInOrder(sortedComments);
-        setCommentCount(data?.comments?.length || 0);
-        setLikeCount(data?.likedBy?.length || 0);
-      } catch (error) {
-        console.error("Error fetching post:", error);
-      }
+    if (post) {
+      setCommentCount(post.comments?.length || 0);
+      setLikeCount(post.likedBy?.length || 0);
     }
-    fetchPost();
-  }, [postId]);
+  }, [post]);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl h-full w-full mx-auto py-4 border-x-1 border-x-[var(--borderc)]">
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[var(--dmono)]"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-3xl h-full w-full mx-auto py-4 border-x-1 border-x-[var(--borderc)]">
+        <div className="flex justify-center py-8">
+          <p className="text-red-500">Error loading post: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl h-full w-full mx-auto py-4 border-x-1 border-x-[var(--borderc)]">
-      <div className="flex flex-col w-full h-full overflow-hidden px-2 md:px-4">
+      <div className="flex flex-col w-full px-2 md:px-4">
         <PostOnly
-          post={post}
-          // setHidden={setModalHidden}
+          post={post || null}
           likeCount={likeCount}
           setLikeCount={setLikeCount}
           commentCount={commentCount}
@@ -73,9 +79,7 @@ export default function PostPage({
 
         <CommentCreator
           postId={postId}
-          setComment={setCommentsInOrder}
           parentId={undefined}
-          // setHidden={setModalHidden}
           className="border-b border-b-[var(--borderc)]"
           setCommentCount={setCommentCount}
         />
@@ -85,17 +89,12 @@ export default function PostPage({
             commentsInOrder.map((comment: EssentialComment) => (
               <div className="flex flex-col" key={comment?.id}>
                 <PostFlow
-                  // setParentId={setParentId}
                   comment={comment}
-                  setCommentsInOrder={setCommentsInOrder}
-                  setExpandedCommentId={setExpandedCommentId} // Pass the setter
-                  isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
+                  setExpandedCommentId={setExpandedCommentId}
+                  isLast={(comment?.replies?.length ?? 0) === 0}
                   postId={postId}
                   expandedCommentId={expandedCommentId}
                   setTopCommentCount={setCommentCount}
-                  // anotherReply={
-                  //   replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
-                  // }
                 />
               </div>
               // <div className="flex flex-col" key={comment?.id}>

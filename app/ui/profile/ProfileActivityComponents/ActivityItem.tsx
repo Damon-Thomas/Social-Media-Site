@@ -328,7 +328,7 @@ export default function ActivityItem({
             pOrc === "comment" || data.cOrp === "comment" ? data.id : undefined
           }
           hidden={openPostComment !== data.id}
-          creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--dull)]"
+          creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--borderc)]"
           narrow={true}
           setOpenPostComment={setOpenPostComment}
           setCommentCount={setCommentCount}

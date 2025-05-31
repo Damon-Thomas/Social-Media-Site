@@ -127,7 +127,7 @@ export default function Post({
                 ref={contentRef}
                 className={`whitespace-pre-wrap text-[var(--dmono)] ${
                   expanded ? "" : "max-h-[400px] overflow-hidden"
-                } transition-all duration-300`}
+                } transition-all duration-300 p-2 md:pb-4`}
                 style={{
                   WebkitMaskImage:
                     !expanded && isOverflowing

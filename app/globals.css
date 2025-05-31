@@ -49,7 +49,7 @@ body {
   --tcolor: #0a0a0a;
   --itcolor: #e6e9ea;
   --light-grey: #9ba0a7;
-  --gtint: #e9eaec;
+  --gtint: #dfdfdf;
   --grey: #2e2e2e;
   --darkgrey: #252525;
   --greyRing: #424242;
@@ -71,7 +71,6 @@ body {
   --dmono: #e6e9ea;
   --rdmono: #0a0a0a;
   --rdmonoh: #040404;
-
   --dmono-90: #e6e9eae6; /* 90% opacity */
   --rdmono-90: #0a0a0ae6; /* 90% opacity */
   --dmono-70: #e6e9eab3; /* 70% opacity */

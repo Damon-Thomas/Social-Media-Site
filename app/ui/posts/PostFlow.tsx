@@ -111,7 +111,7 @@ function ReplyFlow({
         </div>
         <div className={`commentContent px-2 pb-4  w-full h-full`}>
           <Link href={`/dashboard/comment/${comment?.id}`}>
-            <p className="whitespace-pre">{comment?.content}</p>
+            <p className="whitespace-pre-wrap">{comment?.content}</p>
           </Link>
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
@@ -269,7 +269,7 @@ export default function PostFlow({
         <div className="commentContent px-2 pb-4  w-full h-full">
           <div className="flex flex-col grow">
             <Link href={`/dashboard/comment/${comment?.id}`}>
-              <p className="whitespace-pre">{comment?.content}</p>
+              <p className="whitespace-pre-wrap">{comment?.content}</p>
             </Link>
             <div className="flex items-center gap-4 mt-2 justify-between">
               <div className="flex">

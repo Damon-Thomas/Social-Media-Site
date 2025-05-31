@@ -105,7 +105,7 @@ export default function PostOnly({
         </Link>
       </div>
 
-      <p className="whitespace-pre mb-4">
+      <p className="whitespace-pre-wrap mb-4">
         {post?.content || "Post content here."}
       </p>
 

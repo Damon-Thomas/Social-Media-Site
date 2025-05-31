@@ -99,7 +99,7 @@ export default function CommentOnly({
         </Link>
       </div>
 
-      <p className="whitespace-pre mb-4">
+      <p className="whitespace-pre-wrap mb-4">
         {comment?.content || "comment content here."}
       </p>
 

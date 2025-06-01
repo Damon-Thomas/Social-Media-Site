@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { getNewUsers } from "@/app/actions/fetch";
 import { SimpleUser } from "@/app/lib/definitions";

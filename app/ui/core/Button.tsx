@@ -6,6 +6,7 @@ export default function Button({
   size = "medium",
   className = "",
   disabled = false,
+  ...props
 }: {
   children: React.ReactNode;
   onClick?: (
@@ -42,6 +43,7 @@ export default function Button({
       onClick={onClick}
       type={type}
       disabled={disabled}
+      {...props}
     >
       {children}
     </button>

@@ -6,6 +6,7 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Button from "../../core/Button";
+import Link from "next/link";
 
 export default function PendingRequestSection() {
   const [pendingRequests, setPendingRequests] = useState<EssentialUser[]>([]);
@@ -26,6 +27,10 @@ export default function PendingRequestSection() {
     fetchPendingRequests();
   }, [user?.id]);
 
+  const getHref = (id: string) => {
+    return `profile/${id}`;
+  };
+
   return (
     <div className="w-full border-1 border-[var(--borderc)] rounded p-2 md:p-4 my-2 md:my-4">
       <div className="flex flex-col items-start justify-baseline">
@@ -38,19 +43,32 @@ export default function PendingRequestSection() {
           {pendingRequests.map((user) => (
             <div
               key={user?.id}
-              className="flex items-center gap-2 p-2 border rounded hover:bg-gray-100"
+              className="flex items-center gap-2 p-2 border rounded hover:bg-[var(--gtint)] transition-all cursor-pointer"
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('[data-interactive="true"]')) {
+                  return;
+                }
+                window.location.href = getHref(user?.id || "");
+              }}
             >
-              <Image
-                src={user?.image || defaultAvatar}
-                alt={user?.name || "User Avatar"}
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full"
-              />
-              <span className="font-semibold">{user?.name}</span>
+              <Link
+                href={`/profile/${user?.id}`}
+                className="flex items-center gap-2"
+              >
+                <Image
+                  src={user?.image || defaultAvatar}
+                  alt={user?.name || "User Avatar"}
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full"
+                />
+                <span className="font-semibold">{user?.name}</span>
+              </Link>
               <Button
                 className="ml-auto"
                 style="primary"
+                data-interactive="true"
                 onClick={() =>
                   console.log(`Accepting request from ${user?.name}`)
                 }
@@ -60,6 +78,7 @@ export default function PendingRequestSection() {
               <Button
                 className="ml-2"
                 style="bordered"
+                data-interactive="true"
                 onClick={() =>
                   console.log(`Declining request from ${user?.name}`)
                 }

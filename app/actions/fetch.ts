@@ -824,3 +824,28 @@ export async function deleteFriend(userId: string, friendId: string) {
   }
   return true;
 }
+
+export async function declineFriendRequest(userId: string, friendId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friendRequestsReceived: {
+          disconnect: { id: friendId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friendRequestsSent: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error declining friend request:", error);
+    throw new Error("Failed to decline friend request");
+  }
+  return true;
+}

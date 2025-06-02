@@ -799,3 +799,28 @@ export async function acceptFriendRequest(userId: string, friendId: string) {
   }
   return true;
 }
+
+export async function deleteFriend(userId: string, friendId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friends: {
+          disconnect: { id: friendId },
+        },
+      },
+    });
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friends: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting friend:", error);
+    throw new Error("Failed to delete friend");
+  }
+  return true;
+}

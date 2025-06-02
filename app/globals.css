@@ -59,6 +59,7 @@ body {
   --aWhite: #e6e9ea;
   --borderc: #0a0a0a30;
   --dull: #6a7282;
+  --danger: #d05353;
 }
 
 /* Tailwind dark mode styles */

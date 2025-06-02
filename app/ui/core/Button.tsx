@@ -12,7 +12,7 @@ export default function Button({
     event: React.MouseEvent<HTMLButtonElement>
   ) => void | Promise<void>;
   type?: "button" | "submit";
-  style?: "default" | "bordered" | "text" | "primary";
+  style?: "default" | "bordered" | "text" | "primary" | "destructive";
   size?: "small" | "medium" | "large" | "fit";
   className?: string;
   disabled?: boolean;
@@ -25,6 +25,7 @@ export default function Button({
     text: "bg-transparent text-[var(--dmono)] font-extrabold",
     primary: "bg-[var(--primary)] text-[var(--aBlack)] ",
     secondary: "bg-[var(--aBlack)] text-[var(--primary)]",
+    destructive: "bg-[var(--danger)] text-[var(--aBlack)]",
   };
   const buttonSize = {
     small: "text-sm px-2 py-1 w-20",

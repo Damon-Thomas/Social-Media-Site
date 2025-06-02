@@ -8,6 +8,7 @@ import { useFullUser } from "@/app/context/UserContext";
 import {
   acceptFriendRequest,
   cancelFriendRequest,
+  deleteFriend,
   followUser,
   sendFriendRequest,
   unfollowUser,
@@ -113,7 +114,7 @@ export default function PersInfo({
         setFriendCount((prevCount) => prevCount + 1);
       } else if (isFriend) {
         // Unfriend
-        await cancelFriendRequest(fullUser.id, userData.id);
+        await deleteFriend(fullUser.id, userData.id);
         setAreFriends("none");
         setFriendCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
       } else {

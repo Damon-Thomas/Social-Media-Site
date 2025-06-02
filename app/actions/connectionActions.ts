@@ -2,10 +2,10 @@
 
 import prisma from "../lib/prisma";
 
-export async function getFriends() {
-  const friends = prisma.user.findUnique({
+export async function getFriends(userId: string) {
+  const friends = await prisma.user.findUnique({
     where: {
-      id: "userId",
+      id: userId,
     },
     select: {
       friends: {
@@ -20,10 +20,10 @@ export async function getFriends() {
   return friends;
 }
 
-export async function getFollowers() {
-  const followers = prisma.user.findUnique({
+export async function getFollowers(userId: string) {
+  const followers = await prisma.user.findUnique({
     where: {
-      id: "userId",
+      id: userId,
     },
     select: {
       followers: {
@@ -38,10 +38,10 @@ export async function getFollowers() {
   return followers;
 }
 
-export async function getFollowing() {
-  const following = prisma.user.findUnique({
+export async function getFollowing(userId: string) {
+  const following = await prisma.user.findUnique({
     where: {
-      id: "userId",
+      id: userId,
     },
     select: {
       following: {
@@ -56,10 +56,12 @@ export async function getFollowing() {
   return following;
 }
 
-export async function getFriendsRequestsReceived() {
-  const friendRequests = prisma.user.findUnique({
+export async function getFriendRequestsReceived(userId: string) {
+  console.log("Fetching friend requests received...");
+
+  const friendRequests = await prisma.user.findUnique({
     where: {
-      id: "userId",
+      id: userId,
     },
     select: {
       friendRequestsReceived: {
@@ -71,13 +73,15 @@ export async function getFriendsRequestsReceived() {
       },
     },
   });
+  console.log("Friend Requests Received:", friendRequests);
+
   return friendRequests;
 }
 
-export async function getFriendRequestsSent() {
-  const friendRequests = prisma.user.findUnique({
+export async function getFriendRequestsSent(userId: string) {
+  const friendRequests = await prisma.user.findUnique({
     where: {
-      id: "userId",
+      id: userId,
     },
     select: {
       friendRequestsSent: {

@@ -15,7 +15,7 @@ export default function PendingRequestSection() {
   const defaultAvatar = useDefaultProfileImage();
   const user = useCurrentUser();
   const refreshUser = useRefreshUser();
-  const { notifications, setNotifications } = useNotifications();
+  const { setNotifications } = useNotifications();
   // const notification = "This is a notification message";
 
   useEffect(() => {
@@ -51,11 +51,14 @@ export default function PendingRequestSection() {
         }
       } else {
         console.error(`Failed to accept request from ${friendId}.`);
-        setNotifications([...notifications, "Failed to accept friend request"]);
+        setNotifications((prev) => [
+          ...prev,
+          "Failed to accept friend request",
+        ]);
       }
     } catch (error) {
       console.error(`Error accepting request from ${friendId}:`, error);
-      setNotifications([...notifications, "Error accepting friend request"]);
+      setNotifications((prev) => [...prev, "Error accepting friend request"]);
     }
   }
 
@@ -70,21 +73,21 @@ export default function PendingRequestSection() {
         console.log(`Request from ${friendId} declined successfully.`);
 
         // Show notification
-        setNotifications([...notifications, "Friend request declined"]);
+        setNotifications((prev) => [...prev, "Friend request declined"]);
 
         // Refresh user context to update friend request lists
         if (refreshUser) {
           await refreshUser();
         }
       } else {
-        setNotifications([
-          ...notifications,
+        setNotifications((prev) => [
+          ...prev,
           "Failed to decline friend request",
         ]);
       }
     } catch (error) {
       console.error(`Error declining request from ${friendId}:`, error);
-      setNotifications([...notifications, "Error declining friend request"]);
+      setNotifications((prev) => [...prev, "Error declining friend request"]);
     }
   }
 

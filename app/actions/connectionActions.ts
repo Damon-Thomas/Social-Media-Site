@@ -95,3 +95,49 @@ export async function getFriendRequestsSent(userId: string) {
   });
   return friendRequests;
 }
+
+export async function getProspects(
+  userId: string,
+  take: number,
+  start: number
+) {
+  const prospects = await prisma.user.findMany({
+    where: {
+      NOT: {
+        id: userId,
+      },
+      friends: {
+        none: {
+          id: userId,
+        },
+      },
+      friendRequestsReceived: {
+        none: {
+          id: userId,
+        },
+      },
+      friendRequestsSent: {
+        none: {
+          id: userId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      _count: {
+        select: {
+          followers: true,
+          posts: true,
+          comments: true,
+          friends: true,
+        },
+      },
+    },
+    take: take,
+    skip: start,
+    distinct: ["id"],
+  });
+  return prospects;
+}

@@ -21,7 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@public/*": ["./public/*"]
+      "@public/*": ["./public/*"],
+      "@core/*": ["./app/ui/core/*"]
     }
   },
   "include": [

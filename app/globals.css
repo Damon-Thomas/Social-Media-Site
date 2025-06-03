@@ -182,3 +182,12 @@ button:hover {
 .flip-vertical {
   transition: transform 0.5s ease-in-out;
 }
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}

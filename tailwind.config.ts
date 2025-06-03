@@ -72,10 +72,41 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "slide-in-from-top": {
+          from: { transform: "translateY(-100%)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
+        "slide-in-from-right": {
+          from: { transform: "translateX(100%)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
+        "slide-out-to-bottom": {
+          from: { transform: "translateY(0)", opacity: "1" },
+          to: { transform: "translateY(100%)", opacity: "0" },
+        },
+        "slide-down": {
+          from: { transform: "translateY(-4px)" },
+          to: { transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "fade-out": {
+          from: { opacity: "1" },
+          to: { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "slide-in-from-top-2": "slide-in-from-top 0.3s ease-out",
+        "slide-in-from-right":
+          "slide-in-from-right 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
+        "slide-out-to-bottom-2": "slide-out-to-bottom 1.0s ease-in",
+        "slide-down": "slide-down 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-in-0": "fade-in 0.2s ease-out",
+        "fade-out-0": "fade-out 0.2s ease-in",
       },
     },
   },

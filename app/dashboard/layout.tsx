@@ -1,9 +1,10 @@
 "use client";
 
+import NotificationProvider from "../context/NotificationContext";
 import { UserProvider } from "../context/UserContext";
-// import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
 import Navigator from "../ui/navigator/Navigator";
 import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
+import Sonner from "../ui/core/Sonner";
 
 export default function DashboardLayout({
   children,
@@ -12,18 +13,21 @@ export default function DashboardLayout({
 }) {
   return (
     <UserProvider>
-      <ThemeSwitcher />
-      <div
-        className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
-      >
-        <Navigator />
+      <NotificationProvider>
+        <ThemeSwitcher />
         <div
-          id="dashboard-scroll-container"
-          className="grow flex justify-center overflow-y-auto h-full"
+          className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
         >
-          {children}
+          <Navigator />
+          <div
+            id="dashboard-scroll-container"
+            className="grow flex justify-center overflow-y-auto h-full"
+          >
+            {children}
+          </div>
+          <Sonner />
         </div>
-      </div>
+      </NotificationProvider>
     </UserProvider>
   );
 }

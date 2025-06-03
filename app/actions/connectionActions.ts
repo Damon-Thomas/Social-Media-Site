@@ -136,7 +136,7 @@ export async function getProspects(
       },
     },
     take: take,
-    skip: start,
+    skip: start * take,
     distinct: ["id"],
   });
   return prospects;

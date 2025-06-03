@@ -31,6 +31,7 @@ body {
   --mono: #171717;
   --rmono: #f0f0f0;
   --dmono: #0a0a0a;
+  --dmonoh: #040404;
   --rdmono: #e6e9ea;
   --rdmonoh: #f8f8f8;
   --dmono-90: #0a0a0ae6; /* 90% opacity */
@@ -50,6 +51,8 @@ body {
   --itcolor: #e6e9ea;
   --light-grey: #9ba0a7;
   --gtint: #dfdfdf;
+  --rgtint: #232323;
+
   --grey: #2e2e2e;
   --darkgrey: #252525;
   --greyRing: #424242;
@@ -70,6 +73,7 @@ body {
   --mono: #e6e9ea;
   --rmono: #171717;
   --dmono: #e6e9ea;
+  --dmonoh: #f8f8f8;
   --rdmono: #0a0a0a;
   --rdmonoh: #040404;
   --dmono-90: #e6e9eae6; /* 90% opacity */
@@ -83,6 +87,7 @@ body {
   --dmono-10: #e6e9ea1a; /* 10% opacity */
   --rdmono-10: #0a0a0a1a; /* 10% opacity */
   --gtint: #232323;
+  --rgtint: #dfdfdf;
   --opdmono: #36363650;
   --oprdmono: #0a0a0a50;
   --text-color: #c7c7c7;
@@ -190,4 +195,8 @@ button:hover {
   to {
     width: 0%;
   }
+}
+
+.no-scale:hover {
+  scale: 1 !important;
 }

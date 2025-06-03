@@ -12,8 +12,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UserProvider>
-      <NotificationProvider>
+    <NotificationProvider>
+      <UserProvider>
         <ThemeSwitcher />
         <div
           className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
@@ -27,7 +27,7 @@ export default function DashboardLayout({
           </div>
           <Sonner />
         </div>
-      </NotificationProvider>
-    </UserProvider>
+      </UserProvider>
+    </NotificationProvider>
   );
 }

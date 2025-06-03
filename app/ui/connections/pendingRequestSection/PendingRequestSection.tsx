@@ -16,19 +16,7 @@ export default function PendingRequestSection() {
   const user = useCurrentUser();
   const refreshUser = useRefreshUser();
   const { notifications, setNotifications } = useNotifications();
-  //   const randomNotifications = [
-  //     "You have a new friend request!",
-  //     "Someone wants to connect with you!",
-  //     "A user is waiting for your response!",
-  //     "Don't forget to check your friend requests!",
-  //     "New connection request received!",
-  //     "A user is eager to be your friend!",
-  //     "You have pending friend requests!",
-  //     "Someone is waiting for your approval!",
-  //     "A new friend request is in your inbox!",
-  //     "Your friend request list is waiting for you!",
-  //     "A user is looking forward to connecting with you!",
-  //   ];
+  // const notification = "This is a notification message";
 
   useEffect(() => {
     if (!user?.id) return;
@@ -55,11 +43,11 @@ export default function PendingRequestSection() {
         console.log(`Request from ${friendId} accepted successfully.`);
 
         // Show notification
-        setNotifications([...notifications, "Friend request accepted!"]);
+        setNotifications((prev) => [...prev, "Friend request accepted!"]);
 
         // Refresh user context to update friend lists
         if (refreshUser) {
-          await refreshUser();
+          refreshUser();
         }
       } else {
         console.error(`Failed to accept request from ${friendId}.`);
@@ -106,8 +94,8 @@ export default function PendingRequestSection() {
 
   return (
     <div className="w-full border-1 border-[var(--borderc)] rounded p-2 md:p-4 my-2 md:my-4">
-      <div className="flex flex-col items-start justify-baseline">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col items-start justify-baseline gap-2">
+        <div className="flex items-center gap-4 mt-2">
           <h2 className="font-bold text-2xl ">
             {pendingRequests.length
               ? "Friend Requests"
@@ -117,7 +105,7 @@ export default function PendingRequestSection() {
             {pendingRequests.length}
           </div>
         </div>
-        <div className="flex flex-col gap-2 mt-2 w-full">
+        <div className="flex flex-col gap-2  w-full">
           {pendingRequests.map((user) => (
             <div
               key={user?.id}
@@ -162,21 +150,15 @@ export default function PendingRequestSection() {
             </div>
           ))}
         </div>
-        {/* <Button
+        {/* <button
+          className="mt-4 text-sm text-[var(--primary)] hover:underline w-full"
           onClick={() => {
-            const randomIndex = Math.floor(
-              Math.random() * randomNotifications.length
-            );
-            setNotifications((prev) => [
-              ...prev,
-              randomNotifications[randomIndex],
-            ]);
+            setNotifications([...notifications, notification]);
+            refreshUser?.();
           }}
-          size="large"
-          className="mt-4 w-full"
         >
-          Notify User
-        </Button> */}
+          Show Notification
+        </button> */}
       </div>
     </div>
   );

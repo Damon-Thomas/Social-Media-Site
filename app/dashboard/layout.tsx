@@ -3,7 +3,6 @@
 import NotificationProvider from "../context/NotificationContext";
 import { UserProvider } from "../context/UserContext";
 import Navigator from "../ui/navigator/Navigator";
-import ThemeSwitcher from "../ui/landing-page/ThemeSwitcher";
 import Sonner from "../ui/core/Sonner";
 
 export default function DashboardLayout({

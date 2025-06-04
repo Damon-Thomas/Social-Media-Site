@@ -14,10 +14,7 @@ import {
   unfollowUser,
 } from "@/app/actions/fetch";
 import { useEffect, useState } from "react";
-import {
-  useAddNotification,
-  useNotifications,
-} from "@/app/context/NotificationContext";
+import { useAddNotification } from "@/app/context/NotificationContext";
 
 export default function PersInfo({
   userData,

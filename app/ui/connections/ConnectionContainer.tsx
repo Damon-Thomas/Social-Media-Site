@@ -3,10 +3,7 @@
 import { useCurrentUser } from "@/app/context/UserContext";
 import { useRef, useEffect, useState } from "react";
 import ConnectCard from "./ConnectCard";
-import {
-  getFriendsPaginated,
-  getProspects,
-} from "@/app/actions/connectionActions";
+import { getProspects } from "@/app/actions/connectionActions";
 import { useNotifications } from "@/app/context/NotificationContext";
 import Button from "../core/Button";
 

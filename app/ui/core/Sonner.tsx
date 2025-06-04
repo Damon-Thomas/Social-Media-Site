@@ -18,7 +18,7 @@ export default function Sonner() {
 
   return (
     <div
-      className={`fixed bottom-0 right-0 m-4 transition-all ${
+      className={`fixed bottom-0 right-0 m-4 z-50 transition-all ${
         show ? "block animate-slide-in-from-right" : "hidden"
       }`}
     >

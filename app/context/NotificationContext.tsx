@@ -28,3 +28,12 @@ export function useNotifications() {
     );
   return ctx;
 }
+
+// Custom hook that provides the addNotification function
+export function useAddNotification() {
+  const { setNotifications } = useNotifications();
+  
+  return (message: string) => {
+    setNotifications((prev) => [...prev, message]);
+  };
+}

@@ -14,7 +14,7 @@ export default function DashboardLayout({
   return (
     <NotificationProvider>
       <UserProvider>
-        <ThemeSwitcher />
+        {/* <ThemeSwitcher /> */}
         <div
           className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
         >

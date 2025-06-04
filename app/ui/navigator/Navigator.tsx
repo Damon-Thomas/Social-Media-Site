@@ -8,6 +8,7 @@ import NavLogo from "./NavLogo";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import NavGroup from "./NavGroup";
+import ThemeSwitcher from "../landing-page/ThemeSwitcher";
 
 export default function Navigator() {
   const [mounted, setMounted] = useState(false);
@@ -46,10 +47,11 @@ export default function Navigator() {
             Connections
           </Linker>
         </NavGroup>
-        <NavGroup>
+        <NavGroup className="justify-end items-center">
           <Linker onClick={logout} type="logout">
             Logout
           </Linker>
+          <ThemeSwitcher inLine={true} />
         </NavGroup>
       </Nav>
     </NavWrapper>

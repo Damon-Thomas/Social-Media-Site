@@ -31,3 +31,10 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+// Things to add
+//
+// hide theme icon
+// set theme
+// delete account (unless test account)
+// connect with the developer

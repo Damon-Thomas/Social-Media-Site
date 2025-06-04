@@ -14,6 +14,10 @@ import {
   unfollowUser,
 } from "@/app/actions/fetch";
 import { useEffect, useState } from "react";
+import {
+  useAddNotification,
+  useNotifications,
+} from "@/app/context/NotificationContext";
 
 export default function PersInfo({
   userData,
@@ -32,6 +36,7 @@ export default function PersInfo({
   const [areFriends, setAreFriends] = useState<
     "friend" | "none" | "pending" | "received"
   >("none");
+  const addNotification = useAddNotification();
 
   useEffect(() => {
     if (userData) {
@@ -82,10 +87,12 @@ export default function PersInfo({
       if (isFollowing) {
         await unfollowUser(fullUser.id, userData.id);
         setIsFollowing(false);
+        addNotification(`Unfollowed ${userData.name}`);
         // Optimistically decrement
         setFollowerCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
       } else {
         await followUser(fullUser.id, userData.id);
+        addNotification(`Followed ${userData.name}`);
         setIsFollowing(true);
         // Optimistically increment
         setFollowerCount((prevCount) => prevCount + 1);
@@ -106,20 +113,24 @@ export default function PersInfo({
       if (isPending) {
         // Cancel friend request
         await cancelFriendRequest(fullUser.id, userData.id);
+        addNotification(`Cancelled friend request to ${userData.name}`);
         setAreFriends("none");
       } else if (isReceived) {
         // Accept friend request
         await acceptFriendRequest(fullUser.id, userData.id);
+        addNotification(`Accepted friend request from ${userData.name}`);
         setAreFriends("friend");
         setFriendCount((prevCount) => prevCount + 1);
       } else if (isFriend) {
         // Unfriend
         await deleteFriend(fullUser.id, userData.id);
+        addNotification(`Unfriended ${userData.name}`);
         setAreFriends("none");
         setFriendCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
       } else {
         // Send friend request
         await sendFriendRequest(fullUser.id, userData.id);
+        addNotification(`Sent friend request to ${userData.name}`);
         setAreFriends("pending");
       }
     } catch (error) {
@@ -144,8 +155,8 @@ export default function PersInfo({
       <Image
         src={profileImage}
         alt="User Avatar"
-        width={100}
-        height={100}
+        width={160}
+        height={160}
         className="self-center rounded-full w-20 h-20 md:w-40 md:h-40 object-cover mb-4 shrink-0"
         priority
       />

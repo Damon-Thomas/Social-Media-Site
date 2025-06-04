@@ -3,7 +3,10 @@
 import { useCurrentUser } from "@/app/context/UserContext";
 import { useRef, useEffect, useState } from "react";
 import ConnectCard from "./ConnectCard";
-import { getProspects } from "@/app/actions/connectionActions";
+import {
+  getFriendsPaginated,
+  getProspects,
+} from "@/app/actions/connectionActions";
 import { useNotifications } from "@/app/context/NotificationContext";
 import Button from "../core/Button";
 
@@ -19,101 +22,196 @@ export type ConnectUser = {
   };
 };
 
-export default function ConnectionContainer() {
+export default function ConnectionContainer({
+  type = "none",
+  rows = 2,
+}: {
+  type?:
+    | "none"
+    | "friends"
+    | "followers"
+    | "following"
+    | "friendRequestsSent"
+    | "recentlyActive";
+  rows?: number;
+}) {
   const user = useCurrentUser();
   const { setNotifications } = useNotifications();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState(192);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [itemsPerRow, setItemsPerRow] = useState(0);
+  const [page, setPage] = useState(1);
   const [prospects, setProspects] = useState<ConnectUser[]>([]);
   const [nextContent, setNextContent] = useState<"Next" | "End">("Next");
   const [previousContent, setPreviousContent] = useState<"Previous" | "Start">(
     "Previous"
   );
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const cardWidth = 192; // Default card width + gap
-  const [page, setPage] = useState(1);
-
-  const itemsPerRow = Math.max(1, Math.floor(containerWidth / cardWidth));
-  const rows = 2; // Fixed number of rows
-
   useEffect(() => {
-    function updateWidth() {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+    const node = containerRef.current;
+    if (!node) return;
+
+    const updateSize = () => {
+      const width = node.offsetWidth;
+      if (width > 0) {
+        setContainerWidth(width);
       }
+    };
+
+    const observer = new ResizeObserver(() => updateSize());
+    observer.observe(node);
+
+    requestAnimationFrame(updateSize);
+
+    if (window.innerWidth < 640) {
+      setCardWidth(120);
     }
-    updateWidth();
 
-    // Use ResizeObserver for responsive updates
-    const observer = new ResizeObserver(updateWidth);
-    if (containerRef.current) observer.observe(containerRef.current);
-
-    // Cleanup
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    async function fetchProspects() {
-      if (!user?.id) return;
-      const newProspects = await getProspects(
-        user.id,
-        itemsPerRow * rows,
-        page
-      );
-      console.log("Fetched Prospects:", newProspects);
-      if (page === 1) {
-        setPreviousContent("Start");
-      } else {
-        setPreviousContent("Previous");
-      }
-      if (newProspects && newProspects.length === itemsPerRow * rows) {
-        setProspects([...newProspects]);
-        setNextContent("Next");
-      } else if (newProspects && newProspects.length > 0) {
-        setProspects([...newProspects]);
-        setNextContent("End");
-      } else if (newProspects && newProspects.length === 0) {
-        setNextContent("End");
-      } else {
-        setNotifications((prev) => [...prev, "Friend request accepted!"]);
-        console.error("Failed to fetch prospects");
-      }
+    if (containerWidth > 0 && cardWidth > 0) {
+      const count = Math.max(1, Math.floor(containerWidth / cardWidth));
+      setItemsPerRow(count);
     }
+  }, [containerWidth, cardWidth]);
+
+  useEffect(() => {
+    if (!user?.id || itemsPerRow <= 0) return;
+
+    const fetchProspects = async () => {
+      const limit = itemsPerRow * rows;
+      // let newProspects;
+      // if (type === "friends") {
+      //   newProspects = await getFriendsPaginated(user.id, limit, page - 1);
+      // } else {
+      //   newProspects = await getProspects(user.id, limit, page - 1, type);
+      // }
+      const newProspects = await getProspects(user.id, limit, page - 1, type);
+      console.log("Fetched prospects:", type, newProspects);
+      if (!newProspects) {
+        console.error("Failed to fetch prospects");
+        setNotifications((prev) => [
+          ...prev,
+          "Failed to fetch prospects. Please try again later.",
+        ]);
+        return;
+      }
+
+      setPreviousContent(page === 1 ? "Start" : "Previous");
+
+      if (newProspects?.length === limit) {
+        setProspects(newProspects);
+        setNextContent("Next");
+      } else if (newProspects?.length > 0) {
+        setProspects(newProspects);
+        setNextContent("End");
+      } else if (newProspects?.length === 0) {
+        setProspects([]);
+        setNextContent("End");
+      } else {
+        console.error("Failed to fetch prospects");
+        setNotifications((prev) => [...prev, "Friend request accepted!"]);
+      }
+    };
+
     fetchProspects();
-  }, [user?.id, containerWidth, itemsPerRow, page, setNotifications]);
+  }, [user?.id, itemsPerRow, page, rows, type, setNotifications]);
+
+  if (!user) {
+    return (
+      <div className="w-full h-48 flex items-center justify-center">
+        Loading user...
+      </div>
+    );
+  }
 
   return (
-    <div ref={containerRef} className="grow w-full  overflow-hidden">
-      <div
-        className="grid gap-1 p-1 mb-2"
-        style={{
-          gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-          gridTemplateRows: "2",
-        }}
-      >
-        {prospects.map((prospect) => (
-          <ConnectCard key={prospect.id} user={prospect} />
-        ))}
-      </div>
-      <div className="w-full flex gap-2 justify-center items-center">
-        <Button
-          className="grow no-scale hover:bg-[var(--rgtint)]"
-          onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : 1))}
-        >
-          {previousContent}
-        </Button>
-        <Button
-          className="grow  no-scale hover:bg-[var(--rgtint)]"
-          onClick={() =>
-            setPage((prev) => {
-              return nextContent === "End" ? prev : prev + 1;
-            })
-          }
-        >
-          {nextContent}
-        </Button>
-      </div>
+    <div
+      ref={containerRef}
+      className="grow flex flex-col w-full overflow-hidden min-h-[1px]"
+    >
+      {prospects.length === 0 && page === 1 ? (
+        <div className="w-full h-48 grow flex items-center justify-center">
+          <p className="text-xl">No connections found.</p>
+        </div>
+      ) : (
+        <>
+          <div className="w-full p-1 mb-2">
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+              }}
+            >
+              {prospects.length === 0 && page > 1 ? (
+                <div className="w-full col-span-4 h-48 flex items-center justify-center">
+                  <p className="text-xl">No more connections found.</p>
+                </div>
+              ) : (
+                prospects.map((prospect) => (
+                  <ConnectCard key={prospect.id} user={prospect} />
+                ))
+              )}
+            </div>
+          </div>
+          <div className="w-full flex gap-2 justify-center items-center">
+            <Button
+              className="grow no-scale hover:bg-[var(--rgtint)]"
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            >
+              {previousContent}
+            </Button>
+            <Button
+              className="grow no-scale hover:bg-[var(--rgtint)]"
+              onClick={() => {
+                if (nextContent !== "End") setPage((prev) => prev + 1);
+              }}
+            >
+              {nextContent}
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
+
+  // return (
+  //   <div
+  //     ref={containerRef}
+  //     className="grow flex flex-col w-full overflow-hidden min-h-[1px]"
+  //   >
+  //     <div className="w-full p-1 mb-2">
+  //       <div
+  //         className="grid gap-2"
+  //         style={{
+  //           gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+  //         }}
+  //       >
+  //         {prospects.map((prospect) => (
+  //           <ConnectCard key={prospect.id} user={prospect} />
+  //         ))}
+  //       </div>
+  //     </div>
+  //     <div className="w-full flex gap-2 justify-center items-center">
+  //       <Button
+  //         className="grow no-scale hover:bg-[var(--rgtint)]"
+  //         onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+  //       >
+  //         {previousContent}
+  //       </Button>
+  //       <Button
+  //         className="grow no-scale hover:bg-[var(--rgtint)]"
+  //         onClick={() => {
+  //           if (nextContent !== "End") setPage((prev) => prev + 1);
+  //         }}
+  //       >
+  //         {nextContent}
+  //       </Button>
+  //     </div>
+  //   </div>
+  // );
 }

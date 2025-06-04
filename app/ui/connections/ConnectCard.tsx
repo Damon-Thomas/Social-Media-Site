@@ -19,7 +19,7 @@ export default function ConnectCard({ user }: { user: ConnectUser }) {
   return (
     <Link href={`profile/${user.id}`}>
       <div
-        className={`flex flex-col justify-between items-center p-2 border-1 rounded h-48 overflow-hidden hover:bg-[var(--gtint)] transition-all cursor-pointer`}
+        className={`flex flex-col justify-between items-center p-2 border-1 rounded-lg h-48 overflow-hidden hover:bg-[var(--gtint)] transition-all cursor-pointer`}
       >
         {mounted ? (
           <Image

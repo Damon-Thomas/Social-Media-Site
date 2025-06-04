@@ -23,7 +23,6 @@ export default function PendingRequestSection() {
     async function fetchPendingRequests() {
       try {
         const response = await getFriendRequestsReceived(user?.id || "");
-        console.log("Pending Requests:", response);
         setPendingRequests(response?.friendRequestsReceived || []);
       } catch (error) {
         console.error("Error fetching pending requests:", error);

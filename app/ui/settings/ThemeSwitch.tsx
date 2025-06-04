@@ -35,30 +35,33 @@ export default function ThemeSwitch() {
   }
 
   return (
-    <button
-      className={`w-20 rounded-l-3xl relative rounded-r-3xl bg-[var(--dmono-50)] text-[var(--rdmono)] h-11 rounded outline-2 ${
-        theme === "dark"
-          ? "outline-[var(--dmono-90)]"
-          : "outline-[var(--darkgrey)]"
-      } no-scale overflow-hidden`}
-      onClick={handleThemeChange}
-    >
-      <div
-        className={`h-10 w-10 absolute top-0.5 transition-all duration-300 ease ${
-          theme === "dark" ? "left-[0.1rem]" : "left-[calc(100%-2.6rem)]"
-        } bg-[var(--aBlack)] rounded-full shadow-md hover:shadow-lg z-50 ${
-          isSpinning ? "spin-animation" : ""
-        } flex items-center justify-center 
-        `}
+    <div className="flex flex-col gap-4 p-2 md:p-4 border-t-2 border-[var(--grey)]  w-full">
+      <h2 className="text-2xl font-bold">Theme Toggle</h2>
+      <button
+        className={`w-20 rounded-l-3xl relative rounded-r-3xl bg-[var(--dmono-50)] text-[var(--rdmono)] h-11 rounded outline-2 ${
+          theme === "dark"
+            ? "outline-[var(--dmono-90)]"
+            : "outline-[var(--darkgrey)]"
+        } no-scale overflow-hidden`}
+        onClick={handleThemeChange}
       >
-        <Image
-          src={theme === "dark" ? moon : sun}
-          alt={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          width={24}
-          height={24}
-          className="w-6 h-6"
-        />
-      </div>
-    </button>
+        <div
+          className={`h-10 w-10 absolute top-0.5 transition-all duration-300 ease ${
+            theme === "dark" ? "left-[0.1rem]" : "left-[calc(100%-2.6rem)]"
+          } bg-[var(--aBlack)] rounded-full shadow-md hover:shadow-lg z-50 ${
+            isSpinning ? "spin-animation" : ""
+          } flex items-center justify-center
+          `}
+        >
+          <Image
+            src={theme === "dark" ? moon : sun}
+            alt={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            width={24}
+            height={24}
+            className="w-6 h-6"
+          />
+        </div>
+      </button>
+    </div>
   );
 }

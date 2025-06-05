@@ -12,7 +12,7 @@ export default function DeleteAccount() {
   const handleDelete = async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch("/api/destructive", {
+      const res = await fetch("/api/destructiveAccount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id }),
@@ -32,7 +32,7 @@ export default function DeleteAccount() {
   };
 
   return (
-    <div className="flex flex-col items-start w-full  border-y-2 border-[var(--danger)]">
+    <div className="flex flex-col items-start w-full md:mt-8  border-y-2 border-[var(--danger)]">
       <button
         className="bg-[var(--rdmono)] text-[var(--danger)] text-2xl w-full p-4 md:py-8 h-full flex justify-start  font-extrabold  no-button-effects transition-all duration-300 ease-in-out hover:bg-red-50"
         onClick={() => setHidden(false)}

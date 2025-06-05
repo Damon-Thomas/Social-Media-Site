@@ -1,4 +1,7 @@
 import { likePost } from "@/app/actions/postActions";
+import { mutate } from "swr";
+
+import { SWR_KEYS } from "@/app/lib/swr";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { FullPost } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
@@ -6,6 +9,8 @@ import formatDate from "@/app/utils/formatDate";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import WarningModal from "../core/WarningModal";
+import { useAddNotification } from "@/app/context/NotificationContext";
 
 export default function PostOnly({
   post,
@@ -28,6 +33,10 @@ export default function PostOnly({
   const [mounted, setMounted] = useState(false);
   const user = useCurrentUser(); // Get the current user
   const defaultProfile = useDefaultProfileImage();
+  const addNotification = useAddNotification();
+  const [showWarning, setShowWarning] = useState(false);
+  const warningMessage =
+    "Are you sure you want to delete this post? This action cannot be undone.";
   // Format the date
   const formattedDate = formatDate(post?.createdAt);
 
@@ -73,6 +82,48 @@ export default function PostOnly({
     }
   }
 
+  async function deletePostHandler() {
+    if (!user || !post?.id) {
+      console.error("User must be logged in and post must exist to delete.");
+      return;
+    }
+    let notificationMessage;
+    try {
+      const res = await fetch("/api/destructiveCAndP", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          commentOrPost: "post",
+          itemId: post.id,
+        }),
+      });
+      const data = await res.json();
+      console.log("Delete post response:", data);
+      if (!data.success || data.error) {
+        console.error("Failed to delete post:", data.error);
+        notificationMessage =
+          data.error || "Failed to delete post. Please try again.";
+      } else {
+        notificationMessage = "Post deleted successfully.";
+        mutate(SWR_KEYS.POST(post.id));
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      if (error instanceof Error) {
+        notificationMessage = error.message;
+      } else {
+        notificationMessage =
+          "An unknown error occurred while deleting the post.";
+      }
+    } finally {
+      setShowWarning(false);
+      addNotification(
+        notificationMessage || "Deleting post experienced an unkown error."
+      );
+    }
+  }
+
   // function commentHandler() {
   //   // Handle comment action here
   //   console.log("Comment button clicked");
@@ -83,7 +134,7 @@ export default function PostOnly({
 
   return (
     <div className={`max-w-3xl flex flex-col w-full mx-auto ${className}`}>
-      <div className="flex">
+      <div className="flex justify-between">
         <Link
           href={`/dashboard/profile/${post?.author?.id}`}
           className="flex mb-4"
@@ -103,6 +154,35 @@ export default function PostOnly({
             {post?.author?.name || "Unknown Name"}
           </h6>
         </Link>
+        {user?.id === post?.authorId && (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="stroke-[var(--danger)] h-8 w-8 hover:cursor-pointer hover:scale-110 transition-transform duration-200 ease-in-out"
+              onClick={() => setShowWarning((prev) => !prev)}
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M20 6a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-11l-5 -5a1.5 1.5 0 0 1 0 -2l5 -5z" />
+              <path d="M12 10l4 4m0 -4l-4 4" />
+            </svg>
+            <WarningModal
+              hidden={!showWarning}
+              setHidden={setShowWarning}
+              warningMessage={warningMessage}
+              typeVerificationText="Post"
+              onConfirm={deletePostHandler}
+              onCancel={() => setShowWarning((prev) => !prev)}
+            />
+          </>
+        )}
       </div>
 
       <p className="whitespace-pre-wrap mb-4">

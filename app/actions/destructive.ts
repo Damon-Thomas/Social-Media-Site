@@ -196,3 +196,87 @@ async function deleteFriendRequests(userId: string) {
     });
   }
 }
+
+export async function deleteComment(userId: string, commentId: string) {
+  // Check if the comment exists
+  try {
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+    if (!comment) {
+      return {
+        error: "Comment not found",
+        status: 404,
+        success: false,
+      };
+    }
+
+    // Check if the user is the author of the comment
+    if (!comment.authorId) {
+      return {
+        error: "You are not authorized to delete this comment",
+        status: 403,
+        success: false,
+      };
+    }
+
+    // Delete the comment
+    await prisma.comment.update({
+      where: { id: commentId },
+      data: { content: "This comment has been deleted.", authorId: null },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return {
+      error: "Failed to delete comment",
+      status: 500,
+      success: false,
+    };
+  }
+}
+
+export async function deletePost(userId: string, postId: string) {
+  // Check if the post exists
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+    if (!post) {
+      return {
+        error: "Post not found",
+        status: 404,
+        success: false,
+      };
+    }
+
+    // Check if the user is the author of the post
+    if (post.authorId !== userId) {
+      return {
+        error: "You are not authorized to delete this post",
+        status: 403,
+        success: false,
+      };
+    }
+
+    // Delete the post
+    await prisma.post.update({
+      where: { id: postId },
+      data: { content: "This post has been deleted.", authorId: null },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return {
+      error: "Failed to delete post",
+      status: 500,
+      success: false,
+    };
+  }
+}

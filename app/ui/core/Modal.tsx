@@ -26,7 +26,7 @@ export default function Modal({
         className="absolute inset-0 bg-[var(--rdmono-90)]  transition-opacity duration-300"
         onClick={() => {
           if (setHidden) {
-            setHidden(!hidden);
+            setHidden((prev) => !prev);
           }
         }} // Close modal when clicking outside
       />
@@ -40,7 +40,7 @@ export default function Modal({
           <button
             onClick={() => {
               if (setHidden) {
-                setHidden(!hidden);
+                setHidden((prev) => !prev);
               }
             }}
             className="absolute top-3 right-3 leading-none text-[var(--aWhite)] text-2xl font-extrabold bg-transparent hover:scale-110 transition-transform duration-200 "

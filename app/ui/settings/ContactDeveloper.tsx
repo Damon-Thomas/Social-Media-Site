@@ -70,7 +70,7 @@ export default function ContactDeveloper() {
 
   return (
     <form
-      className="w-full flex flex-col gap-3 mt-8"
+      className="w-full flex flex-col mt-8"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -82,16 +82,18 @@ export default function ContactDeveloper() {
           </label>
           <input
             id="contact-name"
-            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--aWhite)] focus:border-[var(--primary)] transition"
+            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
             type="text"
             placeholder="Your Name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             required
           />
-          {errors.name && (
-            <p className="text-red-400 text-xs mt-1">{errors.name}</p>
-          )}
+          <div className="h-4">
+            {errors.name && (
+              <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+            )}
+          </div>
         </div>
         <div className="flex-1 flex flex-col">
           <label htmlFor="contact-email" className="mb-1 text-sm font-medium">
@@ -99,16 +101,18 @@ export default function ContactDeveloper() {
           </label>
           <input
             id="contact-email"
-            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--aWhite)] focus:border-[var(--primary)] transition"
+            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
             type="email"
             placeholder="Your Email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             required
           />
-          {errors.email && (
-            <p className="text-red-400 text-xs mt-1">{errors.email}</p>
-          )}
+          <div className="h-4">
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex flex-col">
@@ -117,31 +121,34 @@ export default function ContactDeveloper() {
         </label>
         <textarea
           id="contact-message"
-          className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--aWhite)] focus:border-[var(--primary)] transition min-h-[100px]"
+          className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition min-h-[100px]"
           placeholder="Your Message"
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
           rows={5}
           required
         />
-        {errors.message &&
-          !errors.name &&
-          !errors.email &&
-          errors.message !== "Too many requests. Please try again later." &&
-          errors.message !== "Failed to send email." && (
-            <p className="text-red-400 text-xs mt-1">{errors.message}</p>
-          )}
+        <div className="h-6">
+          {errors.message &&
+            !errors.name &&
+            !errors.email &&
+            errors.message !== "Too many requests. Please try again later." &&
+            errors.message !== "Failed to send email." && (
+              <p className="text-red-400 text-xs mt-1">{errors.message}</p>
+            )}
+        </div>
       </div>
+      {/* General error (rate limit, server, etc) */}
       {errors.message &&
         !errors.name &&
         !errors.email &&
         (errors.message === "Too many requests. Please try again later." ||
           errors.message === "Failed to send email.") && (
-          <p className="text-red-400 text-xs">{errors.message}</p>
+          <p className="text-red-400 text-xs mb-2">{errors.message}</p>
         )}
-      <div className="flex items-center gap-4 mt-2">
+      <div className="flex items-center gap-4">
         <button
-          className="bg-[var(--primary)] text-[var(--aBlack)] font-bold py-2 px-6 rounded hover:bg-[var(--primary-dark)] transition"
+          className="bg-[var(--primary)] text-[var(--aBlack)] font-bold py-2 px-6 rounded transition"
           type="submit"
           disabled={status === "sending"}
         >

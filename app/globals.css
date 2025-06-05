@@ -200,3 +200,9 @@ button:hover {
 .no-scale:hover {
   scale: 1 !important;
 }
+
+@media (max-width: 640px) {
+  html {
+    font-size: 90%; /* or whatever size you want for small screens */
+  }
+}

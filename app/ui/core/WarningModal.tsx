@@ -23,7 +23,7 @@ export default function WarningModal({
     <Modal
       hidden={hidden}
       setHidden={setHidden}
-      className="bg-[var(--darkgrey)] text-[var(--dmono)] rounded-2xl shadow-lg border-2 border-[var(--greyRing)] min-w-[320px] max-w-[90vw] p-6 flex flex-col items-center"
+      className="bg-[var(--darkgrey)] text-[var(--dmono)] rounded-2xl shadow-lg border-2 border-[var(--greyRing)]  p-6 flex flex-col items-center"
     >
       <h2 className="text-xl font-bold text-[var(--danger)] mb-4">Warning</h2>
       <p className="text-[var(--aWhite)] mb-6 text-center">{warningMessage}</p>

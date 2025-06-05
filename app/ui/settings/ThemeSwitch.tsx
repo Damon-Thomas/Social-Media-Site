@@ -35,7 +35,7 @@ export default function ThemeSwitch() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-2 md:p-4 border-t-2 border-[var(--grey)]  w-full">
+    <div className="flex items-center gap-8 p-2 my-2 md:my-8 border-y-2 border-[var(--grey)]  w-full">
       <h2 className="text-2xl font-bold">Theme Toggle</h2>
       <button
         className={`w-20 rounded-l-3xl relative rounded-r-3xl bg-[var(--dmono-50)] text-[var(--rdmono)] h-11 rounded outline-2 ${

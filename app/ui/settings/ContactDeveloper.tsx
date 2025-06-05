@@ -70,7 +70,7 @@ export default function ContactDeveloper() {
 
   return (
     <form
-      className="w-full flex flex-col mt-8"
+      className="w-full flex flex-col mt-8 py-4 border-y-2 border-[var(--grey)]"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -82,7 +82,7 @@ export default function ContactDeveloper() {
           </label>
           <input
             id="contact-name"
-            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
+            className="p-2 rounded border border-[var(--greyRing)] bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
             type="text"
             placeholder="Your Name"
             value={form.name}
@@ -101,7 +101,7 @@ export default function ContactDeveloper() {
           </label>
           <input
             id="contact-email"
-            className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
+            className="p-2 rounded border border-[var(--greyRing)] bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition"
             type="email"
             placeholder="Your Email"
             value={form.email}
@@ -121,7 +121,7 @@ export default function ContactDeveloper() {
         </label>
         <textarea
           id="contact-message"
-          className="p-2 rounded border border-zinc-600 bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition min-h-[100px]"
+          className="p-2 rounded border border-[var(--greyRing)] bg-transparent text-[var(--dmono)] focus:border-[var(--primary)] transition min-h-[100px]"
           placeholder="Your Message"
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}

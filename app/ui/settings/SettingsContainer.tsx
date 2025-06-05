@@ -4,7 +4,7 @@ export default function SettingsContainer({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-start justify-start mt-4 md:mt-8 w-full max-w-5xl h-full">
+    <div className="flex px-2 md:px-0 flex-col items-start justify-start w-full max-w-5xl h-full">
       {children}
     </div>
   );

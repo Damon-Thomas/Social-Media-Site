@@ -33,7 +33,7 @@ export default function Modal({
 
       {/* Modal content */}
       <div
-        className={`relative text-[var(--rdmono)] rounded-md  z-10 w-full max-w-xl m-2  ${className}`}
+        className={`relative text-[var(--rdmono)] rounded-md z-10 w-full max-w-[min(36rem,calc(100vw-2rem))] m-2 ${className}`}
       >
         {/* Close button */}
         {setHidden && (

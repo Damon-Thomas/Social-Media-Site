@@ -117,7 +117,9 @@ export default function Post({
         <div className="flex flex-col flex-grow min-w-0">
           <Link href={`dashboard/posts/${post?.id}`}>
             <div className="flex items-start justify-between gap-2">
-              <span className="font-extrabold">{post?.author?.name}</span>
+              <span className="font-extrabold">
+                {post?.author?.name || "Deleted Post"}
+              </span>
               <p className="text-sm text-[var(--dull)] ">
                 {post?.createdAt && formatRelativeTime(post.createdAt, true)}
               </p>

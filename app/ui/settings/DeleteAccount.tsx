@@ -1,22 +1,34 @@
 import { useState } from "react";
 import WarningModal from "../core/WarningModal";
-// import { useCurrentUser } from "@/app/context/UserContext";
+import { useCurrentUser } from "@/app/context/UserContext";
 import { useNotifications } from "@/app/context/NotificationContext";
+import { logout } from "@/app/lib/session";
 
 export default function DeleteAccount() {
   const [hidden, setHidden] = useState(true);
-  //   const user = useCurrentUser();
+  const user = useCurrentUser();
   const { setNotifications } = useNotifications();
 
   const handleDelete = async () => {
-    // if (user?.isTestAccount) {
-    //   setNotifications(["You cannot delete a test account."]);
-    //   return;
-    // }
-
-    console.log("Deleting account...");
-    // await deleteUser();
-    setNotifications(["Your account has been deleted."]);
+    if (!user?.id) return;
+    try {
+      const res = await fetch("/api/destructive", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json();
+      console.log("Delete account response:", data);
+      if (res.ok && data.success) {
+        setNotifications(["Your account has been deleted."]);
+        await logout();
+      } else {
+        setNotifications([data.error || "Failed to delete account."]);
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      setNotifications(["Failed to delete account."]);
+    }
   };
 
   return (

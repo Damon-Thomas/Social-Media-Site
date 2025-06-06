@@ -14,7 +14,6 @@ import { mutate } from "swr";
 export default function CommentOnly({
   comment,
   className = "",
-  setHidden,
   likeCount = 0,
   setLikeCount,
   commentCount = 0,
@@ -22,7 +21,6 @@ export default function CommentOnly({
 }: {
   comment: EssentialComment | null; // Update to accept FullPost
   className?: string;
-  setHidden?: React.Dispatch<React.SetStateAction<boolean>>;
   likeCount?: number;
   setLikeCount?: React.Dispatch<React.SetStateAction<number>>;
   commentCount?: number;

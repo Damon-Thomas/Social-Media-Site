@@ -15,7 +15,7 @@ export default function DashboardLayout({
       <UserProvider>
         {/* <ThemeSwitcher /> */}
         <div
-          className={`flex flex-col-reverse md:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
+          className={`flex flex-col-reverse xs:flex-col h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
         >
           <Navigator />
           <div

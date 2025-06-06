@@ -21,7 +21,7 @@ const config: Config = {
     },
     extend: {
       screens: {
-        xs: "480px", // Define the xs breakpoint (adjust the value as needed)
+        xs: "500px", // Define the xs breakpoint (adjust the value as needed)
       },
       colors: {
         border: "hsl(var(--border))",

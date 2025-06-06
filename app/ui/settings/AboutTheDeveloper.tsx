@@ -51,7 +51,7 @@ export default function AboutTheDeveloper() {
           About the Developer
         </h2>
         <p className="text-[var(--aWhite)] mb-6 text-left whitespace-pre-line leading-relaxed">
-          Hi there! My name is <b>Damon Thomas</b>, and I'm an enthusiastic{" "}
+          Hi there! My name is <b>Damon Thomas</b>, and I&apos;m an enthusiastic{" "}
           <b>Full-Stack Web Developer</b> driven to create intuitive and
           impactful applications. I build responsive and dynamic web
           experiences, leveraging modern frontend technologies like <b>React</b>{" "}
@@ -62,10 +62,10 @@ export default function AboutTheDeveloper() {
           <b>websites and web-based tools</b>.
           <br />
           <br />
-          I'm currently open to new opportunities and collaborations. If you
-          have a project in mind or just want to connect, please don't hesitate
-          to reach out via the contact form below or connect with me at the
-          following links.
+          I&apos;m currently open to new opportunities and collaborations. If
+          you have a project in mind or just want to connect, please don&apos;t
+          hesitate to reach out via the contact form below or connect with me at
+          the following links.
         </p>
         <div className="flex flex-row items-center gap-4 mt-2 mb-2">
           <Image

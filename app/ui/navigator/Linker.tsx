@@ -39,7 +39,7 @@ export default function Linker({
   ) : (
     <Link
       href={route || "#"}
-      className={`flex items-center justify-center flex-1 min-w-0 p-2 md:p-4 ${className} ${
+      className={`flex items-center justify-center flex-1 min-w-fit p-2 md:p-4 ${className} ${
         active
           ? bottom
             ? feature

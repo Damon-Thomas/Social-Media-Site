@@ -141,7 +141,7 @@ export default function Profile() {
       {/* Right Sidebar - Use sticky positioning */}
       <div
         ref={sidebarRef}
-        className={`sideContent md:w-64 lg:w-72 hidden md:block sticky top-0 self-start z-10`}
+        className={`sideContent w-fit hidden md:block sticky top-0 self-start z-10`}
         // style={{ top: `${initialTop}px` }}
       >
         <div className="space-y-6 flex flex-col grow w-full">

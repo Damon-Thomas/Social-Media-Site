@@ -6,7 +6,7 @@ import Noobs from "@/app/ui/dashboard/Noobs";
 export default function Connections() {
   return (
     <div className="w-full max-w-6xl">
-      <div className="flex gap-4 md:gap-8">
+      <div className="flex gap-4 md:gap-8 p-2">
         <div className="min-w-0 grow flex flex-col gap-y-4">
           <PendingRequestSection />
           <div className="flex flex-col border-1 border-[var(--borderc)] rounded">

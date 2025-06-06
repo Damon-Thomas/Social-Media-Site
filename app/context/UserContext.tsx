@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@/app/lib/definitions";
+import Loading from "../loading";
 
 const UserContext = createContext<{
   user: User | null;
@@ -101,9 +102,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">Loading...</div>
-    );
+    return <Loading />;
   }
 
   return (

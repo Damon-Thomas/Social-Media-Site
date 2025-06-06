@@ -5,12 +5,13 @@ import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import PersInfo from "@/app/ui/profile/ProfileComponents/PersInfo";
 import ProfileRemote from "@/app/ui/profile/ProfileRemote/ProfileRemote";
+import ProfileInfoSkeleton from "@/app/ui/skeleton/profile/ProfileInfoSkeleton";
 
 // Use the same type as ProfileRemote's activeTab state
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 export interface ProfileProps {
-  userData: User;
+  userData?: User;
   initialActivity?: ActivityItem[];
   activityCursor?: string | null;
   initialPosts?: Post[];
@@ -21,10 +22,11 @@ export interface ProfileProps {
   likedPostsCursor?: string | null;
   initialLikedComments?: Comment[];
   likedCommentsCursor?: string | null;
-  activeTab: ActiveProfileTab;
-  setActiveTab: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
+  activeTab?: ActiveProfileTab;
+  setActiveTab?: Dispatch<SetStateAction<ActiveProfileTab>>; // Updated type
   ownProfile?: boolean; // Optional prop to indicate if it's the user's own profile
   refreshProfileData?: () => Promise<void>; // Optional refresh function
+  loading?: boolean; // Optional loading state
 }
 
 export default function ProfileSection({
@@ -39,19 +41,29 @@ export default function ProfileSection({
   likedPostsCursor = null,
   initialLikedComments = [],
   likedCommentsCursor = null,
-  activeTab,
-  setActiveTab,
+  activeTab = "activity", // Default to 'activity' if not provided
+  setActiveTab = () => {}, // Default to a no-op function if not provided
   ownProfile = false, // Default to false if not provided
-  refreshProfileData,
+  refreshProfileData = async () => {}, // Default to a no-op function if not provided
+  loading = false,
 }: ProfileProps) {
   const NAVIGATOR_HEIGHT = 64;
-
-  // Shared state for managing which comment dropdown is open across all sections
   const [openPostComment, setOpenPostComment] = useState("");
 
+  if (loading) {
+    return (
+      <div className="grid grid-cols-[1fr] gap-6 w-full ">
+        <div className="flex flex-col min-w-0">
+          <ProfileInfoSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  // Only show "User not found" if not loading and userData is missing
   if (!userData) {
     return (
-      <div className="flex flex-col items-center justify-center h-full">
+      <div className="flex flex-col items-center justify-center h-full mt-20">
         <h1 className="text-2xl font-bold">User not found</h1>
         <p className="mt-2 text-gray-600">
           The user you are looking for does not exist.

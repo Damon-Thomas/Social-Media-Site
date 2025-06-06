@@ -50,9 +50,10 @@ function OAuthCallbackInner() {
 }
 
 import { Suspense } from "react";
+import Loading from "@/app/loading";
 export default function OAuthCallback() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading />}>
       <OAuthCallbackInner />
     </Suspense>
   );

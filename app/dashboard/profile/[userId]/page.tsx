@@ -83,12 +83,21 @@ export default function ProfilePage() {
       });
   }, [userId, user?.id]);
 
-  if (loading) {
-    return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
-  }
-
-  if (!initialData?.userData) {
-    return <div className="p-6 text-center">User not found.</div>;
+  if (loading || !initialData) {
+    // Render your skeletons or loading UI here
+    return (
+      <div className="max-w-5xl flex items-start gap-6 p-2 sm:pt-6 w-full">
+        <div className="flex-1 min-w-0 max-w-full ">
+          <ProfileSection loading={true} />
+        </div>
+        <div className="sideContent w-fit hidden md:block sticky top-0 self-start z-10">
+          <div className="space-y-6 flex flex-col grow w-full">
+            <Goats />
+            <Noobs />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Destructure data after loading and checking for user

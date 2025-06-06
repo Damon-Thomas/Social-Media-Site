@@ -91,15 +91,24 @@ export default function Profile() {
       });
   }, [user?.id]);
 
-  if (loading) {
-    return <div className="p-6 text-center">Loading profile...</div>; // Or a spinner
+  if (loading || !initialData) {
+    // Render your skeletons or loading UI here
+    return (
+      <div className="max-w-5xl flex items-start gap-6 p-2 sm:pt-6 w-full">
+        <div className="flex-1 min-w-0 max-w-full ">
+          <ProfileSection loading={true} />
+        </div>
+        <div className="sideContent w-fit hidden md:block sticky top-0 self-start z-10">
+          <div className="space-y-6 flex flex-col grow w-full">
+            <Goats />
+            <Noobs />
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  if (!initialData?.userData) {
-    return <div className="p-6 text-center">User not found.</div>;
-  }
-
-  // Destructure data after loading and checking for user
+  // Now it's safe to destructure
   const {
     userData,
     initialActivity,
@@ -136,6 +145,7 @@ export default function Profile() {
           setActiveTab={setActiveTab}
           ownProfile={true} // Pass the ownProfile prop
           refreshProfileData={refreshProfileData}
+          loading={loading} // Pass the loading state
         />
       </div>
       {/* Right Sidebar - Use sticky positioning */}

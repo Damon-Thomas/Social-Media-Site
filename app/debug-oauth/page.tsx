@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Loading from "../loading";
 
 function DebugOAuthInner() {
   const params = useSearchParams();
@@ -37,7 +38,7 @@ function DebugOAuthInner() {
 
 export default function DebugOAuth() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading />}>
       <DebugOAuthInner />
     </Suspense>
   );

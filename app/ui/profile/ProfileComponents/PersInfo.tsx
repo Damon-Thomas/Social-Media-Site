@@ -1,18 +1,10 @@
 import { User } from "@/app/lib/definitions";
 import Image from "next/image";
 import BioText from "./BioText";
-import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
-import EditProfileModal from "./EditProfileModal"; // Update the path to the correct location
+import EditProfileModal from "./EditProfileModal";
 import Button from "../../core/Button";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import { useFullUser } from "@/app/context/UserContext";
-import {
-  acceptFriendRequest,
-  cancelFriendRequest,
-  deleteFriend,
-  followUser,
-  sendFriendRequest,
-  unfollowUser,
-} from "@/app/actions/fetch";
 import { useEffect, useState } from "react";
 import { useAddNotification } from "@/app/context/NotificationContext";
 
@@ -20,10 +12,12 @@ export default function PersInfo({
   userData,
   ownProfile = false,
   refreshProfileData,
+  loading = false, // <-- Add a loading prop!
 }: {
-  userData: User;
+  userData?: User;
   ownProfile?: boolean;
   refreshProfileData?: () => Promise<void>;
+  loading?: boolean;
 }) {
   const defaultProfile = useDefaultProfileImage();
   const fullUser = useFullUser();
@@ -31,7 +25,6 @@ export default function PersInfo({
   const [followerCount, setFollowerCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isSmall, setIsSmall] = useState(false);
-  // const [isMicro, setIsMicro] = useState(false);
   const [avatarFullSize, setAvatarFullSize] = useState(true);
   const [areFriends, setAreFriends] = useState<
     "friend" | "none" | "pending" | "received"
@@ -41,16 +34,11 @@ export default function PersInfo({
   useEffect(() => {
     const handleResize = () => {
       setIsSmall(window.innerWidth < 500);
-      // setIsMicro(window.innerWidth < 350);
       setAvatarFullSize(window.innerWidth >= 900);
     };
-
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -160,42 +148,69 @@ export default function PersInfo({
     }
   };
 
+  // Skeleton helpers
+  const Skeleton = ({ className }: { className?: string }) => (
+    <div
+      className={`bg-gray-300 dark:bg-gray-700 animate-pulse ${className}`}
+    />
+  );
+
   const profileImage =
-    userData.image && userData.image.trim() !== ""
+    userData?.image && userData.image.trim() !== ""
       ? userData.image
       : defaultProfile;
 
   return (
     <div className="w-full clearfix">
-      <Image
-        src={profileImage}
-        alt="User Avatar"
-        width={160}
-        height={160}
-        className="rounded-full float-left object-cover mr-6 mb-2"
-        style={{
-          // shapeOutside: "circle(50%)",
-          width: !avatarFullSize ? "80px" : "160px",
-          height: !avatarFullSize ? "80px" : "160px",
-        }}
-        priority
-      />
+      {/* Avatar */}
+      {loading ? (
+        <Skeleton
+          className={`rounded-full float-left mr-6 mb-2 ${
+            avatarFullSize ? "w-[160px] h-[160px]" : "w-[80px] h-[80px]"
+          }`}
+        />
+      ) : (
+        <Image
+          src={profileImage}
+          alt="User Avatar"
+          width={160}
+          height={160}
+          className="rounded-full float-left object-cover mr-6 mb-2"
+          style={{
+            width: !avatarFullSize ? "80px" : "160px",
+            height: !avatarFullSize ? "80px" : "160px",
+          }}
+          priority
+        />
+      )}
+
       <div className="w-full">
         <div
           className={`flex items-start ${
             isSmall ? "flex-col" : "flex-row"
           } justify-between`}
         >
-          <h1 className="text-lg pb-2 grow sm:text-2xl font-bold wrap-anywhere ">
-            {userData.name}
-          </h1>
-          {ownProfile && (
+          {/* Name */}
+          {loading ? (
+            <Skeleton className="h-8 w-1/3 mb-2 rounded" />
+          ) : (
+            <h1 className="text-lg pb-2 grow sm:text-2xl font-bold wrap-anywhere ">
+              {userData?.name}
+            </h1>
+          )}
+
+          {/* Edit or Action Buttons */}
+          {loading ? (
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-20 rounded" />
+              <Skeleton className="h-8 w-24 rounded" />
+            </div>
+          ) : ownProfile ? (
             <EditProfileModal
               bio={userData?.bio || ""}
               refreshProfileData={refreshProfileData}
             />
-          )}
-          {!ownProfile && (
+          ) : (
             <div
               className={`flex gap-2 justify-end ${
                 isSmall ? "flex-row w-full" : "flex-row"
@@ -230,19 +245,36 @@ export default function PersInfo({
             </div>
           )}
         </div>
-        <BioText>{userData.bio}</BioText>
+
+        {/* Bio */}
+        {loading ? (
+          <Skeleton className="h-4 w-2/3 mb-2 rounded" />
+        ) : (
+          <BioText>{userData?.bio}</BioText>
+        )}
+
+        {/* Stats */}
         <div className="flex font-bold gap-4 p-1 gap-y-0 justify-between flex-wrap">
-          <p className="whitespace-nowrap w-fit">
-            {`Joined: ${userData.createdAt.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}`}
-          </p>
-          <div className="flex gap-4 w-fit">
-            <p className="whitespace-nowrap">{followerCount} followers</p>
-            <p className="whitespace-nowrap">{friendCount} friends</p>
-          </div>
+          {loading ? (
+            <>
+              <Skeleton className="h-4 w-32 rounded" />
+              <Skeleton className="h-4 w-32 rounded" />
+            </>
+          ) : (
+            <>
+              <p className="whitespace-nowrap w-fit">
+                {`Joined: ${userData?.createdAt?.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}`}
+              </p>
+              <div className="flex gap-4 w-fit">
+                <p className="whitespace-nowrap">{followerCount} followers</p>
+                <p className="whitespace-nowrap">{friendCount} friends</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

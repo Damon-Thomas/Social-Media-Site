@@ -1,16 +1,22 @@
 export default function NavWrapper({
   children,
   className,
+  fullBleed = false,
 }: {
   children: React.ReactNode;
   className?: string;
+  fullBleed?: boolean;
 }) {
   return (
     <div
-      className={`w-full flex justify-center border-b-1 border-[var(--borderc)]`}
+      className={`w-full z-50 flex justify-center border-b-1 border-[var(--borderc)]`}
     >
       <div
-        className={`pt-2 px-2  flex items-center w-full max-w-6xl justify-start mr-10 ${className}`}
+        className={
+          fullBleed
+            ? "flex items-center w-full justify-center"
+            : "pt-2 px-2 flex items-center w-full max-w-6xl justify-start mr-10"
+        }
       >
         {children}
       </div>

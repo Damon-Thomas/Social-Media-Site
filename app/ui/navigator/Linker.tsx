@@ -4,9 +4,11 @@ export default function Linker({
   children,
   route,
   className,
-  active,
+  active = false,
   onClick,
   type,
+  bottom = false,
+  feature = false,
 }: {
   children: React.ReactNode;
   route?: string;
@@ -14,6 +16,8 @@ export default function Linker({
   active?: boolean;
   onClick?: () => void;
   type?: "logout";
+  bottom?: boolean;
+  feature?: boolean;
 }) {
   const handleLogout = () => {
     if (onClick) {
@@ -24,7 +28,7 @@ export default function Linker({
   return type === "logout" ? (
     <button
       onClick={handleLogout}
-      className={`flex items-center justify-center p-2 md:p-4 ${className} ${
+      className={`flex items-center justify-center flex-1 min-w-0 p-2 md:p-4 ${className} ${
         active
           ? "border-b-2 rounded-t-md border-[var(--dmono)] bg-[var(--opdmono)]"
           : ""
@@ -35,9 +39,13 @@ export default function Linker({
   ) : (
     <Link
       href={route || "#"}
-      className={`flex items-center justify-center p-2 md:p-4 ${className} ${
+      className={`flex items-center justify-center flex-1 min-w-0 p-2 md:p-4 ${className} ${
         active
-          ? "border-b-2 rounded-t-md border-[var(--dmono)] bg-[var(--opdmono)]"
+          ? bottom
+            ? feature
+              ? "border-t-2 border-x-2 rounded-t-md border-[var(--dmono)] bg-[var(--opdmono)]"
+              : "border-t-2 border-[var(--dmono)] bg-[var(--opdmono)]"
+            : "border-b-2 rounded-t-md border-[var(--dmono)] bg-[var(--opdmono)]"
           : ""
       }`}
     >

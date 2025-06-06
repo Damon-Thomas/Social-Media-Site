@@ -65,7 +65,7 @@ export default function AboutTheDeveloper() {
           I'm currently open to new opportunities and collaborations. If you
           have a project in mind or just want to connect, please don't hesitate
           to reach out via the contact form below or connect with me at the
-          links below.
+          following links.
         </p>
         <div className="flex flex-row items-center gap-4 mt-2 mb-2">
           <Image

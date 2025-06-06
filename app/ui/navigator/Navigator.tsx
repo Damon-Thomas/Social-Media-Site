@@ -34,17 +34,18 @@ export default function Navigator() {
           >
             Profile
           </Linker>
-          <Linker
-            active={pathname === "/dashboard/settings"}
-            route="/dashboard/settings"
-          >
-            Settings
-          </Linker>
+
           <Linker
             active={pathname === "/dashboard/connections"}
             route="/dashboard/connections"
           >
             Connections
+          </Linker>
+          <Linker
+            active={pathname === "/dashboard/settings"}
+            route="/dashboard/settings"
+          >
+            Settings
           </Linker>
         </NavGroup>
         <NavGroup className="justify-end items-center">

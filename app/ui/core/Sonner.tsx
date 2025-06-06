@@ -1,8 +1,12 @@
-import { useNotifications } from "@/app/context/NotificationContext";
+import {
+  useClearNotifications,
+  useNotifications,
+} from "@/app/context/NotificationContext";
 import { useEffect, useState } from "react";
 
 export default function Sonner() {
   const { notifications, setNotifications } = useNotifications();
+  const clearNotifications = useClearNotifications();
   const show = notifications.length > 0;
   const [progressKey, setProgressKey] = useState(0);
 
@@ -22,6 +26,12 @@ export default function Sonner() {
         show ? "block animate-slide-in-from-right" : "hidden"
       }`}
     >
+      <button
+        onClick={clearNotifications}
+        className="absolute cursor-pointer hover:te top-2 right-1 text-sm text-[var(--rdmono)] z-60"
+      >
+        X
+      </button>
       <div className="bg-[var(--dmono)] text-[var(--rdmono)] min-w-52 rounded-lg shadow-lg">
         {/* Progress bar */}
         <div className="h-2 w-full rounded-t bg-[var(--rdmono)] overflow-hidden">
@@ -33,7 +43,7 @@ export default function Sonner() {
             }}
           ></div>
         </div>
-        <div className="p-4">
+        <div className="p-4 ">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold">Notifications</h2>
             <p className="bg-[var(--rdmono)] text-[var(--dmono)] rounded-full w-5 h-5 flex items-center justify-center font-bold">

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ ...action });
   } catch (error) {
     console.error("Error deleting content:", error);
     return NextResponse.json(

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import WarningModal from "../../core/WarningModal";
 import { useAddNotification } from "@/app/context/NotificationContext";
 import { mutate } from "swr";
+import { useRouter } from "next/navigation";
 
 export default function CommentOnly({
   comment,
@@ -33,6 +34,7 @@ export default function CommentOnly({
   const defaultProfile = useDefaultProfileImage();
   const [showWarning, setShowWarning] = useState(false);
   const addNotification = useAddNotification();
+  const router = useRouter();
 
   const warningMessage =
     "Are you sure you want to delete this comment? This action cannot be undone.";
@@ -79,6 +81,7 @@ export default function CommentOnly({
   }
 
   async function deleteCommentHandler() {
+    console.log("DELETE COMMENT HANDLER");
     if (!user || !comment?.id) {
       console.error("User must be logged in and post must exist to delete.");
       addNotification("You must be logged in to delete a comment.");
@@ -86,6 +89,9 @@ export default function CommentOnly({
     }
     let notificationMessage;
     try {
+      const parentId = comment.parentId;
+      const postId = comment.postId;
+
       const res = await fetch("/api/destructiveCAndP", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,14 +102,38 @@ export default function CommentOnly({
         }),
       });
       const data = await res.json();
-      console.log("Delete comment response:", data);
+      console.log("YOUR DATA HERE", data);
       if (!data.success || data.error) {
-        console.error("Failed to delete comment:", data.error);
         notificationMessage =
           data.error || "Failed to delete comment. Please try again.";
       } else {
+        console.log("ELSE");
         notificationMessage = "Comment deleted successfully.";
-        mutate(SWR_KEYS.COMMENT(comment.id)); // For comments
+        console.log("PRE MUTATE");
+        mutate(SWR_KEYS.COMMENT(comment.id));
+        console.log("POST MUTATE");
+        // Redirect logic:
+        console.log(
+          "Comment deleted successfully",
+          parentId,
+          postId,
+          comment,
+          data,
+          data.deleted
+        );
+        if (data.deleted) {
+          console.log(
+            "Comment deleted successfully pre redirect",
+            parentId,
+            postId,
+            comment
+          );
+          if (parentId) {
+            router.push(`/dashboard/comment/${parentId}`);
+          } else if (postId) {
+            router.push(`/dashboard/posts/${postId}`);
+          }
+        }
       }
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -116,7 +146,7 @@ export default function CommentOnly({
     } finally {
       setShowWarning(false);
       addNotification(
-        notificationMessage || "Deleting comment experienced an unkown error."
+        notificationMessage || "Deleting comment experienced an unknown error."
       );
     }
   }

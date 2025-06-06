@@ -58,6 +58,28 @@ async function deleteUser(userId: string) {
 // maintain commments and posts for deleted users
 // This is to maintain the integrity of the comments and posts in the system
 async function deleteUserComments(userId: string) {
+  // Find comments with no replies and delete them
+  let commentsWithNoReplies;
+  let round = 1;
+  do {
+    console.log("Finding comments with no replies for user:", round);
+    round++;
+    commentsWithNoReplies = await prisma.comment.findMany({
+      where: {
+        authorId: userId,
+        // Find comments where no other comment has this comment as parent
+        replies: { none: {} },
+      },
+      select: { id: true },
+    });
+    for (const comment of commentsWithNoReplies) {
+      await prisma.comment.delete({
+        where: { id: comment.id },
+      });
+    }
+  } while (commentsWithNoReplies.length > 0);
+
+  // Update comments with replies to remove authorId and set content to a placeholder
   await prisma.comment.updateMany({
     where: { authorId: userId },
     data: { authorId: null, content: "This comment has been deleted." },
@@ -67,6 +89,20 @@ async function deleteUserComments(userId: string) {
 // maintain posts for deleted users
 // This is to maintain the integrity of the posts in the system and to maintain comment chains
 async function deleteUserPosts(userId: string) {
+  //find posts with no comments and delete them
+  const postsWithNoComments = await prisma.post.findMany({
+    where: {
+      authorId: userId,
+      comments: { none: {} }, // No comments associated with the post
+    },
+    select: { id: true },
+  });
+  for (const post of postsWithNoComments) {
+    await prisma.post.delete({
+      where: { id: post.id },
+    });
+  }
+  // Update posts with comments to remove authorId and set content to a placeholder
   await prisma.post.updateMany({
     where: { authorId: userId },
     data: { authorId: null, content: "This post has been deleted." },
@@ -220,7 +256,38 @@ export async function deleteComment(userId: string, commentId: string) {
       };
     }
 
-    // Delete the comment
+    // Check if the comment has replies
+    const replies = await prisma.comment.findMany({
+      where: { parentId: commentId },
+    });
+    if (replies.length === 0) {
+      const usersWhoLikedComment = await prisma.user.findMany({
+        where: { likedComments: { some: { id: commentId } } },
+        select: { id: true },
+      });
+      // Remove the comment from all users who liked it
+      for (const u of usersWhoLikedComment) {
+        await prisma.user.update({
+          where: { id: u.id },
+          data: {
+            likedComments: {
+              disconnect: { id: commentId },
+            },
+          },
+        });
+      }
+      // Delete the comment
+      await prisma.comment.delete({
+        where: { id: commentId },
+      });
+      console.log("Comment deleted successfully pre deleted");
+      return {
+        success: true,
+        deleted: true,
+      };
+    }
+
+    // Delete the comment's content and authorId if it has replies
     await prisma.comment.update({
       where: { id: commentId },
       data: { content: "This comment has been deleted.", authorId: null },
@@ -262,7 +329,38 @@ export async function deletePost(userId: string, postId: string) {
       };
     }
 
-    // Delete the post
+    // Check if the post has comments
+    const comments = await prisma.comment.findMany({
+      where: { postId: postId },
+    });
+    if (comments.length === 0) {
+      const usersWhoLikedPoast = await prisma.user.findMany({
+        where: { likedPosts: { some: { id: postId } } },
+        select: { id: true },
+      });
+      // Remove the post from all users who liked it
+      for (const u of usersWhoLikedPoast) {
+        await prisma.user.update({
+          where: { id: u.id },
+          data: {
+            likedPosts: {
+              disconnect: { id: postId },
+            },
+          },
+        });
+      }
+      // Delete the post
+      await prisma.post.delete({
+        where: { id: postId },
+      });
+      console.log("Post deleted successfully pre deleted");
+      return {
+        success: true,
+        deleted: true,
+      };
+    }
+
+    // Delete the post info and authorId if there are comments
     await prisma.post.update({
       where: { id: postId },
       data: { content: "This post has been deleted.", authorId: null },

@@ -31,9 +31,22 @@ export function useNotifications() {
 
 // Custom hook that provides the addNotification function
 export function useAddNotification() {
-  const { setNotifications } = useNotifications();
-  
+  const { notifications, setNotifications } = useNotifications();
+
   return (message: string) => {
+    // Limit to 3 notifications
+    if (notifications.length > 2) {
+      setNotifications((prev) => {
+        const newNotifications = [...prev];
+        newNotifications.shift(); // Remove the oldest notification
+        return newNotifications;
+      });
+    }
     setNotifications((prev) => [...prev, message]);
   };
+}
+
+export function useClearNotifications() {
+  const { setNotifications } = useNotifications();
+  return () => setNotifications([]);
 }

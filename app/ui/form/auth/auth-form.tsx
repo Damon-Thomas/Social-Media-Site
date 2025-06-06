@@ -137,7 +137,7 @@ export default function AuthForm() {
           )}
         </div>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline sm:justify-between">
+          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-between">
             <button
               className="w-fit no-button-effects"
               type="button"
@@ -169,7 +169,7 @@ export default function AuthForm() {
               {login ? "Log in" : "Register"}
             </button>
           </div>
-          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-baseline sm:justify-between items-center">
+          <div className="flex flex-wrap gap-x-10 gap-y-4 justify-between items-center">
             <div className="max-w-[235px]">
               <p>Want to see what all the hype is about? Log in as a guest</p>
             </div>

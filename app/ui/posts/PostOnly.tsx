@@ -1,5 +1,6 @@
 import { likePost } from "@/app/actions/postActions";
 import { mutate } from "swr";
+import { useRouter } from "next/navigation";
 
 import { SWR_KEYS } from "@/app/lib/swr";
 import { useCurrentUser } from "@/app/context/UserContext";
@@ -29,6 +30,7 @@ export default function PostOnly({
   commentCount?: number;
   setCommentCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [mounted, setMounted] = useState(false);
   const user = useCurrentUser(); // Get the current user
@@ -107,6 +109,11 @@ export default function PostOnly({
       } else {
         notificationMessage = "Post deleted successfully.";
         mutate(SWR_KEYS.POST(post.id));
+        console.log("HEHHEHRERR", data, data.deleted);
+        if (data.deleted) {
+          router.push("/dashboard");
+          return;
+        }
       }
     } catch (error) {
       console.error("Error deleting post:", error);

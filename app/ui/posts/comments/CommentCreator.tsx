@@ -97,7 +97,6 @@ export default function CommentCreator({
       });
       setCloseCreator?.("");
       return;
-      // add nested comment
     }
     setPost?.((prevPost: FullPost | null) => {
       if (!prevPost) return prevPost;
@@ -228,6 +227,7 @@ export default function CommentCreator({
       // Pages using SWR will get updates automatically from cache
       if (setPost || setComment) {
         updatePost(optimisticComment);
+        setCloseCreator?.(""); // <-- Add this here
       }
 
       setCommentCount?.((prevCount) => (prevCount || 0) + 1);
@@ -274,6 +274,7 @@ export default function CommentCreator({
         if (refreshPageAfterComment) {
           router.refresh();
         }
+        setCloseCreator?.(""); // <-- Add this here as well, if you want to be extra safe
       } else {
         console.error("Unexpected response from createComment:", newComment);
         alert("An unexpected error occurred. Please try again later.");

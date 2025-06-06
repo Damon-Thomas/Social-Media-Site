@@ -31,7 +31,7 @@ export default function PersInfo({
   const [followerCount, setFollowerCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isSmall, setIsSmall] = useState(false);
-  const [isMicro, setIsMicro] = useState(false);
+  // const [isMicro, setIsMicro] = useState(false);
   const [avatarFullSize, setAvatarFullSize] = useState(true);
   const [areFriends, setAreFriends] = useState<
     "friend" | "none" | "pending" | "received"
@@ -41,7 +41,7 @@ export default function PersInfo({
   useEffect(() => {
     const handleResize = () => {
       setIsSmall(window.innerWidth < 500);
-      setIsMicro(window.innerWidth < 350);
+      // setIsMicro(window.innerWidth < 350);
       setAvatarFullSize(window.innerWidth >= 900);
     };
 

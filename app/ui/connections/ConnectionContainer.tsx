@@ -133,21 +133,27 @@ export default function ConnectionContainer({
       className="grow flex flex-col w-full overflow-hidden min-h-[1px]"
     >
       {!loaded ? (
-        <div className="w-full p-1 mb-2">
-          <div
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-            }}
-          >
-            {Array.from({ length: itemsPerRow * rows }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse h-32 sm:h-40 w-full"
-              />
-            ))}
+        <>
+          <div className="w-full p-1 mb-2">
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+              }}
+            >
+              {Array.from({ length: itemsPerRow * rows }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse h-32 sm:h-40 w-full"
+                />
+              ))}
+            </div>
           </div>
-        </div>
+          <div className="w-full flex gap-2 justify-center items-center">
+            <div className="h-8 grow rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            <div className="h-8 grow rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          </div>
+        </>
       ) : (
         <>
           {prospects.length === 0 && page === 1 && loaded ? (

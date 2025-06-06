@@ -30,10 +30,28 @@ export default function PersInfo({
   const [friendCount, setFriendCount] = useState(0);
   const [followerCount, setFollowerCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isSmall, setIsSmall] = useState(false);
+  const [isMicro, setIsMicro] = useState(false);
+  const [avatarFullSize, setAvatarFullSize] = useState(true);
   const [areFriends, setAreFriends] = useState<
     "friend" | "none" | "pending" | "received"
   >("none");
   const addNotification = useAddNotification();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmall(window.innerWidth < 500);
+      setIsMicro(window.innerWidth < 350);
+      setAvatarFullSize(window.innerWidth >= 900);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initial check
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (userData) {
@@ -148,69 +166,82 @@ export default function PersInfo({
       : defaultProfile;
 
   return (
-    <div className="flex items-start mb-4 gap-4 md:gap-8 justify-start w-full">
+    <div className="w-full clearfix">
       <Image
         src={profileImage}
         alt="User Avatar"
         width={160}
         height={160}
-        className="self-center rounded-full w-20 h-20 md:w-40 md:h-40 object-cover mb-4 shrink-0"
+        className="rounded-full float-left object-cover mr-6 mb-2"
+        style={{
+          // shapeOutside: "circle(50%)",
+          width: !avatarFullSize ? "80px" : "160px",
+          height: !avatarFullSize ? "80px" : "160px",
+        }}
         priority
       />
-      <div className="flex grow min-h-full">
-        <div className="grow flex flex-col gap-2">
-          <div className="flex flex-col justify-start gap-2 h-full">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold">{userData.name}</h1>
-              {ownProfile && (
-                <EditProfileModal
-                  bio={userData?.bio || ""}
-                  refreshProfileData={refreshProfileData}
-                ></EditProfileModal>
-              )}
-              {!ownProfile && (
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleFollowClick}
-                    style={!isFollowing ? "default" : "bordered"}
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </Button>
-                  <Button
-                    onClick={handleFriendRequest}
-                    style={
-                      areFriends === "none" || areFriends === "received"
-                        ? "default"
-                        : "bordered"
-                    }
-                  >
-                    {areFriends === "friend"
-                      ? "Unfriend"
-                      : areFriends === "none"
-                      ? "Befriend"
-                      : areFriends === "received"
-                      ? "Accept"
-                      : "Pending"}
-                  </Button>
-                </div>
-              )}
+      <div className="w-full">
+        <div
+          className={`flex items-start ${
+            isSmall ? "flex-col" : "flex-row"
+          } justify-between`}
+        >
+          <h1 className="text-lg pb-2 grow sm:text-2xl font-bold wrap-anywhere ">
+            {userData.name}
+          </h1>
+          {ownProfile && (
+            <EditProfileModal
+              bio={userData?.bio || ""}
+              refreshProfileData={refreshProfileData}
+            />
+          )}
+          {!ownProfile && (
+            <div
+              className={`flex gap-2 justify-end ${
+                isSmall ? "flex-row w-full" : "flex-row"
+              }`}
+            >
+              <Button
+                onClick={handleFollowClick}
+                style={!isFollowing ? "default" : "bordered"}
+                size={isSmall ? "micro" : "medium"}
+                className={`${isSmall ? "grow py-2" : ""}`}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </Button>
+              <Button
+                onClick={handleFriendRequest}
+                className={`${isSmall ? "grow" : ""}`}
+                size={isSmall ? "micro" : "medium"}
+                style={
+                  areFriends === "none" || areFriends === "received"
+                    ? "default"
+                    : "bordered"
+                }
+              >
+                {areFriends === "friend"
+                  ? "Unfriend"
+                  : areFriends === "none"
+                  ? "Befriend"
+                  : areFriends === "received"
+                  ? "Accept"
+                  : "Pending"}
+              </Button>
             </div>
-            <BioText>{userData.bio}</BioText>
-          </div>
-
-          <div className="flex font-bold gap-4 gap-y-0 justify-between flex-wrap">
-            <p className="whitespace-nowrap w-fit">
-              {`Joined:
-                ${userData.createdAt.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}`}
-            </p>
-            <div className="flex gap-4 w-fit">
-              <p className="whitespace-nowrap">{followerCount} followers</p>
-              <p className="whitespace-nowrap">{friendCount} friends</p>
-            </div>
+          )}
+        </div>
+        <BioText>{userData.bio}</BioText>
+        <div className="flex font-bold gap-4 p-1 gap-y-0 justify-between flex-wrap">
+          <p className="whitespace-nowrap w-fit">
+            {`Joined: ${userData.createdAt.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}`}
+          </p>
+          <div className="flex gap-4 w-fit">
+            <p className="whitespace-nowrap">{followerCount} followers</p>
+            <p className="whitespace-nowrap">{friendCount} friends</p>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ export default function Nav({
 }) {
   return (
     <nav
-      className={`flex items-center flex-wrap gap-2 md:gap-4 w-full ${className}`}
+      className={`flex items-center flex-wrap gap-2 md:gap-3 w-full ${className}`}
     >
       {children}
     </nav>

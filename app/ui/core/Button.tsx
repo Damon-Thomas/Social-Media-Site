@@ -14,7 +14,7 @@ export default function Button({
   ) => void | Promise<void>;
   type?: "button" | "submit";
   style?: "default" | "bordered" | "text" | "primary" | "destructive";
-  size?: "small" | "medium" | "large" | "fit";
+  size?: "micro" | "small" | "medium" | "large" | "fit";
   className?: string;
   disabled?: boolean;
 }) {
@@ -29,6 +29,7 @@ export default function Button({
     destructive: "bg-[var(--danger)] text-[var(--aBlack)]",
   };
   const buttonSize = {
+    micro: "text-xs px-1 py-0.5",
     small: "text-sm px-2 py-1 w-20",
     medium: "text-base px-4 py-2 w-24",
     large: "text-lg px-6 py-3 w-30",

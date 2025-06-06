@@ -13,7 +13,37 @@ export default function ConnectCard({ user }: { user: ConnectUser }) {
   }, []);
 
   if (!user) {
-    return null; // add fallback UI
+    return (
+      <div className="animate-pulse flex flex-col justify-between items-center p-2 w-full border-1 rounded-lg h-48 overflow-hidden">
+        <div
+          className="rounded-full flex-shrink-0 h-20 w-20 bg-gray-700"
+          style={{ width: 80, height: 80 }}
+        />
+        <div className="h-8 bg-gray-700 rounded w-full mt-2" />
+        <div className="flex flex-col items-center w-full gap-2 mt-2">
+          <div className="flex justify-around h-fit w-full">
+            <div className="flex gap-2">
+              <div className=" bg-gray-700 rounded  w-6 h-6" />
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+            </div>
+            <div className="flex gap-2">
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+            </div>
+          </div>
+          <div className="flex justify-around h-fit w-full">
+            <div className="flex gap-2">
+              <div className=" bg-gray-700 rounded  w-6 h-6" />
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+            </div>
+            <div className="flex gap-2">
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+              <div className=" bg-gray-700 rounded w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -32,8 +62,8 @@ export default function ConnectCard({ user }: { user: ConnectUser }) {
         ) : (
           <div style={{ width: 80, height: 80 }} />
         )}
-        <div className="flex items-center justify-center pt-2">
-          <p className="text-[var(--dmono)] font-bold overflow-hidden text-ellipsis whitespace-nowrap">
+        <div className="flex items-center justify-center pt-2 px-2 w-full">
+          <p className="text-[var(--dmono)] font-bold w-full whitespace-nowrap overflow-hidden text-ellipsis text-center">
             {user.name}
           </p>
         </div>

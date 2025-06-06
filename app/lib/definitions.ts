@@ -94,6 +94,7 @@ export type Post = {
   createdAt: Date;
   updatedAt: Date;
   Notification?: Notification[];
+  isLikedByUser?: boolean;
 } | null;
 
 export type Comment = {
@@ -182,6 +183,7 @@ export type EssentialPost = {
     comments: number;
     likedBy: number;
   };
+  likedByUser?: boolean;
 } | null;
 
 export type EssentialComment = {

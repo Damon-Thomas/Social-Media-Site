@@ -203,7 +203,8 @@ export async function getfullPost(postId: string): Promise<FullPost> {
 
 export async function getGlobalFeedPosts(
   cursor?: string,
-  limit: number = 15
+  limit: number = 15,
+  userId?: string
 ): Promise<{ posts: EssentialPost[]; nextCursor: string | null }> {
   const posts = await prisma.post.findMany({
     take: limit,
@@ -223,6 +224,13 @@ export async function getGlobalFeedPosts(
           image: true,
         },
       },
+      // Only include likedBy if userId is provided
+      ...(userId && {
+        likedBy: {
+          where: { id: userId },
+          select: { id: true },
+        },
+      }),
       _count: {
         select: {
           comments: true,
@@ -232,8 +240,15 @@ export async function getGlobalFeedPosts(
     },
   });
 
+  // Map posts to include likedByUser field and exclude likedBy array
+  const postsWithLikeStatus = posts.map(post => ({
+    ...post,
+    ...(userId && { likedByUser: post.likedBy && post.likedBy.length > 0 }),
+    likedBy: undefined, // Remove likedBy from response since EssentialPost doesn't include it
+  }));
+
   const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
-  return { posts, nextCursor };
+  return { posts: postsWithLikeStatus, nextCursor };
 }
 
 export async function getEssentialPost({
@@ -351,6 +366,10 @@ export async function getFollowingPosts(
               },
               createdAt: true,
               updatedAt: true,
+              likedBy: {
+                where: { id: userId },
+                select: { id: true },
+              },
               _count: {
                 select: {
                   comments: true,
@@ -379,6 +398,10 @@ export async function getFollowingPosts(
           },
           createdAt: true,
           updatedAt: true,
+          likedBy: {
+            where: { id: userId },
+            select: { id: true },
+          },
           _count: {
             select: {
               comments: true,
@@ -392,9 +415,16 @@ export async function getFollowingPosts(
 
   const followingPosts = user?.following.flatMap((f) => f.posts) || [];
   const userPosts = user?.posts || [];
-  const allPosts = [...followingPosts, ...userPosts].sort(
+  const allPostsRaw = [...followingPosts, ...userPosts].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
   );
+
+  // Map posts to include likedByUser field and exclude likedBy array
+  const allPosts = allPostsRaw.map(post => ({
+    ...post,
+    likedByUser: post.likedBy && post.likedBy.length > 0,
+    likedBy: undefined, // Remove likedBy from response
+  }));
 
   const nextCursor =
     allPosts.length === limit ? allPosts[allPosts.length - 1].id : null;

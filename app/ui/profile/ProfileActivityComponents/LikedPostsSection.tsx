@@ -64,6 +64,7 @@ export default function LikedPostsSection({
               likeCount: post.likedBy?.length || 0,
               commentCount: post.comments?.length || 0,
               createdAt: post.createdAt.toISOString(),
+              isLikedByUser: true, // Always true for liked posts section
             }}
             user={{
               id: post.authorId || "",

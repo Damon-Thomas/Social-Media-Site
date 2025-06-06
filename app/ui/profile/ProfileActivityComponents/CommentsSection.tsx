@@ -75,6 +75,7 @@ export default function CommentsSection({
               commentCount: comment.replies?.length || 0,
               createdAt: comment.createdAt.toISOString(),
               postId: comment.postId || undefined, // Add postId for comments
+              isLikedByUser: undefined, // Will fall back to API call
             }}
             user={{
               id: comment.authorId || "",

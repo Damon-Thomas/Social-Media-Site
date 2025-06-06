@@ -65,17 +65,25 @@ export default function Post({
   // This will update when userData changes due to the refreshUser() call
   useEffect(() => {
     if (!userData || !post) return; // Early exit if userData is not available
-    async function checkIfLiked() {
-      setIconLoading(true);
-      if (userData && post) {
-        const isLiked = await doesUserLikePost(userData.id, post.id);
-        setLiked(isLiked);
-      } else {
-        setLiked(false);
-      }
+
+    // Use pre-fetched likedByUser field if available, otherwise fall back to API call
+    if (post.likedByUser !== undefined) {
+      setLiked(post.likedByUser);
       setIconLoading(false);
+    } else {
+      // Fallback for backward compatibility
+      async function checkIfLiked() {
+        setIconLoading(true);
+        if (userData && post) {
+          const isLiked = await doesUserLikePost(userData.id, post.id);
+          setLiked(isLiked);
+        } else {
+          setLiked(false);
+        }
+        setIconLoading(false);
+      }
+      checkIfLiked();
     }
-    checkIfLiked();
   }, [post, userData]);
   useEffect(() => {
     setLikeCount(post?._count?.likedBy || 0);
@@ -191,7 +199,7 @@ export default function Post({
           <div className="flex items-center gap-4 mt-0.5">
             <div className="flex items-center gap-1">
               {iconLoading ? (
-                <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
+                <div className="w-12 h-5 bg-gray-300 animate-pulse rounded-full"></div>
               ) : (
                 <ThemedIcon
                   count={likeCount}

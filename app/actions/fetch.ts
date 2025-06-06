@@ -198,7 +198,8 @@ export async function fetchUserById(id: string) {
 export async function fetchPaginatedPosts(
   userId: string,
   cursor?: string,
-  limit: number = 5
+  limit: number = 5,
+  currentUserId?: string
 ) {
   const posts = await prisma.post.findMany({
     where: { authorId: userId },
@@ -213,9 +214,17 @@ export async function fetchPaginatedPosts(
     },
   });
 
+  // Map posts to include isLikedByUser field if currentUserId is provided
+  const postsWithLikeStatus = posts.map((post) => ({
+    ...post,
+    ...(currentUserId && {
+      isLikedByUser: post.likedBy.some((user) => user.id === currentUserId),
+    }),
+  }));
+
   const nextCursor = posts.length === limit ? posts[posts.length - 1].id : null;
 
-  return { posts, nextCursor };
+  return { posts: postsWithLikeStatus, nextCursor };
 }
 
 export async function fetchPaginatedComments(

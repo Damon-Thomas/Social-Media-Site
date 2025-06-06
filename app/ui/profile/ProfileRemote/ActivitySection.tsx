@@ -62,6 +62,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
+              isLikedByUser: undefined, // Will fall back to API call
             };
             return (
               <ActivityItemComponent
@@ -96,6 +97,7 @@ export default function ActivitySection({
                 year: "numeric",
               }),
               postId: c?.postId || undefined, // Add postId for comments
+              isLikedByUser: undefined, // Will fall back to API call
             };
             return (
               <ActivityItemComponent
@@ -129,6 +131,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
+              isLikedByUser: true, // Always true for liked posts
             };
             return (
               <ActivityItemComponent
@@ -163,6 +166,7 @@ export default function ActivitySection({
                 year: "numeric",
               }),
               postId: c?.postId || undefined, // Add postId for comments
+              isLikedByUser: true, // Always true for liked comments
             };
             return (
               <ActivityItemComponent

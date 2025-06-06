@@ -21,6 +21,7 @@ export type ActivityItem = {
   commentCount: number;
   createdAt: string;
   postId?: string; // Added to support comments that need parent post ID
+  isLikedByUser?: boolean; // Pre-fetched like status to avoid individual API calls
 };
 
 export default function ActivityItem({
@@ -84,6 +85,13 @@ export default function ActivityItem({
   useEffect(() => {
     if (!currentUser || !data.id) return;
 
+    // Use pre-fetched like status if available, otherwise make API call
+    if (data.isLikedByUser !== undefined) {
+      setIsLiked(data.isLikedByUser);
+      setIconLoading(false);
+      return;
+    }
+
     async function checkIfLiked() {
       setIconLoading(true);
       try {
@@ -101,7 +109,7 @@ export default function ActivityItem({
     }
 
     checkIfLiked();
-  }, [currentUser, data.id, pOrc, data.cOrp]);
+  }, [currentUser, data.id, data.isLikedByUser, pOrc, data.cOrp]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -287,7 +295,7 @@ export default function ActivityItem({
           <div className="flex items-center gap-4 mt-0.5 md:mt-1 pt-1 -translate-x-2 ">
             <div className="flex items-center gap-1" data-interactive="true">
               {iconLoading ? (
-                <div className="w-5 h-5 bg-gray-300 animate-pulse rounded-full"></div>
+                <div className="w-12 h-5 bg-gray-300 animate-pulse rounded-full"></div>
               ) : (
                 <ThemedIcon
                   count={likeCount}

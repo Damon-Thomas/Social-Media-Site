@@ -93,6 +93,7 @@ export default function CombinedLikedSection({
                 day: "numeric",
                 year: "numeric",
               }) || "",
+            isLikedByUser: true, // Always true for liked posts
           };
           return (
             <ActivityItemComponent
@@ -128,6 +129,7 @@ export default function CombinedLikedSection({
                 year: "numeric",
               }) || "",
             postId: c?.postId || undefined, // Add postId for comments
+            isLikedByUser: true, // Always true for liked comments
           };
           return (
             <ActivityItemComponent

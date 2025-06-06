@@ -7,6 +7,14 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import { useFullUser } from "@/app/context/UserContext";
 import { useEffect, useState } from "react";
 import { useAddNotification } from "@/app/context/NotificationContext";
+import {
+  acceptFriendRequest,
+  cancelFriendRequest,
+  deleteFriend,
+  followUser,
+  sendFriendRequest,
+  unfollowUser,
+} from "@/app/actions/fetch";
 
 export default function PersInfo({
   userData,

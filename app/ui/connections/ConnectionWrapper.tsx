@@ -23,7 +23,9 @@ export default function ConnectionWrapper({
         botborder ? "border-b-1 border-[var(--borderc)]" : ""
       }`}
     >
-      <h3 className="text-2xl mb-2 ">{children}</h3>
+      <h3 className="text-2xl mb-2 pb-1 border-b-1 border-[var(--borderc)]">
+        {children}
+      </h3>
       <ConnectionContainer type={type} rows={rows} />
     </div>
   );

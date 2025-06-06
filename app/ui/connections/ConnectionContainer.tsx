@@ -36,9 +36,10 @@ export default function ConnectionContainer({
   const { setNotifications } = useNotifications();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState(192);
+  const [cardWidth, setCardWidth] = useState(175);
   const [containerWidth, setContainerWidth] = useState(0);
   const [itemsPerRow, setItemsPerRow] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const [page, setPage] = useState(1);
   const [prospects, setProspects] = useState<ConnectUser[]>([]);
   const [nextContent, setNextContent] = useState<"Next" | "End">("Next");
@@ -111,8 +112,8 @@ export default function ConnectionContainer({
         setNextContent("End");
       } else {
         console.error("Failed to fetch prospects");
-        setNotifications((prev) => [...prev, "Friend request accepted!"]);
       }
+      setLoaded(true);
     };
 
     fetchProspects();
@@ -131,84 +132,68 @@ export default function ConnectionContainer({
       ref={containerRef}
       className="grow flex flex-col w-full overflow-hidden min-h-[1px]"
     >
-      {prospects.length === 0 && page === 1 ? (
-        <div className="w-full h-48 grow flex items-center justify-center">
-          <p className="text-xl">No connections found.</p>
+      {!loaded ? (
+        <div className="w-full p-1 mb-2">
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+            }}
+          >
+            {Array.from({ length: itemsPerRow * rows }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse h-32 sm:h-40 w-full"
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <>
-          <div className="w-full p-1 mb-2">
-            <div
-              className="grid gap-2"
-              style={{
-                gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-              }}
-            >
-              {prospects.length === 0 && page > 1 ? (
-                <div className="w-full col-span-4 h-48 flex items-center justify-center">
-                  <p className="text-xl">No more connections found.</p>
-                </div>
-              ) : (
-                prospects.map((prospect) => (
-                  <ConnectCard key={prospect.id} user={prospect} />
-                ))
-              )}
+          {prospects.length === 0 && page === 1 && loaded ? (
+            <div className="w-full h-48 grow flex items-center justify-center">
+              <p className="text-xl">No connections found.</p>
             </div>
-          </div>
-          <div className="w-full flex gap-2 justify-center items-center">
-            <Button
-              className="grow no-scale hover:bg-[var(--rgtint)]"
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            >
-              {previousContent}
-            </Button>
-            <Button
-              className="grow no-scale hover:bg-[var(--rgtint)]"
-              onClick={() => {
-                if (nextContent !== "End") setPage((prev) => prev + 1);
-              }}
-            >
-              {nextContent}
-            </Button>
-          </div>
+          ) : (
+            <>
+              <div className="w-full p-1 mb-2">
+                <div
+                  className="grid gap-2"
+                  style={{
+                    gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {prospects.length === 0 && page > 1 ? (
+                    <div className="w-full col-span-4 h-48 flex items-center justify-center">
+                      <p className="text-xl">No more connections found.</p>
+                    </div>
+                  ) : (
+                    prospects.map((prospect) => (
+                      <ConnectCard key={prospect.id} user={prospect} />
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="w-full flex gap-2 justify-center items-center">
+                <Button
+                  className="grow no-scale hover:bg-[var(--rgtint)]"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                >
+                  {previousContent}
+                </Button>
+                <Button
+                  className="grow no-scale hover:bg-[var(--rgtint)]"
+                  onClick={() => {
+                    if (nextContent !== "End") setPage((prev) => prev + 1);
+                  }}
+                >
+                  {nextContent}
+                </Button>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
   );
-
-  // return (
-  //   <div
-  //     ref={containerRef}
-  //     className="grow flex flex-col w-full overflow-hidden min-h-[1px]"
-  //   >
-  //     <div className="w-full p-1 mb-2">
-  //       <div
-  //         className="grid gap-2"
-  //         style={{
-  //           gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-  //         }}
-  //       >
-  //         {prospects.map((prospect) => (
-  //           <ConnectCard key={prospect.id} user={prospect} />
-  //         ))}
-  //       </div>
-  //     </div>
-  //     <div className="w-full flex gap-2 justify-center items-center">
-  //       <Button
-  //         className="grow no-scale hover:bg-[var(--rgtint)]"
-  //         onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-  //       >
-  //         {previousContent}
-  //       </Button>
-  //       <Button
-  //         className="grow no-scale hover:bg-[var(--rgtint)]"
-  //         onClick={() => {
-  //           if (nextContent !== "End") setPage((prev) => prev + 1);
-  //         }}
-  //       >
-  //         {nextContent}
-  //       </Button>
-  //     </div>
-  //   </div>
-  // );
 }

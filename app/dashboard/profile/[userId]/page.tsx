@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 10;
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 // Fetch data on the server side (keep this part)
-async function getData(userId: string) {
+async function getData(userId: string, currentUserId?: string) {
   const [
     userData,
     activityResponse,
@@ -34,7 +34,7 @@ async function getData(userId: string) {
   ] = await Promise.all([
     fetchUserById(userId),
     fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE, currentUserId),
     fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
     fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
     fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Fetch initial data on the client
-    getData(userId || user?.id || "")
+    getData(userId || user?.id || "", user?.id)
       .then((data) => {
         setInitialData(data);
         setLoading(false);

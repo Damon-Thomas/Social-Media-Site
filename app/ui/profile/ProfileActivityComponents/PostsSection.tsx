@@ -5,6 +5,7 @@ import { fetchPaginatedPosts } from "@/app/actions/fetch";
 import type { Post } from "@/app/lib/definitions";
 import type { Dispatch, SetStateAction } from "react";
 import ActivityItem from "./ActivityItem";
+import { useCurrentUser } from "@/app/context/UserContext";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -21,11 +22,14 @@ export default function PostsSection({
   openPostComment?: string;
   setOpenPostComment?: Dispatch<SetStateAction<string>>;
 }) {
+  const currentUser = useCurrentUser(); // Get current user for like status
+
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedPosts(
       userId,
       cursor ?? undefined,
-      ITEMS_PER_PAGE
+      ITEMS_PER_PAGE,
+      currentUser?.id // Pass current user ID for like status
     );
     return { items: posts, nextCursor };
   };
@@ -57,6 +61,7 @@ export default function PostsSection({
               likeCount: post.likedBy?.length || 0,
               commentCount: post.comments?.length || 0,
               createdAt: post.createdAt.toISOString(),
+              isLikedByUser: post.isLikedByUser, // Pass pre-fetched like status
             }}
             user={{
               id: post.authorId || "",

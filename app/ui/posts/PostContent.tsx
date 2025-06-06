@@ -29,7 +29,9 @@ export default function PostContent({
   const fetchMore = async (cursor: string | null) => {
     if (selectedFeed === "global") {
       const { posts, nextCursor } = await getGlobalFeedPosts(
-        cursor || undefined
+        cursor || undefined,
+        15,
+        user?.id // Pass user ID for like status
       );
       return { items: posts ?? [], nextCursor };
     } else {
@@ -48,7 +50,7 @@ export default function PostContent({
       try {
         let response;
         if (selectedFeed === "global") {
-          response = await getGlobalFeedPosts();
+          response = await getGlobalFeedPosts(undefined, 15, user?.id);
         } else {
           response = await getFollowingPosts(user?.id);
         }

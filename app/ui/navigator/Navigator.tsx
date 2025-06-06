@@ -35,7 +35,9 @@ export default function Navigator() {
       {!smallScreen && <NavLogo />}
       <Nav
         className={`${
-          smallScreen ? "w-full justify-stretch px-2 " : "justify-between"
+          smallScreen
+            ? "w-full justify-stretch px-2 "
+            : "justify-end sm:justify-between"
         }`}
       >
         <NavGroup

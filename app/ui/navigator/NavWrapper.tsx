@@ -15,7 +15,7 @@ export default function NavWrapper({
         className={
           fullBleed
             ? "flex items-center w-full justify-center"
-            : "pt-2 px-2 flex items-center w-full max-w-6xl justify-start mr-10"
+            : "pt-2 px-2 flex items-center w-full max-w-6xl justify-start sm:mr-10"
         }
       >
         {children}

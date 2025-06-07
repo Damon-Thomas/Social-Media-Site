@@ -4,10 +4,6 @@ import AuthForm from "./ui/form/auth/auth-form";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
-import yellowNoBg from "../public/yellowNoBg.png";
-import yellowRemoveBgPreview from "../public/yellow-removebg-preview.png";
-import yellowmobile from "../public/mobileyellow.png";
-import blackmobile from "../public/blackmobile.png";
 import Footer from "./ui/landing-page/Footer";
 import ThemeSwitcher from "./ui/landing-page/ThemeSwitcher";
 // import { validateSessionOrClear } from "@/app/actions/auth";
@@ -33,7 +29,7 @@ export default function Home() {
         <main className="flex flex-col grow md:flex-row items-center justify-start md:justify-around w-full pb-10">
           <div className="relative w-[150px] h-[50px] my-10 md:w-[400px] md:h-[400px]">
             <Image
-              src={theme === "dark" ? yellowmobile : blackmobile}
+              src={theme === "dark" ? "/mobileyellow.png" : "/blackmobile.png"}
               alt="Mobile version"
               fill
               style={{ objectFit: "contain" }}
@@ -41,7 +37,11 @@ export default function Home() {
               priority
             />
             <Image
-              src={theme === "dark" ? yellowNoBg : yellowRemoveBgPreview}
+              src={
+                theme === "dark"
+                  ? "/yellowNoBg.png"
+                  : "/yellow-removebg-preview.png"
+              }
               alt={
                 theme === "dark"
                   ? "Zuno brand logo dark"

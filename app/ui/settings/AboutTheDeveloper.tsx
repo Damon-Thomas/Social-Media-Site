@@ -1,7 +1,5 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import githubWhite from "@/public/github-mark-white.svg";
-import linkedIn from "@/public/linkedIn.svg";
 
 export default function AboutTheDeveloper() {
   const [imageWidth, setImageWidth] = useState(120);
@@ -35,8 +33,8 @@ export default function AboutTheDeveloper() {
         <Image
           src="/developer.jpg"
           alt="Developer's profile picture"
-          width={240}
-          height={336}
+          width={imageWidth}
+          height={imageHeight}
           className="float-right ml-8 mb-2 object-contain shadow-lg"
           style={{
             borderRadius: "50% / 55%" /* Smoother, more natural oval */,
@@ -67,9 +65,9 @@ export default function AboutTheDeveloper() {
           hesitate to reach out via the contact form below or connect with me at
           the following links.
         </p>
-        <div className="flex flex-row items-center gap-4 mt-2 mb-2">
+        <div className="flex flex-row gap-4 mt-4">
           <Image
-            src={linkedIn}
+            src="/linkedIn.svg"
             alt="LinkedIn"
             width={28}
             height={28}
@@ -82,7 +80,7 @@ export default function AboutTheDeveloper() {
             }}
           />
           <Image
-            src={githubWhite}
+            src="/github-mark-white.svg"
             alt="GitHub"
             width={28}
             height={28}

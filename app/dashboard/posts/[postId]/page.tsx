@@ -97,57 +97,11 @@ export default function PostPage({
                   setTopCommentCount={setCommentCount}
                 />
               </div>
-              // <div className="flex flex-col" key={comment?.id}>
-              //   <CommentItem
-              //     setParentId={setParentId}
-              //     comment={comment}
-              //     setExpandedCommentId={setExpandedCommentId} // Pass the setter
-              //     isLast={(comment?.replies?.length ?? 0) === 0} // Pass the "isLast" prop
-              //     setCommentsInOrder={setCommentsInOrder}
-              //     postId={postId}
-              //     expandedCommentId={expandedCommentId}
-              //     anotherReply={
-              //       replyIndex === 0 && (comment?.replies?.length ?? 0) > 1
-              //     }
-              //   />
-
-              //   {comment?.replies && comment?.replies.length > 0 && (
-              //     <div className="ml-8">
-              //       {comment.replies.map(
-              //         (reply: BasicComment, replyIndex: number) => (
-              //           <CommentItem
-              //             key={reply?.id}
-              //             setParentId={setParentId}
-              //             comment={reply}
-              //             setExpandedCommentId={setExpandedCommentId} // Pass the setter
-              //             isLast={
-              //               replyIndex === (comment.replies?.length ?? 0) - 1
-              //             } // Pass the "isLast" prop for replies
-              //             setCommentsInOrder={setCommentsInOrder}
-              //             postId={postId}
-              //             setHidden={setModalHidden}
-              //             expandedCommentId={expandedCommentId}
-              //             continueLink={
-              //               replyIndex < (comment.replies?.length ?? 0) - 1
-              //             } // Simplified logic
-              //           />
-              //         )
-              //       )}
-              //     </div>
-              //   )}
-              // </div>
             ))
           ) : (
             <p className="text-[var(--dull)]">No comments yet.</p>
           )}
         </div>
-        {/* <CommentModal
-          postId={postId}
-          setComment={setCommentsInOrder}
-          hidden={modalHidden}
-          setHidden={setModalHidden}
-          parentId={parentId || undefined}
-        ></CommentModal> */}
       </div>
     </div>
   );

@@ -1,6 +1,4 @@
 import { useTheme } from "next-themes";
-import defaultProfileDark from "@public/defaultProfileDark.svg";
-import defaultProfileLight from "@public/defaultProfileLight.svg";
 
 /**
  * Returns the correct default profile picture based on the current theme.
@@ -8,6 +6,7 @@ import defaultProfileLight from "@public/defaultProfileLight.svg";
  */
 export function useDefaultProfileImage(): string {
   const { theme } = useTheme();
-
-  return theme === "dark" ? defaultProfileDark.src : defaultProfileLight.src;
+  return theme === "dark"
+    ? "/defaultProfileDark.svg"
+    : "/defaultProfileLight.svg";
 }

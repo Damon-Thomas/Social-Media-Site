@@ -2,10 +2,6 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
 
-import githubWhite from "@/public/github-mark-white.svg";
-import githubBlack from "@/public/github-mark.svg";
-import linkedIn from "@/public/linkedIn.svg";
-
 export default function Footer() {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
@@ -57,7 +53,7 @@ export default function Footer() {
                   src={
                     theme === "light"
                       ? "/chevron-up.svg"
-                      : "chevron-primary.svg"
+                      : "/chevron-primary.svg"
                   }
                   alt="Footer indicator"
                   width={16}
@@ -88,7 +84,7 @@ export default function Footer() {
                 </h4>
                 <div className="icons flex items-center w-full justify-center">
                   <Image
-                    src={linkedIn}
+                    src="/linkedIn.svg"
                     alt="LinkedIn"
                     width={24}
                     height={24}
@@ -100,7 +96,11 @@ export default function Footer() {
                   />
                   {mounted ? (
                     <Image
-                      src={theme === "light" ? githubWhite : githubBlack}
+                      src={
+                        theme === "light"
+                          ? "/github-mark-white.svg"
+                          : "/github-mark.svg"
+                      }
                       alt="GitHub"
                       width={24}
                       height={24}

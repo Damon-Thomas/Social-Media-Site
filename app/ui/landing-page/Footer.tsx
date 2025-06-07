@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import chevron from "@/public/chevron-up.svg";
-import pchevron from "@/public/chevron-primary.svg";
+
 import githubWhite from "@/public/github-mark-white.svg";
 import githubBlack from "@/public/github-mark.svg";
 import linkedIn from "@/public/linkedIn.svg";

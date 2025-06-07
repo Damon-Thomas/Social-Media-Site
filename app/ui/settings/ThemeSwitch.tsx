@@ -4,8 +4,7 @@ import { setUserTheme } from "@/app/actions/userActions";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import sun from "@public/sun.svg";
-import moon from "@public/moonPrimary.svg";
+
 import Image from "next/image";
 
 export default function ThemeSwitch() {
@@ -54,7 +53,7 @@ export default function ThemeSwitch() {
           `}
         >
           <Image
-            src={theme === "dark" ? moon : sun}
+            src={theme === "dark" ? "/moonPrimary.svg" : "/sun.svg"}
             alt={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             width={24}
             height={24}

@@ -55,7 +55,11 @@ export default function Footer() {
             >
               {mounted ? (
                 <Image
-                  src={theme === "light" ? chevron : pchevron}
+                  src={
+                    theme === "light"
+                      ? "/chevron-up.svg"
+                      : "chevron-primary.svg"
+                  }
                   alt="Footer indicator"
                   width={16}
                   height={16}

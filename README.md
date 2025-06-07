@@ -1,4 +1,4 @@
-# [Zuno](https://github.com/Damon-Thomas/Social-Media-Site)
+# [Zuno](https://zuno.damonthomas.dev/)
 
 Try it out without signing up by using the guest account.  
 Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodinproject.com/lessons/node-path-nodejs-odin-book)

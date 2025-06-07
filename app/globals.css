@@ -245,3 +245,7 @@ button:hover {
     height: 18px !important;
   }
 }
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

@@ -39,7 +39,7 @@ export default function Footer() {
         onMouseLeave={() => setOpen(false)}
         className={`fixed ${
           open ? "translate-y-0" : "translate-y-26"
-        } h-28 bottom-0 w-screen text-[var(--background)]  bg-[var(--rbackground)] py-1 px-2 md:p-4 transition-all duration-500 ease-in-out z-20`}
+        } h-28 bottom-0 w-screen text-[var(--background)]  bg-[var(--rbackground)] py-1 px-2 md:p-4 transition-all duration-500 ease-in-out z-20 safe-bottom`}
       >
         <div className="relative flex justify-center h-full w-full">
           <div className="absolute -top-4 md:-top-6 transform -translate-y-1/2">

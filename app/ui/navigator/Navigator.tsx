@@ -31,7 +31,7 @@ export default function Navigator() {
   if (!mounted) return null;
 
   return (
-    <NavWrapper fullBleed={smallScreen}>
+    <NavWrapper smallScreen={smallScreen} fullBleed={smallScreen}>
       {!smallScreen && <NavLogo />}
       <Nav
         className={`${

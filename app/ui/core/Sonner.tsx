@@ -24,7 +24,7 @@ export default function Sonner() {
     <div
       className={`fixed bottom-0 right-0 m-4 z-50 transition-all ${
         show ? "block animate-slide-in-from-right" : "hidden"
-      }`}
+      } safe-bottom`}
     >
       <button
         onClick={clearNotifications}

@@ -32,7 +32,7 @@ export default function DashboardLayout({
         {/* <ThemeSwitcher /> */}
         <div
           className={`flex ${
-            smallScreen ? "flex-col-reverse" : "flex-col"
+            smallScreen ? "flex-col-reverse " : "flex-col"
           } h-screen bg-[var(--rdmono)] text-[var(--dmono)] `}
         >
           <Navigator />

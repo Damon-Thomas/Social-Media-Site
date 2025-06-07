@@ -1,15 +1,19 @@
 export default function NavWrapper({
   children,
   className,
+  smallScreen = false,
   fullBleed = false,
 }: {
   children: React.ReactNode;
   className?: string;
+  smallScreen?: boolean;
   fullBleed?: boolean;
 }) {
   return (
     <div
-      className={`w-full z-50 flex justify-center border-b-1 border-[var(--borderc)] ${className}`}
+      className={`w-full z-50 flex justify-center border-b-1 border-[var(--borderc)] ${className} ${
+        smallScreen ? "safe-bottom" : ""
+      }`}
     >
       <div
         className={

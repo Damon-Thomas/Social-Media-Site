@@ -83,7 +83,7 @@ I’ve used GitHub Copilot regularly over the last six months. It’s a powerful
 - **Infinite Scrolling**: Copilot got the base implementation running, but maintenance became tricky because I hadn’t written it myself. In hindsight, doing it manually would’ve taken only slightly longer and resulted in better long-term understanding.
 - **Authentication**: I asked too much from Copilot here. It repeatedly failed to implement Next.js OAuth correctly. After two wasted days, I did it myself in the same amount of time. Now I cap AI assistance at three unproductive prompts before switching to manual implementation.
 - **useFormState Hook**: I tried using `useFormState` to manage form logic after reading the Next.js docs. Copilot kept rewriting everything to avoid it, even when I asked it not to. I suspect the hook just isn’t popular enough for it to recognize.
-- **Email Notifications**: This was a win. I used Claude Sonnet 4 through Copilot to help set up an email system that notifies me when someone uses the site’s contact form. I didn’t love the form logic, but I appreciated the speed. Sometimes letting the AI take control — instead of trying to force your own structure — is the right call.
+- **Email Notifications**: I used Copilot to quickly set up an email system that sends a notification when someone uses the site’s contact form. It got the job done fast, but the form logic wasn’t great. Letting AI run with its own approach is faster, but it comes with trade-offs.
 
 ### Styling the Website
 

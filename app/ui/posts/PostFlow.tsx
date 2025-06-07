@@ -5,8 +5,6 @@ import { BasicComment, EssentialComment } from "@/app/lib/definitions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import flame from "@/public/flame.svg";
-import commentText from "@/public/comment.svg";
 import ThemedIcon from "../core/ThemedIcon";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
@@ -119,14 +117,14 @@ function ReplyFlow({
           <div className="flex items-center gap-4 mt-2 justify-between">
             <div className="flex">
               <ThemedIcon
-                src={flame.src}
+                src="/flame.svg"
                 alt="Likes"
                 count={likeCount}
                 onClick={handleLike}
                 liked={isLiked}
               />
               <ThemedIcon
-                src={commentText.src}
+                src="/comment.svg"
                 alt="Replies"
                 count={replyCount}
                 onClick={handleReply}
@@ -280,14 +278,14 @@ export default function PostFlow({
             <div className="flex items-center gap-4 mt-2 justify-between">
               <div className="flex">
                 <ThemedIcon
-                  src={flame.src}
+                  src="/flame.svg"
                   alt="Likes"
                   count={likeCount}
                   onClick={handleLike}
                   liked={isLiked}
                 />
                 <ThemedIcon
-                  src={commentText.src}
+                  src="/comment.svg"
                   alt="Replies"
                   count={replyCount}
                   onClick={handleReply}

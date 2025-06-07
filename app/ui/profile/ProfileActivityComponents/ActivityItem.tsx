@@ -5,8 +5,6 @@ import { capitalize } from "@/app/utils/capitalize";
 import Image from "next/image";
 import Link from "next/link";
 import ThemedIcon from "../../core/ThemedIcon";
-import flame from "@/public/flame.svg";
-import commentText from "@/public/comment.svg";
 import { useEffect, useState, useRef } from "react";
 import PopDownComment from "../../posts/comments/PopDownComment";
 import { likePost, doesUserLikePost } from "@/app/actions/postActions";
@@ -299,7 +297,7 @@ export default function ActivityItem({
               ) : (
                 <ThemedIcon
                   count={likeCount}
-                  src={flame.src}
+                  src="/flame.svg"
                   alt="Likes"
                   size={iconSize}
                   liked={isLiked}
@@ -316,7 +314,7 @@ export default function ActivityItem({
             >
               <ThemedIcon
                 count={commentCount}
-                src={commentText.src}
+                src="/comment.svg"
                 alt="Comments"
                 size={iconSize}
               />

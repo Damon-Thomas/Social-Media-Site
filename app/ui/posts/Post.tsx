@@ -5,8 +5,6 @@ import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import flame from "@/public/flame.svg";
-import commentText from "@/public/comment.svg";
 import ThemedIcon from "@/app/ui/core/ThemedIcon";
 import { useCurrentUser } from "@/app/context/UserContext";
 import { doesUserLikePost, likePost } from "@/app/actions/postActions";
@@ -203,7 +201,7 @@ export default function Post({
               ) : (
                 <ThemedIcon
                   count={likeCount}
-                  src={flame.src}
+                  src="/flame.svg"
                   alt="Likes"
                   size={iconSize}
                   liked={liked}
@@ -216,7 +214,7 @@ export default function Post({
             <div onClick={commentHandler} className="flex items-center gap-1">
               <ThemedIcon
                 count={commentCount}
-                src={commentText.src}
+                src="/comment.svg"
                 alt="Comments"
                 size={iconSize}
               />

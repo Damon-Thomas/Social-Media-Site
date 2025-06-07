@@ -40,7 +40,6 @@ export default function DashboardClient({ user }: { user: SimpleUser }) {
           />
         </div>
         <div className="w-fit max-w-xs mr-2 md:mr-4 md:block hidden">
-          <Goats />
           <Noobs />
           <Goats />
         </div>

@@ -92,8 +92,8 @@ export default function ProfilePage() {
         </div>
         <div className="sideContent w-fit hidden md:block sticky top-0 self-start z-10">
           <div className="space-y-6 flex flex-col grow w-full">
-            <Goats />
             <Noobs />
+            <Goats />
           </div>
         </div>
       </div>
@@ -145,9 +145,7 @@ export default function ProfilePage() {
         // style={{ top: `${initialTop}px` }}
       >
         <div className="space-y-6 flex flex-col grow w-full">
-          <Goats />
           <Noobs />
-
           <Goats />
         </div>
       </div>

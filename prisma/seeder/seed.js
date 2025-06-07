@@ -273,6 +273,7 @@ function generateSuperUserBio() {
 }
 
 async function main() {
+  console.log("[SEED] 1. Creating super user...");
   // 1. Create super user with custom data
   const superUserData = {
     firstName: "Super",
@@ -292,8 +293,10 @@ async function main() {
       password: superUserData.password,
     },
   });
+  console.log("[SEED] Super user created");
 
   // Create regular users as before
+  console.log("[SEED] 2. Creating regular users...");
   const users = [];
   for (let i = 0; i < 50; i++) {
     const person = createRandomUser();
@@ -307,8 +310,10 @@ async function main() {
     });
     users.push(user);
   }
+  console.log("[SEED] Regular users created");
 
   // 2. Super user creates 50 posts (increased from 20)
+  console.log("[SEED] 3. Creating posts for super user and regular users...");
   const posts = [];
   for (let i = 0; i < 50; i++) {
     // Mix of different post types for variety
@@ -331,7 +336,6 @@ async function main() {
     });
     posts.push(post);
   }
-
   // Regular users also create posts
   for (const user of users) {
     const numPosts = getRandomInt(5, 7);
@@ -356,8 +360,12 @@ async function main() {
       posts.push(post);
     }
   }
+  console.log("[SEED] Posts created");
 
   // 3. Super user makes 100 comments on various posts
+  console.log(
+    "[SEED] 4. Creating comments for super user and regular users..."
+  );
   const comments = [];
   const superUserComments = [];
 
@@ -396,8 +404,10 @@ async function main() {
       comments.push(comment);
     }
   }
+  console.log("[SEED] Comments created");
 
   // 4. Add replies to comments, with higher engagement on super user content
+  console.log("[SEED] 5. Creating replies to comments...");
   const replyComments = [];
 
   // Each user replies to super user comments more frequently
@@ -421,8 +431,10 @@ async function main() {
       replyComments.push(reply);
     }
   }
+  console.log("[SEED] Replies created");
 
   // 5. Ensure super user's posts get more likes
+  console.log("[SEED] 6. Liking posts...");
   const allComments = comments.concat(replyComments);
 
   // All users like more of super user's posts
@@ -464,8 +476,7 @@ async function main() {
       });
     }
   }
-
-  // 5B. Super user likes some posts from others
+  // Super user likes some posts from others
   const nonSuperUserPosts = posts.filter(
     (post) => post.authorId !== superUser.id
   );
@@ -485,8 +496,6 @@ async function main() {
       data: { likedBy: { connect: { id: superUser.id } } },
     });
   }
-
-  // 5C. Everyone likes some comments
   const allUsers = [...users, superUser];
   for (const user of allUsers) {
     // Each user likes between 3 and 7 comments
@@ -504,8 +513,10 @@ async function main() {
       });
     }
   }
+  console.log("[SEED] Likes added");
 
   // 6. Create following relationships (80-90% of users follow the super user)
+  console.log("[SEED] 7. Creating following relationships...");
   for (const user of users) {
     // 85% chance a user follows the super user
     if (Math.random() < 0.85) {
@@ -539,22 +550,17 @@ async function main() {
       }
     }
   }
-
-  // Super user follows back 30-40% of their followers
   const superUserFollowers = await prisma.user.findUnique({
     where: { id: superUser.id },
     include: { followers: true },
   });
-
   const numToFollowBack = getRandomInt(
     Math.floor(superUserFollowers.followers.length * 0.3),
     Math.floor(superUserFollowers.followers.length * 0.4)
   );
-
   const shuffledFollowers = [...superUserFollowers.followers].sort(
     () => 0.5 - Math.random()
   );
-
   for (let i = 0; i < numToFollowBack; i++) {
     await prisma.user.update({
       where: { id: superUser.id },
@@ -563,10 +569,10 @@ async function main() {
       },
     });
   }
+  console.log("[SEED] Following relationships created");
 
   // 7. Create friend requests and friendships
-
-  // 70% of users send friend requests to the super user
+  console.log("[SEED] 8. Creating friend requests and friendships...");
   const friendRequestUsers = [];
   for (const user of users) {
     if (Math.random() < 0.7) {
@@ -579,17 +585,13 @@ async function main() {
       friendRequestUsers.push(user);
     }
   }
-
-  // Super user accepts 40-60% of friend requests
   const numToAccept = getRandomInt(
     Math.floor(friendRequestUsers.length * 0.4),
     Math.floor(friendRequestUsers.length * 0.6)
   );
-
   const shuffledRequests = [...friendRequestUsers].sort(
     () => 0.5 - Math.random()
   );
-
   for (let i = 0; i < numToAccept; i++) {
     // Remove friend request
     await prisma.user.update({
@@ -666,18 +668,16 @@ async function main() {
       }
     }
   }
-
-  console.log("Seeding complete with super user!");
+  console.log("[SEED] Friend requests and friendships created");
 
   // Finally, set a special longer bio for the super user
+  console.log("[SEED] 9. Setting bios...");
   await prisma.user.update({
     where: { id: superUser.id },
     data: {
       bio: generateSuperUserBio(),
     },
   });
-
-  // Regular user bios
   for (const user of users) {
     await prisma.user.update({
       where: { id: user.id },
@@ -686,6 +686,7 @@ async function main() {
       },
     });
   }
+  console.log("[SEED] Bios set. Seeding complete with super user!");
 }
 
 main()

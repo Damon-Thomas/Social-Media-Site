@@ -36,7 +36,15 @@ export async function GET() {
 
     if (!user) {
       console.error("All retries failed. Returning 401 Unauthorized");
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      const res = NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+      res.headers.set(
+        "Set-Cookie",
+        "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax"
+      );
+      return res;
     }
 
     return NextResponse.json(user);

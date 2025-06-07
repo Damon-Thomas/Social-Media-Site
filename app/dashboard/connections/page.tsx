@@ -27,8 +27,8 @@ export default function Connections() {
           </div>
         </div>
         <div className="hidden md:flex flex-col">
-          <Goats />
           <Noobs />
+          <Goats />
         </div>
       </div>
     </div>

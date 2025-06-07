@@ -97,7 +97,7 @@ function ReplyFlow({
           href={`/dashboard/comment/${comment?.id}`}
           className="flex items-center"
         >
-          <h1 className="ml-4 flex items-center">
+          <h1 className="ml-4 font-bold flex items-center">
             {" "}
             {comment?.author?.name || "Deleted Comment"}
           </h1>
@@ -255,7 +255,7 @@ export default function PostFlow({
           href={`/dashboard/comment/${comment?.id}`}
           className="flex items-center"
         >
-          <h1 className="ml-4 flex items-center">
+          <h1 className="ml-4 flex font-bold items-center">
             {" "}
             {comment?.author?.name || "Deleted Comment"}
           </h1>

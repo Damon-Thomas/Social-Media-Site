@@ -46,7 +46,7 @@ function OAuthCallbackInner() {
     }
   }, [params, router]);
 
-  return <div>Signing you in...</div>;
+  return <Loading message="Signing You In To Something Awesome" />;
 }
 
 import { Suspense } from "react";

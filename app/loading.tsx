@@ -1,13 +1,15 @@
-export default function Loading() {
+export default function Loading({
+  message = "Loading Something Awesome For You...",
+}: {
+  message?: string;
+}) {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-50">
       <h1 className="text-4xl text-center text-[var(--primary)]">
         {" "}
         Post. Ping. Zuno.
       </h1>
-      <h1 className="text-2xl text-center">
-        Loading Something Awesome For You...
-      </h1>
+      <h1 className="text-2xl text-center">{message}</h1>
       <div
         className="relative mt-8"
         style={{

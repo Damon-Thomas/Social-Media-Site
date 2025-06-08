@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/app/lib/session.server";
 import cache from "@/app/lib/cache";
 
-const protectedRoutes = ["/dashboard"];
-const publicRoutes = ["/"];
-// const homeRoute = "/";
+// Change this to use prefixes instead of exact matches
+const protectedPrefixes = ["/dashboard"];
+const publicRoutes = ["/", "/auth", "/api/auth"];
+const apiExemptRoutes = ["/api/me", "/api/fullUser"];
 
 type Session = {
   userId: string;
@@ -21,15 +22,18 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip authentication for /api/me route to allow our retry logic to work
-  if (path === "/api/me") {
+  // Skip authentication for exempt API routes
+  if (apiExemptRoutes.some((route) => path.startsWith(route))) {
     return NextResponse.next();
   }
 
-  const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
+  // Check if this is a protected path (starts with any protected prefix)
+  const isProtectedRoute = protectedPrefixes.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+  );
+  const isPublicRoute = publicRoutes.some((route) => route === path);
 
-  // Read cookie from request
+  // Read cookie from request - keep your existing cache logic
   const cookie = req.cookies.get("session")?.value;
   let isAuthenticated = false;
 
@@ -38,6 +42,7 @@ export default async function middleware(req: NextRequest) {
       const session = cache.get(cookie) as Session;
       isAuthenticated = !!session.userId;
     } else {
+      // Your existing decrypt and validation logic stays the same
       try {
         const session = await decrypt(cookie);
         isAuthenticated = !!session?.userId;

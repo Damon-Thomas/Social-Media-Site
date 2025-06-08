@@ -46,28 +46,36 @@ export default async function middleware(req: NextRequest) {
       try {
         const session = await decrypt(cookie);
         isAuthenticated = !!session?.userId;
-        // Cache the session for 5 minutes (300 seconds)
-        cache.set(cookie, session, 300);
-        const validateUser = await fetch(
-          `${req.nextUrl.origin}/api/auth/validCookie`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Cookie: `session=${cookie}`,
-            },
+
+        if (session?.userId) {
+          // Cache the session for 5 minutes
+          cache.set(cookie, session, 300);
+
+          // Replace the hardcoded URL with an environment variable
+          const validateUser = await fetch(
+            `${
+              process.env.NEXTAUTH_URL || req.nextUrl.origin
+            }/api/auth/validCookie`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Cookie: `session=${cookie}`,
+              },
+            }
+          );
+
+          if (validateUser.status === 401) {
+            // Clear invalid session cookie and redirect to home
+            const clearRes = NextResponse.redirect(new URL("/", req.nextUrl));
+            clearRes.cookies.set({
+              name: "session",
+              value: "",
+              expires: new Date(0),
+              path: "/",
+            });
+            return clearRes;
           }
-        );
-        if (validateUser.status === 401) {
-          // Clear invalid session cookie and redirect to home
-          const clearRes = NextResponse.redirect(new URL("/", req.nextUrl));
-          clearRes.cookies.set({
-            name: "session",
-            value: "",
-            expires: new Date(0),
-            path: "/",
-          });
-          return clearRes;
         }
       } catch (e) {
         // Clear invalid cookies

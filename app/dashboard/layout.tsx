@@ -24,6 +24,7 @@ export default function DashboardLayout({
           >
             {children}
           </div>
+          <div className="w-full h-[70px]"></div>
           <Sonner />
         </div>
       </UserProvider>

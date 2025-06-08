@@ -19,8 +19,12 @@ function OAuthCallbackInner() {
         body: formData,
       }).then(async (res) => {
         if (res.redirected) {
-          // If the server responded with a redirect, follow it
-          window.location.replace(res.url);
+          // Extract just the path from the redirected URL
+          const redirectUrl = new URL(res.url);
+          const path = redirectUrl.pathname + redirectUrl.search;
+
+          // Use the current origin instead of the redirected origin
+          window.location.replace(`${window.location.origin}${path}`);
           return;
         }
         // Only try to parse JSON if not redirected

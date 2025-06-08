@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
 
   // If authentication was successful, redirect to dashboard
   if (!result?.errors) {
+    console.log("Authentication successful, redirecting to dashboard");
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 

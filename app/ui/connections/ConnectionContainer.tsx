@@ -36,7 +36,7 @@ export default function ConnectionContainer({
   const { setNotifications } = useNotifications();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState(175);
+  const [cardWidth, setCardWidth] = useState(200);
   const [containerWidth, setContainerWidth] = useState(0);
   const [itemsPerRow, setItemsPerRow] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -64,7 +64,9 @@ export default function ConnectionContainer({
     requestAnimationFrame(updateSize);
 
     if (window.innerWidth < 640) {
-      setCardWidth(120);
+      setCardWidth(150);
+    } else {
+      setCardWidth(200);
     }
 
     return () => observer.disconnect();

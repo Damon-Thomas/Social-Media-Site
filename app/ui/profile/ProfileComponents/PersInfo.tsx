@@ -202,22 +202,24 @@ export default function PersInfo({
           {loading ? (
             <Skeleton className="h-8 w-1/3 mb-2 rounded" />
           ) : (
-            <h1 className="text-lg pb-2 grow sm:text-2xl font-bold wrap-anywhere ">
-              {userData?.name}
-            </h1>
+            <div className="flex justify-between items-center w-full">
+              <h1 className="text-lg pb-2 sm:text-2xl font-bold wrap-anywhere">
+                {userData?.name}
+              </h1>
+              {ownProfile && (
+                <EditProfileModal
+                  bio={userData?.bio || ""}
+                  refreshProfileData={refreshProfileData}
+                />
+              )}
+            </div>
           )}
-
           {/* Edit or Action Buttons */}
           {loading ? (
             <div className="flex gap-2">
               <Skeleton className="h-8 w-20 rounded" />
               <Skeleton className="h-8 w-24 rounded" />
             </div>
-          ) : ownProfile ? (
-            <EditProfileModal
-              bio={userData?.bio || ""}
-              refreshProfileData={refreshProfileData}
-            />
           ) : (
             <div
               className={`flex gap-2 justify-end ${

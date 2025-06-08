@@ -19,6 +19,11 @@ export default function WarningModal({
   const [typed, setTyped] = useState("");
   const needsVerification = !!typeVerificationText;
   const isVerified = !needsVerification || typed === typeVerificationText;
+
+  if (hidden) {
+    return null; // Don't render anything when hidden
+  }
+
   return (
     <Modal
       hidden={hidden}
@@ -39,7 +44,7 @@ export default function WarningModal({
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
             placeholder={typeVerificationText}
-            autoFocus
+            autoFocus={!hidden}
           />
         </div>
       )}

@@ -20,7 +20,7 @@ export default function DashboardLayout({
           <Navigator />
           <div
             id="dashboard-scroll-container"
-            className="grow flex justify-center overflow-y-auto h-full pb-[56px] safe-bottom md:pb-8"
+            className="grow flex justify-center overflow-y-auto h-full content-bottom-padding md:pb-8"
           >
             {children}
           </div>

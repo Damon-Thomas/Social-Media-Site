@@ -4,7 +4,7 @@ import Button from "../../core/Button";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { useActionState } from "react";
 import Image from "next/image";
-import defaultProfileWhite from "@/public/defaultProfileDark.svg";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 import { saveBio } from "@/app/actions/profileActions";
 import type { formState } from "@/app/actions/profileActions";
 
@@ -21,6 +21,7 @@ export default function EditProfileForm({
 }) {
   const user = useCurrentUser();
   const refreshUser = useRefreshUser();
+  const defaultProfileImage = useDefaultProfileImage();
 
   const [state, action, isPending] = useActionState(
     actionHandler,
@@ -94,7 +95,7 @@ export default function EditProfileForm({
       </h1>
       <div className="flex items-center gap-4 mb-4">
         <Image
-          src={user?.image || defaultProfileWhite}
+          src={user?.image || defaultProfileImage}
           alt="User profile picture"
           width={40}
           height={40}

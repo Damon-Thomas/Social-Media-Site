@@ -221,38 +221,40 @@ export default function PersInfo({
               <Skeleton className="h-8 w-24 rounded" />
             </div>
           ) : (
-            <div
-              className={`flex gap-2 justify-end ${
-                isSmall ? "flex-row w-full" : "flex-row"
-              }`}
-            >
-              <Button
-                onClick={handleFollowClick}
-                style={!isFollowing ? "default" : "bordered"}
-                size={isSmall ? "micro" : "medium"}
-                className={`${isSmall ? "grow py-2" : ""}`}
+            !ownProfile && (
+              <div
+                className={`flex gap-2 justify-end ${
+                  isSmall ? "flex-row w-full" : "flex-row"
+                }`}
               >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </Button>
-              <Button
-                onClick={handleFriendRequest}
-                className={`${isSmall ? "grow" : ""}`}
-                size={isSmall ? "micro" : "medium"}
-                style={
-                  areFriends === "none" || areFriends === "received"
-                    ? "default"
-                    : "bordered"
-                }
-              >
-                {areFriends === "friend"
-                  ? "Unfriend"
-                  : areFriends === "none"
-                  ? "Befriend"
-                  : areFriends === "received"
-                  ? "Accept"
-                  : "Pending"}
-              </Button>
-            </div>
+                <Button
+                  onClick={handleFollowClick}
+                  style={!isFollowing ? "default" : "bordered"}
+                  size={isSmall ? "micro" : "medium"}
+                  className={`${isSmall ? "grow py-2" : ""}`}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </Button>
+                <Button
+                  onClick={handleFriendRequest}
+                  className={`${isSmall ? "grow" : ""}`}
+                  size={isSmall ? "micro" : "medium"}
+                  style={
+                    areFriends === "none" || areFriends === "received"
+                      ? "default"
+                      : "bordered"
+                  }
+                >
+                  {areFriends === "friend"
+                    ? "Unfriend"
+                    : areFriends === "none"
+                    ? "Befriend"
+                    : areFriends === "received"
+                    ? "Accept"
+                    : "Pending"}
+                </Button>
+              </div>
+            )
           )}
         </div>
 

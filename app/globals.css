@@ -247,5 +247,15 @@ button:hover {
 }
 
 .safe-bottom {
+  padding-bottom: calc(65px + env(safe-area-inset-bottom));
+}
+
+/* For fixed elements (navbar) */
+.safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* For content that needs to clear a 65px navbar */
+.content-bottom-padding {
+  padding-bottom: 65px;
 }

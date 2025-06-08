@@ -2,7 +2,6 @@
 
 import type { EssentialPost } from "@/app/lib/definitions";
 import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import ThemedIcon from "@/app/ui/core/ThemedIcon";
@@ -10,6 +9,7 @@ import { useCurrentUser } from "@/app/context/UserContext";
 import { doesUserLikePost, likePost } from "@/app/actions/postActions";
 import { useEffect, useState, useRef } from "react";
 import PopDownComment from "./comments/PopDownComment";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export default function Post({
   post,
@@ -22,7 +22,7 @@ export default function Post({
   openPostComment: string;
   setOpenPostComment: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { theme } = useTheme();
+  const defaultProfileImage = useDefaultProfileImage();
   const [mounted, setMounted] = useState(false);
   const iconSize = 20;
   const userData = useCurrentUser();
@@ -105,9 +105,7 @@ export default function Post({
                 src={
                   post?.author?.image && post.author.image.trim() !== ""
                     ? post.author.image
-                    : theme === "light"
-                    ? "/defaultProfileLight.svg"
-                    : "/defaultProfileDark.svg"
+                    : defaultProfileImage
                 }
                 alt="Profile"
                 className="w-8 h-8 rounded-full"

@@ -9,7 +9,7 @@ import { useEffect, useState, useRef } from "react";
 import PopDownComment from "../../posts/comments/PopDownComment";
 import { likePost, doesUserLikePost } from "@/app/actions/postActions";
 import { likeComment, isLikedByUser } from "@/app/actions/commentActions";
-import { useTheme } from "next-themes";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export type ActivityItem = {
   id: string;
@@ -37,8 +37,8 @@ export default function ActivityItem({
   openPostComment?: string;
   setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { theme } = useTheme();
   const currentUser = useCurrentUser();
+  const defaultProfileImage = useDefaultProfileImage();
 
   // State management for ThemedIcon functionality
   const [likeCount, setLikeCount] = useState(data.likeCount || 0);
@@ -196,9 +196,7 @@ export default function ActivityItem({
                   activityUser?.profileImage &&
                   activityUser.profileImage.trim() !== ""
                     ? activityUser.profileImage
-                    : theme === "light"
-                    ? "/defaultProfileLight.svg"
-                    : "/defaultProfileDark.svg"
+                    : defaultProfileImage
                 }
                 alt={`${activityUser?.name || "User"}'s profile picture`}
                 className="rounded-full h-8 w-8 flex-shrink-0 hover:opacity-80 transition-opacity"

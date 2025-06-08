@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCurrentUser, useRefreshUser } from "@/app/context/UserContext";
 import { followUser, unfollowUser } from "@/app/actions/fetch";
-import { useTheme } from "next-themes";
 import Button from "@/app/ui/core/Button";
+import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export default function SideItem({
   selectedData,
@@ -15,7 +15,7 @@ export default function SideItem({
 }) {
   const userData = useCurrentUser();
   const refreshUser = useRefreshUser();
-  const { theme } = useTheme();
+  const defaultProfileImage = useDefaultProfileImage();
   if (!selectedData) {
     return null;
   }
@@ -66,12 +66,7 @@ export default function SideItem({
       className="flex items-center gap-2 h-16"
     >
       <Image
-        src={
-          selectedData?.image ||
-          (theme === "light"
-            ? "/defaultProfileLight.svg"
-            : "/defaultProfileDark.svg")
-        }
+        src={selectedData?.image || defaultProfileImage}
         alt={selectedData?.name || "User"}
         className="w-10 h-10 rounded-full object-cover bg-gray-200"
         width={40}

@@ -1,2 +1,0 @@
-app/ui/tools/DebugTheme.tsx
-app/ui/profile/SectionWrapper.tsx

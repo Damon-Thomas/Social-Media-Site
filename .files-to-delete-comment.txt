@@ -1,3 +1,0 @@
-# These files are unnecessary and can be deleted:
-# - app/ui/tools/DebugTheme.tsx (does nothing)
-# - app/ui/profile/SectionWrapper.tsx (completely commented out)

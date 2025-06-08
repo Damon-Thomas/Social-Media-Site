@@ -173,7 +173,7 @@ export default function PersInfo({
       {/* Avatar */}
       {loading ? (
         <Skeleton
-          className={`rounded-full float-left mr-6 mb-2 ${
+          className={`rounded-full float-left mr-2 ${
             avatarFullSize ? "w-[160px] h-[160px]" : "w-[80px] h-[80px]"
           }`}
         />

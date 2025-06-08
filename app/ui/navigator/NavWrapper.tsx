@@ -12,7 +12,7 @@ export default function NavWrapper({
   return (
     <div
       className={`w-full z-50 flex justify-center border-b-1 border-[var(--borderc)] ${className} ${
-        smallScreen ? "safe-bottom" : ""
+        smallScreen ? "fixed bottom-0 left-0 safe-bottom" : ""
       }`}
     >
       <div

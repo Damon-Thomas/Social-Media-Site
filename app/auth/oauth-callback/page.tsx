@@ -25,63 +25,50 @@ function OAuthCallbackInner() {
         formData.append("oauthProvider", provider);
         formData.append("oauthCode", code);
 
-        console.log("Starting OAuth authentication...");
+        console.log("Processing OAuth authentication...");
 
+        // Let the browser handle redirects naturally
         const res = await fetch("/api/auth/oauth", {
           method: "POST",
           body: formData,
-          // Important: set redirect to manual to handle redirects in JS
-          redirect: "manual",
+          // Allow normal redirect behavior
+          redirect: "follow",
         });
 
-        console.log("OAuth API response:", res.status, res.statusText);
-
-        // Check for redirect responses (status codes 3xx)
-        if (res.status >= 300 && res.status < 400) {
-          // Get the Location header
-          const location = res.headers.get("Location");
-          console.log("Redirect location:", location);
-
-          if (location) {
-            // Ensure it's an absolute URL or make it one
-            const redirectUrl = location.startsWith("/")
-              ? `${window.location.origin}${location}`
-              : location;
-
-            console.log("Redirecting to:", redirectUrl);
-            window.location.href = redirectUrl;
-            // Don't set isProcessing to false here - we're redirecting
-            return;
-          }
-        }
-
-        // Handle normal JSON responses
+        // If we get here, it means we didn't redirect
+        // So we either have an error or non-redirect success
         if (res.ok) {
           const data = await res.json();
-          console.log("OAuth success response:", data);
+          console.log("OAuth response:", data);
 
           if (data.success) {
+            // Handle non-redirect success case
             router.push("/dashboard");
-            // Don't set isProcessing to false here - we're redirecting
-            return;
           } else {
+            // Handle explicit error case
             if (data.errors?.login?.includes("no email found")) {
               setError(
                 "We couldn't get your email. Please make sure your account has a verified email address."
               );
             } else {
-              setError("Authentication failed");
+              setError(data.error || "Authentication failed");
             }
           }
         } else {
-          console.error("OAuth error response:", res.status, res.statusText);
-          setError(`Authentication error: ${res.statusText}`);
+          // Handle HTTP error responses
+          try {
+            const errorData = await res.json();
+            setError(errorData.error || `Authentication error (${res.status})`);
+          } catch (e) {
+            console.error("Error parsing error response:", e);
+            setError(`Authentication error: ${res.statusText || res.status}`);
+          }
         }
       } catch (e) {
-        console.error("OAuth error:", e);
-        setError("An unexpected error occurred during authentication");
+        // This catch only runs for network errors
+        console.error("OAuth network error:", e);
+        setError("Connection error. Please check your internet and try again.");
       } finally {
-        // Only set isProcessing to false if we haven't redirected
         setIsProcessing(false);
       }
     };
@@ -89,12 +76,10 @@ function OAuthCallbackInner() {
     processOAuth();
   }, [params, router]);
 
-  // Show loading state when processing
-  if (isProcessing && !error) {
+  if (isProcessing) {
     return <Loading message="Signing you in..." />;
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -114,7 +99,6 @@ function OAuthCallbackInner() {
     );
   }
 
-  // Fallback loading state (this should rarely be reached)
   return <Loading message="Finalizing authentication..." />;
 }
 

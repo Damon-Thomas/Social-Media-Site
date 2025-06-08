@@ -5,12 +5,19 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const result = await authenticate(undefined, formData);
 
-  // If authentication was successful, redirect to dashboard
+  // If authentication was successful, return success JSON
   if (!result?.errors) {
-    console.log("Authentication successful, redirecting to dashboard");
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+    console.log("Authentication successful");
+    return NextResponse.json({ success: true });
   }
 
-  // If there are errors, redirect to auth page with error param
-  return NextResponse.redirect(new URL("/auth?error=oauth", req.nextUrl));
+  // If there are errors, return error JSON
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Authentication failed",
+      errors: result.errors,
+    },
+    { status: 400 }
+  );
 }

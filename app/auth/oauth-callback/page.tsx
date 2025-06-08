@@ -27,22 +27,20 @@ function OAuthCallbackInner() {
 
         console.log("Processing OAuth authentication...");
 
-        // Let the browser handle redirects naturally
+        // API route now returns JSON instead of redirects
         const res = await fetch("/api/auth/oauth", {
           method: "POST",
           body: formData,
-          // Allow normal redirect behavior
-          redirect: "follow",
         });
 
-        // If we get here, it means we didn't redirect
-        // So we either have an error or non-redirect success
+        console.log("OAuth API response:", res.status);
+
         if (res.ok) {
           const data = await res.json();
           console.log("OAuth response:", data);
 
           if (data.success) {
-            // Handle non-redirect success case
+            // Authentication successful, redirect to dashboard
             router.push("/dashboard");
           } else {
             // Handle explicit error case

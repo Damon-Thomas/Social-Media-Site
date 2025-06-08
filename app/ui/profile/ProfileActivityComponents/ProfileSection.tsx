@@ -12,6 +12,7 @@ type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 export interface ProfileProps {
   userData?: User;
+  currentUserId?: string;
   initialActivity?: ActivityItem[];
   activityCursor?: string | null;
   initialPosts?: Post[];
@@ -31,6 +32,7 @@ export interface ProfileProps {
 
 export default function ProfileSection({
   userData,
+  currentUserId,
   initialActivity = [],
   activityCursor = null,
   initialPosts = [],
@@ -82,6 +84,7 @@ export default function ProfileSection({
         />
         <ProfileRemote
           userData={userData}
+          currentUserId={currentUserId}
           initialActivity={initialActivity}
           activityCursor={activityCursor}
           initialPosts={initialPosts}

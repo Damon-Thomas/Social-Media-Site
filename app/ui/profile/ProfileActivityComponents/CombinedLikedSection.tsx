@@ -14,6 +14,7 @@ const ITEMS_PER_PAGE = 10;
 
 export default function CombinedLikedSection({
   userId,
+  currentUserId,
   initialLikedPosts,
   initialLikedComments,
   openPostComment,
@@ -22,6 +23,7 @@ export default function CombinedLikedSection({
 // likedCommentsCursor,
 {
   userId: string;
+  currentUserId: string;
   initialLikedPosts: Post[];
   initialLikedComments: Comment[];
   likedPostsCursor: string | null;
@@ -83,7 +85,7 @@ export default function CombinedLikedSection({
           const p = item.payload;
           const activityData = {
             id: p?.id || "",
-            cOrp: "post" as const,
+            cOrp: "likedPost" as const, // CHANGED: Now correctly marked as likedPost
             content: p?.content || "",
             likeCount: p?.likedBy?.length ?? 0,
             commentCount: p?.comments?.length ?? 0,
@@ -93,7 +95,13 @@ export default function CombinedLikedSection({
                 day: "numeric",
                 year: "numeric",
               }) || "",
-            isLikedByUser: true, // Always true for liked posts
+            // Check if current user has liked this post
+            isLikedByUser: p?.likedBy?.some(
+              (user) => user?.id === currentUserId
+            )
+              ? true
+              : false,
+            isLikedByProfileOwner: true, // This indicates the profile owner liked it
           };
           return (
             <ActivityItemComponent
@@ -118,7 +126,7 @@ export default function CombinedLikedSection({
           const c = item?.payload;
           const activityData = {
             id: c?.id || "",
-            cOrp: "comment" as const,
+            cOrp: "likedComment" as const,
             content: c?.content || "",
             likeCount: c?.likedBy?.length ?? 0,
             commentCount: c?.replies?.length ?? 0,
@@ -129,7 +137,13 @@ export default function CombinedLikedSection({
                 year: "numeric",
               }) || "",
             postId: c?.postId || undefined, // Add postId for comments
-            isLikedByUser: true, // Always true for liked comments
+            // Check if current user has liked this comment
+            isLikedByUser: c?.likedBy?.some(
+              (user) => user?.id === currentUserId
+            )
+              ? true
+              : false,
+            isLikedByProfileOwner: true, // This indicates the profile owner liked it
           };
           return (
             <ActivityItemComponent

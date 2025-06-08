@@ -69,7 +69,7 @@ export default function LikedCommentsSection({
             key={`liked-comments-section-${comment.id}`}
             data={{
               id: comment.id,
-              cOrp: "comment" as const,
+              cOrp: "likedComment" as const,
               content: comment.content || "",
               likeCount: comment.likedBy?.length || 0,
               commentCount: comment.replies?.length || 0,
@@ -82,7 +82,7 @@ export default function LikedCommentsSection({
               name: comment.author?.name || "Unknown User",
               profileImage: comment.author?.image || undefined,
             }}
-            pOrc="comment"
+            pOrc="likedComment"
             showAsLiked={true}
             openPostComment={openPostComment}
             setOpenPostComment={setOpenPostComment}

@@ -11,6 +11,7 @@ type ProfileInfoProps =
   | {
       type: "activity";
       userData: User;
+      currentUserId?: string;
       initialContent: ActivityItem[];
       cursor: string | null;
       openPostComment?: string;
@@ -19,6 +20,7 @@ type ProfileInfoProps =
   | {
       type: "posts";
       userData: User;
+      currentUserId?: string;
       initialContent: Post[];
       cursor: string | null;
       openPostComment?: string;
@@ -27,6 +29,7 @@ type ProfileInfoProps =
   | {
       type: "comments";
       userData: User;
+      currentUserId?: string;
       initialContent: Comment[];
       cursor: string | null;
       openPostComment?: string;
@@ -35,6 +38,7 @@ type ProfileInfoProps =
   | {
       type: "likedPosts";
       userData: User;
+      currentUserId?: string;
       initialContent: Post[];
       cursor: string | null;
       openPostComment?: string;
@@ -43,6 +47,7 @@ type ProfileInfoProps =
   | {
       type: "likedComments";
       userData: User;
+      currentUserId?: string;
       initialContent: Comment[];
       cursor: string | null;
       openPostComment?: string;
@@ -50,7 +55,14 @@ type ProfileInfoProps =
     };
 
 export default function ProfileInfo(props: ProfileInfoProps) {
-  const { type, userData, cursor, openPostComment, setOpenPostComment } = props;
+  const {
+    type,
+    userData,
+    currentUserId,
+    cursor,
+    openPostComment,
+    setOpenPostComment,
+  } = props;
 
   let content;
   switch (type) {
@@ -58,6 +70,7 @@ export default function ProfileInfo(props: ProfileInfoProps) {
       content = (
         <ActivitySection
           userId={userData?.id || ""}
+          currentUserId={currentUserId}
           initialActivities={props.initialContent}
           initialCursor={cursor}
           openPostComment={openPostComment}

@@ -184,6 +184,7 @@ export type EssentialPost = {
     likedBy: number;
   };
   likedByUser?: boolean;
+  isLikedByProfileOwner?: boolean;
 } | null;
 
 export type EssentialComment = {
@@ -201,6 +202,8 @@ export type EssentialComment = {
     likedBy: number;
     replies: number;
   };
+  likedByUser?: boolean;
+  isLikedByProfileOwner?: boolean;
 } | null;
 
 export type BasicComment = {

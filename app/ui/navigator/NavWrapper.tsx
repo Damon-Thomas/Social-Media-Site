@@ -1,6 +1,6 @@
 export default function NavWrapper({
   children,
-  className = "",
+  className,
   smallScreen = false,
   fullBleed = false,
 }: {

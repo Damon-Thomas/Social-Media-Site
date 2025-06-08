@@ -314,11 +314,8 @@ export async function fetchPaginatedLikedComments(
 export async function fetchPaginatedActivity(
   userId: string,
   cursor?: string, // last‐seen ActivityItem.id
-  limit: number = 10,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  currentUserId?: string
+  limit: number = 10
 ): Promise<{ activities: Activity[]; nextCursor: string | null }> {
-  // Note: currentUserId is available for future like status checking
   // 1) fetch all four lists with the same shape your other sections use
   const [posts, comments, likedPosts, likedComments] = await Promise.all([
     prisma.post.findMany({

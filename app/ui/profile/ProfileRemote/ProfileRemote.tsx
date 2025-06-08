@@ -12,7 +12,6 @@ type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 interface ProfileRemoteProps {
   userData: User | null;
-  currentUserId?: string;
   initialActivity?: ActivityItem[];
   activityCursor?: string | null;
   initialPosts?: Post[];
@@ -32,7 +31,6 @@ interface ProfileRemoteProps {
 
 export default function ProfileRemote({
   userData,
-  currentUserId,
   initialActivity = [],
   activityCursor = null,
   initialPosts = [],
@@ -74,7 +72,6 @@ export default function ProfileRemote({
             <ProfileInfo
               type="activity"
               userData={userData}
-              currentUserId={currentUserId}
               initialContent={initialActivity}
               cursor={activityCursor}
               openPostComment={openPostComment}
@@ -85,7 +82,6 @@ export default function ProfileRemote({
             <ProfileInfo
               type="posts"
               userData={userData}
-              currentUserId={currentUserId}
               initialContent={initialPosts}
               cursor={postsCursor}
               openPostComment={openPostComment}
@@ -96,7 +92,6 @@ export default function ProfileRemote({
             <ProfileInfo
               type="comments"
               userData={userData}
-              currentUserId={currentUserId}
               initialContent={initialComments}
               cursor={commentsCursor}
               openPostComment={openPostComment}
@@ -106,7 +101,6 @@ export default function ProfileRemote({
           {activeTab === "liked" && (
             <CombinedLikedSection
               userId={userData.id}
-              currentUserId={currentUserId || ""}
               initialLikedPosts={initialLikedPosts}
               initialLikedComments={initialLikedComments}
               likedPostsCursor={likedPostsCursor}

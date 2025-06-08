@@ -10,14 +10,12 @@ const ITEMS_PER_PAGE = 10;
 
 export default function ActivitySection({
   userId,
-  currentUserId,
   initialActivities = [],
   initialCursor = null,
   openPostComment,
   setOpenPostComment,
 }: {
   userId: string;
-  currentUserId?: string;
   initialActivities: ActivityItem[];
   initialCursor: string | null;
   openPostComment?: string;
@@ -27,8 +25,7 @@ export default function ActivitySection({
     const { activities, nextCursor } = await fetchPaginatedActivity(
       userId,
       cursor ?? undefined,
-      ITEMS_PER_PAGE,
-      currentUserId
+      ITEMS_PER_PAGE
     );
 
     return { items: activities, nextCursor };

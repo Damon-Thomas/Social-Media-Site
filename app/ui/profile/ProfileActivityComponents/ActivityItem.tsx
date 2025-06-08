@@ -13,7 +13,7 @@ import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export type ActivityItem = {
   id: string;
-  cOrp: "comment" | "post" | "likedPost" | "likedComment"; // Type of activity
+  cOrp: "comment" | "post";
   content: string;
   likeCount: number;
   commentCount: number;
@@ -32,7 +32,7 @@ export default function ActivityItem({
 }: {
   data: ActivityItem;
   user?: { id: string; name: string; profileImage?: string };
-  pOrc?: "post" | "comment" | "likedPost" | "likedComment"; // Type for post or comment, or liked post/comment
+  pOrc?: "post" | "comment";
   showAsLiked?: boolean; // Optional prop to show "Liked Post/Comment" text
   openPostComment?: string;
   setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
@@ -94,19 +94,9 @@ export default function ActivityItem({
       setIconLoading(true);
       try {
         let isLiked = false;
-        if (
-          pOrc === "post" ||
-          data.cOrp === "post" ||
-          pOrc === "likedPost" ||
-          data.cOrp === "likedPost"
-        ) {
+        if (pOrc === "post" || data.cOrp === "post") {
           isLiked = await doesUserLikePost(currentUser!.id, data.id);
-        } else if (
-          pOrc === "comment" ||
-          data.cOrp === "comment" ||
-          pOrc === "likedComment" ||
-          data.cOrp === "likedComment"
-        ) {
+        } else if (pOrc === "comment" || data.cOrp === "comment") {
           isLiked = await isLikedByUser(currentUser!.id, data.id);
         }
         setIsLiked(isLiked);
@@ -128,19 +118,9 @@ export default function ActivityItem({
   }, [data.content, expanded]);
 
   const getHref = () => {
-    if (
-      pOrc === "post" ||
-      data.cOrp === "post" ||
-      pOrc === "likedPost" ||
-      data.cOrp === "likedPost"
-    ) {
+    if (pOrc === "post" || data.cOrp === "post") {
       return `/dashboard/posts/${data.id}`;
-    } else if (
-      pOrc === "comment" ||
-      data.cOrp === "comment" ||
-      pOrc === "likedComment" ||
-      data.cOrp === "likedComment"
-    ) {
+    } else if (pOrc === "comment" || data.cOrp === "comment") {
       return `/dashboard/comment/${data.id}`;
     }
     return "#"; // fallback
@@ -156,20 +136,10 @@ export default function ActivityItem({
     let success = false;
 
     try {
-      if (
-        pOrc === "post" ||
-        data.cOrp === "post" ||
-        pOrc === "likedPost" ||
-        data.cOrp === "likedPost"
-      ) {
+      if (pOrc === "post" || data.cOrp === "post") {
         const res = await likePost(data.id, currentUser.id);
         success = !!res;
-      } else if (
-        pOrc === "comment" ||
-        data.cOrp === "comment" ||
-        pOrc === "likedComment" ||
-        data.cOrp === "likedComment"
-      ) {
+      } else if (pOrc === "comment" || data.cOrp === "comment") {
         const res = await likeComment(data.id, currentUser.id);
         success = !!res;
       }
@@ -251,15 +221,7 @@ export default function ActivityItem({
 
             <p className="text-sm text-[var(--dull)]">
               {showAsLiked && "Liked "}
-              {showAsLiked
-                ? data.cOrp === "likedPost"
-                  ? "Post"
-                  : data.cOrp === "likedComment"
-                  ? "Comment"
-                  : capitalize(pOrc || "")
-                : pOrc
-                ? capitalize(pOrc)
-                : ""}
+              {showAsLiked ? pOrc : pOrc ? capitalize(pOrc) : ""}
             </p>
           </div>
 
@@ -362,20 +324,12 @@ export default function ActivityItem({
       {setOpenPostComment && (
         <PopDownComment
           postId={
-            pOrc === "post" ||
-            data.cOrp === "post" ||
-            pOrc === "likedPost" ||
-            data.cOrp === "likedPost"
+            pOrc === "post" || data.cOrp === "post"
               ? data.id
               : data.postId || data.id
           }
           parentId={
-            pOrc === "comment" ||
-            data.cOrp === "comment" ||
-            pOrc === "likedComment" ||
-            data.cOrp === "likedComment"
-              ? data.id
-              : undefined
+            pOrc === "comment" || data.cOrp === "comment" ? data.id : undefined
           }
           hidden={openPostComment !== data.id}
           creatorClassName=" ml-8 pl-2 border-y-1 border-[var(--borderc)]"

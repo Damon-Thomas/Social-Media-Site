@@ -32,8 +32,8 @@ async function getData(userId: string) {
     likedCommentsResponse,
   ] = await Promise.all([
     fetchUserById(userId),
-    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE, userId),
-    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE, userId),
+    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE),
     fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
     fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
     fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
@@ -131,7 +131,6 @@ export default function Profile() {
       <div className="flex-1 min-w-0 max-w-full ">
         <ProfileSection
           userData={userData}
-          currentUserId={user?.id}
           initialActivity={initialActivity}
           activityCursor={activityCursor}
           initialPosts={initialPosts}

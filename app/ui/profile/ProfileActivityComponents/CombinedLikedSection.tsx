@@ -96,7 +96,7 @@ export default function CombinedLikedSection({
                 day: "numeric",
                 year: "numeric",
               }) || "",
-            isLikedByUser: userId === currentUserId,
+            isLikedByUser: p?.isLikedByUser ?? false, // Use likedByUser from post
           };
           return (
             <ActivityItemComponent
@@ -132,7 +132,7 @@ export default function CombinedLikedSection({
                 year: "numeric",
               }) || "",
             postId: c?.postId || undefined, // Add postId for comments
-            isLikedByUser: true, // Always true for liked comments
+            isLikedByUser: c?.isLikedByUser ?? false, // Use likedByUser from post
           };
           return (
             <ActivityItemComponent

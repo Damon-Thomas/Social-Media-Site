@@ -44,9 +44,7 @@ async function getData(userId: string, currentUserId?: string) {
       undefined
     ),
   ]);
-  console.log("FActivity Response:", activityResponse);
-  console.log("Posts Response:", postsResponse);
-  console.log("Comments Response:", commentsResponse);
+
   console.log("Liked Posts Response:", likedPostsResponse);
   console.log("Liked Comments Response:", likedCommentsResponse);
   return {

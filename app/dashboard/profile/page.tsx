@@ -22,7 +22,7 @@ const ITEMS_PER_PAGE = 10;
 type ActiveProfileTab = "activity" | "posts" | "comments" | "liked";
 
 // Fetch data on the server side (keep this part)
-async function getData(userId: string) {
+async function getData(userId: string, currentUserId?: string) {
   const [
     userData,
     activityResponse,
@@ -32,11 +32,16 @@ async function getData(userId: string) {
     likedCommentsResponse,
   ] = await Promise.all([
     fetchUserById(userId),
-    fetchPaginatedActivity(userId, ITEMS_PER_PAGE, undefined),
-    fetchPaginatedPosts(userId, ITEMS_PER_PAGE, undefined),
-    fetchPaginatedComments(userId, ITEMS_PER_PAGE, undefined),
-    fetchPaginatedLikedPosts(userId, ITEMS_PER_PAGE, undefined),
-    fetchPaginatedLikedComments(userId, ITEMS_PER_PAGE, undefined),
+    fetchPaginatedActivity(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedPosts(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedComments(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedLikedPosts(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedLikedComments(
+      userId,
+      ITEMS_PER_PAGE,
+      currentUserId,
+      undefined
+    ),
   ]);
 
   return {
@@ -57,6 +62,7 @@ async function getData(userId: string) {
 // Client component to handle state and effects
 export default function Profile() {
   const user = useCurrentUser();
+  const currentUserId = user?.id || ""; // Get current user's ID
   const [initialData, setInitialData] = useState<Awaited<
     ReturnType<typeof getData>
   > | null>(null);
@@ -71,7 +77,7 @@ export default function Profile() {
   const refreshProfileData = async () => {
     if (!user?.id) return;
     try {
-      const data = await getData(user.id);
+      const data = await getData(user.id, currentUserId);
       setInitialData(data);
     } catch (error) {
       console.error("Failed to refresh profile data:", error);
@@ -80,7 +86,7 @@ export default function Profile() {
 
   useEffect(() => {
     // Fetch initial data on the client
-    getData(user?.id || "")
+    getData(user?.id || "", currentUserId)
       .then((data) => {
         setInitialData(data);
         setLoading(false);
@@ -89,7 +95,7 @@ export default function Profile() {
         console.error("Failed to fetch profile data:", error);
         setLoading(false);
       });
-  }, [user?.id]);
+  }, [user?.id, currentUserId]); // Add dependencies to re-fetch if user ID changes
 
   if (loading || !initialData) {
     // Render your skeletons or loading UI here

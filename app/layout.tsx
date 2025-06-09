@@ -39,7 +39,9 @@ export default function RootLayout({
           </SWRConfig>
         </ThemeProvider>
         {/* <!-- 100% privacy-first analytics --> */}
+
         <script
+          data-collect-dnt="true"
           async
           src="https://scripts.simpleanalyticscdn.com/latest.js"
         ></script>

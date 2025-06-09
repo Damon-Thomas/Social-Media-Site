@@ -59,6 +59,8 @@ export default function ProfileRemote({
     return null; // or a fallback UI
   }
 
+  console.log("ProfileRemote rendered with activities:", initialActivity);
+
   return (
     <>
       <ProfileSelectors

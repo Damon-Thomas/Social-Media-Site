@@ -33,13 +33,22 @@ async function getData(userId: string, currentUserId?: string) {
     likedCommentsResponse,
   ] = await Promise.all([
     fetchUserById(userId),
-    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE, currentUserId),
-    fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedActivity(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedPosts(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedComments(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedLikedPosts(userId, ITEMS_PER_PAGE, currentUserId, undefined),
+    fetchPaginatedLikedComments(
+      userId,
+      ITEMS_PER_PAGE,
+      currentUserId,
+      undefined
+    ),
   ]);
-
+  console.log("FActivity Response:", activityResponse);
+  console.log("Posts Response:", postsResponse);
+  console.log("Comments Response:", commentsResponse);
+  console.log("Liked Posts Response:", likedPostsResponse);
+  console.log("Liked Comments Response:", likedCommentsResponse);
   return {
     userData,
     initialActivity: (activityResponse.activities || []) as ActivityItem[],

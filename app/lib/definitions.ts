@@ -111,6 +111,7 @@ export type Comment = {
   createdAt: Date;
   updatedAt: Date;
   Notification?: Notification[];
+  isLikedByUser?: boolean;
 } | null;
 
 export type CommentUnested = {
@@ -157,6 +158,7 @@ export type ActivityItem = {
   type: "post" | "comment" | "likedPost" | "likedComment";
   createdAt: Date;
   payload: EssentialPost | EssentialComment;
+  isLikedByUser?: boolean;
 } | null;
 
 export type Activity = {
@@ -164,6 +166,7 @@ export type Activity = {
   type: "post" | "comment" | "likedPost" | "likedComment";
   createdAt: Date;
   payload: EssentialPost | EssentialComment;
+  isLikedByUser?: boolean;
 } | null;
 
 export type EssentialUser = {
@@ -201,6 +204,7 @@ export type EssentialComment = {
     likedBy: number;
     replies: number;
   };
+  likedByUser?: boolean;
 } | null;
 
 export type BasicComment = {

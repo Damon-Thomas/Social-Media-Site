@@ -27,9 +27,9 @@ export default function PostsSection({
   const fetchMore = async (cursor: string | null) => {
     const { posts, nextCursor } = await fetchPaginatedPosts(
       userId,
-      cursor ?? undefined,
       ITEMS_PER_PAGE,
-      currentUser?.id // Pass current user ID for like status
+      currentUser?.id, // Pass current user ID for like status
+      cursor ?? undefined
     );
     return { items: posts, nextCursor };
   };

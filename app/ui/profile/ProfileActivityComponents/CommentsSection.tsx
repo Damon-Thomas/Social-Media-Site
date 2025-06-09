@@ -14,18 +14,21 @@ export default function CommentsSection({
   initialCursor = null,
   openPostComment,
   setOpenPostComment,
+  currentUserId, // Default to empty string if not provided
 }: {
   userId: string;
   initialComments: Comment[];
   initialCursor: string | null;
   openPostComment?: string;
   setOpenPostComment?: Dispatch<SetStateAction<string>>;
+  currentUserId?: string;
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { comments, nextCursor } = await fetchPaginatedComments(
       userId,
-      cursor ?? undefined,
-      ITEMS_PER_PAGE
+      ITEMS_PER_PAGE,
+      currentUserId,
+      cursor ?? undefined
     );
 
     // Map properly to match Comment type

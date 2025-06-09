@@ -32,11 +32,11 @@ async function getData(userId: string) {
     likedCommentsResponse,
   ] = await Promise.all([
     fetchUserById(userId),
-    fetchPaginatedActivity(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedPosts(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedComments(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedLikedPosts(userId, undefined, ITEMS_PER_PAGE),
-    fetchPaginatedLikedComments(userId, undefined, ITEMS_PER_PAGE),
+    fetchPaginatedActivity(userId, ITEMS_PER_PAGE, undefined),
+    fetchPaginatedPosts(userId, ITEMS_PER_PAGE, undefined),
+    fetchPaginatedComments(userId, ITEMS_PER_PAGE, undefined),
+    fetchPaginatedLikedPosts(userId, ITEMS_PER_PAGE, undefined),
+    fetchPaginatedLikedComments(userId, ITEMS_PER_PAGE, undefined),
   ]);
 
   return {

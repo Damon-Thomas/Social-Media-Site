@@ -14,6 +14,7 @@ const ITEMS_PER_PAGE = 10;
 
 export default function CombinedLikedSection({
   userId,
+  currentUserId,
   initialLikedPosts,
   initialLikedComments,
   openPostComment,
@@ -22,6 +23,7 @@ export default function CombinedLikedSection({
 // likedCommentsCursor,
 {
   userId: string;
+  currentUserId?: string;
   initialLikedPosts: Post[];
   initialLikedComments: Comment[];
   likedPostsCursor: string | null;
@@ -57,9 +59,10 @@ export default function CombinedLikedSection({
 
     const { items, nextCursors } = await fetchPaginatedLikedActivity(
       userId,
+      ITEMS_PER_PAGE,
+      currentUserId,
       postsCursor,
-      commentsCursor,
-      ITEMS_PER_PAGE
+      commentsCursor
     );
 
     // Combine the next cursors into a single string
@@ -93,7 +96,7 @@ export default function CombinedLikedSection({
                 day: "numeric",
                 year: "numeric",
               }) || "",
-            isLikedByUser: true, // Always true for liked posts
+            isLikedByUser: userId === currentUserId,
           };
           return (
             <ActivityItemComponent

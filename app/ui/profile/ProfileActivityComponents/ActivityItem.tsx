@@ -8,7 +8,10 @@ import ThemedIcon from "../../core/ThemedIcon";
 import { useEffect, useState, useRef } from "react";
 import PopDownComment from "../../posts/comments/PopDownComment";
 import { likePost, doesUserLikePost } from "@/app/actions/postActions";
-import { likeComment, isLikedByUser } from "@/app/actions/commentActions";
+import {
+  likeComment,
+  isLikedByUser as likedVerifier,
+} from "@/app/actions/commentActions";
 import { useDefaultProfileImage } from "@/app/utils/defaultProfileImage";
 
 export type ActivityItem = {
@@ -26,9 +29,10 @@ export default function ActivityItem({
   data,
   user: activityUser,
   pOrc,
-  showAsLiked = false, // New prop to indicate this item is in a "liked" section
+  showAsLiked = false,
   openPostComment,
   setOpenPostComment,
+  isLikedByUser = false, // Default to false if not provided
 }: {
   data: ActivityItem;
   user?: { id: string; name: string; profileImage?: string };
@@ -36,6 +40,7 @@ export default function ActivityItem({
   showAsLiked?: boolean; // Optional prop to show "Liked Post/Comment" text
   openPostComment?: string;
   setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
+  isLikedByUser?: boolean; // Pre-fetched like status to avoid individual API calls
 }) {
   const currentUser = useCurrentUser();
   const defaultProfileImage = useDefaultProfileImage();
@@ -55,12 +60,14 @@ export default function ActivityItem({
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    console.log("Is liked by user:", data.isLikedByUser);
+  }, [data.isLikedByUser]);
 
   // Keep counts in sync with data prop
   useEffect(() => {
     setLikeCount(data.likeCount || 0);
-  }, [data.likeCount]);
+    console.log("Data", data);
+  }, [data.likeCount, data]);
 
   useEffect(() => {
     setCommentCount(data.commentCount || 0);
@@ -93,13 +100,17 @@ export default function ActivityItem({
     async function checkIfLiked() {
       setIconLoading(true);
       try {
-        let isLiked = false;
-        if (pOrc === "post" || data.cOrp === "post") {
-          isLiked = await doesUserLikePost(currentUser!.id, data.id);
-        } else if (pOrc === "comment" || data.cOrp === "comment") {
-          isLiked = await isLikedByUser(currentUser!.id, data.id);
+        if (data.isLikedByUser) {
+          setIsLiked(true);
+        } else {
+          let isLiked = false;
+          if (pOrc === "post" || data.cOrp === "post") {
+            isLiked = await doesUserLikePost(currentUser!.id, data.id);
+          } else if (pOrc === "comment" || data.cOrp === "comment") {
+            isLiked = await likedVerifier(currentUser!.id, data.id);
+          }
+          setIsLiked(isLiked);
         }
-        setIsLiked(isLiked);
       } catch (error) {
         console.error("Error checking like status:", error);
       }
@@ -107,7 +118,14 @@ export default function ActivityItem({
     }
 
     checkIfLiked();
-  }, [currentUser, data.id, data.isLikedByUser, pOrc, data.cOrp]);
+  }, [
+    currentUser,
+    data.id,
+    data.isLikedByUser,
+    pOrc,
+    data.cOrp,
+    isLikedByUser,
+  ]);
 
   useEffect(() => {
     if (contentRef.current) {

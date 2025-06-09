@@ -14,22 +14,28 @@ export default function ActivitySection({
   initialCursor = null,
   openPostComment,
   setOpenPostComment,
+  currentUserId, // Default to empty string if not provided
 }: {
   userId: string;
   initialActivities: ActivityItem[];
   initialCursor: string | null;
   openPostComment?: string;
   setOpenPostComment?: Dispatch<SetStateAction<string>>;
+  currentUserId?: string; // Default to empty string if not provided
 }) {
   const fetchMore = async (cursor: string | null) => {
     const { activities, nextCursor } = await fetchPaginatedActivity(
       userId,
-      cursor ?? undefined,
-      ITEMS_PER_PAGE
+      ITEMS_PER_PAGE,
+      currentUserId,
+      cursor ?? undefined
     );
+    console.log("Fetched more activities:", activities);
 
     return { items: activities, nextCursor };
   };
+
+  console.log("ActivitySection rendered with activities:", initialActivities);
 
   const {
     items: activities,
@@ -62,7 +68,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
-              isLikedByUser: undefined, // Will fall back to API call
+              isLikedByUser: act?.isLikedByUser ?? false, // Use isLikedByUser from activity
             };
             return (
               <ActivityItemComponent
@@ -97,7 +103,7 @@ export default function ActivitySection({
                 year: "numeric",
               }),
               postId: c?.postId || undefined, // Add postId for comments
-              isLikedByUser: undefined, // Will fall back to API call
+              isLikedByUser: act?.isLikedByUser ?? false, // Use isLikedByUser from activity
             };
             return (
               <ActivityItemComponent
@@ -131,7 +137,7 @@ export default function ActivitySection({
                 day: "numeric",
                 year: "numeric",
               }),
-              isLikedByUser: true, // Always true for liked posts
+              isLikedByUser: act?.isLikedByUser ?? false, // Use isLikedByUser from activity
             };
             return (
               <ActivityItemComponent
@@ -166,7 +172,7 @@ export default function ActivitySection({
                 year: "numeric",
               }),
               postId: c?.postId || undefined, // Add postId for comments
-              isLikedByUser: true, // Always true for liked comments
+              isLikedByUser: act?.isLikedByUser ?? false, // Use isLikedByUser from activity
             };
             return (
               <ActivityItemComponent

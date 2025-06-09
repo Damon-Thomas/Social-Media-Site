@@ -4,6 +4,15 @@ import prisma from "../lib/prisma";
 import type { Activity } from "@/app/lib/definitions";
 import type { Post, Comment } from "@/app/lib/definitions";
 
+function likedChecker(
+  likedBy: { id: string }[],
+  currentUserId?: string
+): boolean {
+  return currentUserId
+    ? likedBy.some((user) => user.id === currentUserId)
+    : false;
+}
+
 export async function mostPopular(currentUserId?: string) {
   const take = 5;
   const popularUsers = await prisma.user.findMany({
@@ -197,9 +206,9 @@ export async function fetchUserById(id: string) {
 
 export async function fetchPaginatedPosts(
   userId: string,
-  cursor?: string,
   limit: number = 5,
-  currentUserId?: string
+  currentUserId?: string,
+  cursor?: string
 ) {
   const posts = await prisma.post.findMany({
     where: { authorId: userId },
@@ -229,8 +238,9 @@ export async function fetchPaginatedPosts(
 
 export async function fetchPaginatedComments(
   userId: string,
-  cursor?: string,
-  limit: number = 5
+  limit: number = 5,
+  currentUserId?: string,
+  cursor?: string
 ) {
   const comments = await prisma.comment.findMany({
     where: { authorId: userId },
@@ -246,16 +256,25 @@ export async function fetchPaginatedComments(
     },
   });
 
+  // Map comments to include isLikedByUser field if currentUserId is provided
+  const commentsWithLikeStatus = comments.map((comment) => ({
+    ...comment,
+    ...(currentUserId && {
+      isLikedByUser: comment.likedBy.some((user) => user.id === currentUserId),
+    }),
+  }));
+
   const nextCursor =
     comments.length === limit ? comments[comments.length - 1].id : null;
 
-  return { comments, nextCursor };
+  return { comments: commentsWithLikeStatus, nextCursor };
 }
 
 export async function fetchPaginatedLikedPosts(
   userId: string,
-  cursor?: string,
-  limit: number = 5
+  limit: number = 5,
+  currentUserId?: string, // Optional for checking like status
+  cursor?: string
 ) {
   const likedPosts = await prisma.post.findMany({
     where: {
@@ -274,16 +293,25 @@ export async function fetchPaginatedLikedPosts(
     },
   });
 
+  // Map likedPosts to include isLikedByUser field if currentUserId is provided
+  const likedPostsWithLikeStatus = likedPosts.map((post) => ({
+    ...post,
+    ...(currentUserId && {
+      isLikedByUser: post.likedBy.some((user) => user.id === currentUserId),
+    }),
+  }));
+
   const nextCursor =
     likedPosts.length === limit ? likedPosts[likedPosts.length - 1].id : null;
 
-  return { posts: likedPosts, nextCursor };
+  return { posts: likedPostsWithLikeStatus, nextCursor };
 }
 
 export async function fetchPaginatedLikedComments(
   userId: string,
-  cursor?: string,
-  limit: number = 5
+  limit: number = 5,
+  currentUserId?: string, // Optional for checking like status
+  cursor?: string
 ) {
   const likedComments = await prisma.comment.findMany({
     where: {
@@ -303,18 +331,27 @@ export async function fetchPaginatedLikedComments(
     },
   });
 
+  // Map likedComments to include isLikedByUser field if currentUserId is provided
+  const likedCommentsWithLikeStatus = likedComments.map((comment) => ({
+    ...comment,
+    ...(currentUserId && {
+      isLikedByUser: comment.likedBy.some((user) => user.id === currentUserId),
+    }),
+  }));
+
   const nextCursor =
     likedComments.length === limit
       ? likedComments[likedComments.length - 1].id
       : null;
 
-  return { comments: likedComments, nextCursor };
+  return { comments: likedCommentsWithLikeStatus, nextCursor };
 }
 
 export async function fetchPaginatedActivity(
   userId: string,
-  cursor?: string, // last‐seen ActivityItem.id
-  limit: number = 10
+  limit: number = 10,
+  currentUserId?: string, // Optional for checking like status
+  cursor?: string // last‐seen ActivityItem.id
 ): Promise<{ activities: Activity[]; nextCursor: string | null }> {
   // 1) fetch all four lists with the same shape your other sections use
   const [posts, comments, likedPosts, likedComments] = await Promise.all([
@@ -415,6 +452,9 @@ export async function fetchPaginatedActivity(
       id: `comment:${c.id}`,
       type: "comment" as const,
       createdAt: c.createdAt,
+      isLikedByUser: currentUserId
+        ? likedChecker(c.likedBy, currentUserId)
+        : false,
       payload: {
         id: c.id,
         content: c.content,
@@ -431,6 +471,9 @@ export async function fetchPaginatedActivity(
       id: `likedPost:${p.id}`,
       type: "likedPost" as const,
       createdAt: p.createdAt,
+      isLikedByUser: currentUserId
+        ? likedChecker(p.likedBy, currentUserId)
+        : false,
       payload: {
         id: p.id,
         content: p.content,
@@ -446,6 +489,9 @@ export async function fetchPaginatedActivity(
       id: `likedComment:${c.id}`,
       type: "likedComment" as const,
       createdAt: c.createdAt,
+      isLikedByUser: currentUserId
+        ? likedChecker(c.likedBy, currentUserId)
+        : false,
       payload: {
         id: c.id,
         content: c.content,
@@ -469,15 +515,16 @@ export async function fetchPaginatedActivity(
   const start = cursor ? all.findIndex((x) => x?.id === cursor) + 1 : 0;
   const page = all.slice(start, start + limit);
   const nextCursor = page.length === limit ? page[page.length - 1]?.id : null;
-
+  console.log("Fetched activities:", page);
   return { activities: page, nextCursor: nextCursor ?? null };
 }
 
 export async function fetchPaginatedLikedActivity(
   userId: string,
-  postsCursor: string | null,
-  commentsCursor: string | null,
-  limit: number = 10
+  limit: number = 10,
+  currentUserId?: string, // Optional for checking like status
+  postsCursor?: string | null,
+  commentsCursor?: string | null
 ): Promise<{
   items: (
     | { type: "likedPost"; payload: Post; createdAt: Date }
@@ -522,11 +569,17 @@ export async function fetchPaginatedLikedActivity(
     ...postsRes.posts.map((p) => ({
       type: "likedPost" as const,
       payload: p,
+      isLikedByUser: currentUserId
+        ? p.likedBy.some((user) => user.id === currentUserId)
+        : false,
       createdAt: p.createdAt,
     })),
     ...commentsRes.comments.map((c) => ({
       type: "likedComment" as const,
       payload: c,
+      isLikedByUser: currentUserId
+        ? c.likedBy.some((user) => user.id === currentUserId)
+        : false,
       createdAt: c.createdAt,
     })),
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());

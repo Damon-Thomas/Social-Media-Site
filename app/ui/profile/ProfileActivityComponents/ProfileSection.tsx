@@ -49,7 +49,7 @@ export default function ProfileSection({
 }: ProfileProps) {
   const NAVIGATOR_HEIGHT = 64;
   const [openPostComment, setOpenPostComment] = useState("");
-
+  console.log("ProfileSection rendered with avtivities:", initialActivity);
   if (loading) {
     return (
       <div className="grid grid-cols-[1fr] gap-6 w-full ">

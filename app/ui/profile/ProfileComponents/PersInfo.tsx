@@ -183,7 +183,7 @@ export default function PersInfo({
           alt="User Avatar"
           width={160}
           height={160}
-          className="rounded-full float-left object-cover mr-6 mb-2"
+          className="rounded-full float-left object-cover mr-2"
           style={{
             width: !avatarFullSize ? "80px" : "160px",
             height: !avatarFullSize ? "80px" : "160px",

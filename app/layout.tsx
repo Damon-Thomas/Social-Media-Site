@@ -38,6 +38,11 @@ export default function RootLayout({
             <main className="transition-colors duration-300">{children}</main>
           </SWRConfig>
         </ThemeProvider>
+        {/* <!-- 100% privacy-first analytics --> */}
+        <script
+          async
+          src="https://scripts.simpleanalyticscdn.com/latest.js"
+        ></script>
       </body>
     </html>
   );

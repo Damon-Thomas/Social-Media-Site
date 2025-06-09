@@ -32,15 +32,15 @@ export default function ActivityItem({
   showAsLiked = false,
   openPostComment,
   setOpenPostComment,
-  isLikedByUser = false, // Default to false if not provided
-}: {
+}: // isLikedByUser = false, // Default to false if not provided
+{
   data: ActivityItem;
   user?: { id: string; name: string; profileImage?: string };
   pOrc?: "post" | "comment";
   showAsLiked?: boolean; // Optional prop to show "Liked Post/Comment" text
   openPostComment?: string;
   setOpenPostComment?: React.Dispatch<React.SetStateAction<string>>;
-  isLikedByUser?: boolean; // Pre-fetched like status to avoid individual API calls
+  // isLikedByUser?: boolean; // Pre-fetched like status to avoid individual API calls
 }) {
   const currentUser = useCurrentUser();
   const defaultProfileImage = useDefaultProfileImage();
@@ -118,14 +118,7 @@ export default function ActivityItem({
     }
 
     checkIfLiked();
-  }, [
-    currentUser,
-    data.id,
-    data.isLikedByUser,
-    pOrc,
-    data.cOrp,
-    isLikedByUser,
-  ]);
+  }, [currentUser, data.id, data.isLikedByUser, pOrc, data.cOrp]);
 
   useEffect(() => {
     if (contentRef.current) {

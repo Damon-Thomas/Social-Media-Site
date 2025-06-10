@@ -7,25 +7,30 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
 
 ## Screenshots
 
-<p align="center">
-  <img src="./public/screenshots/zuno.damonthomas.dev_dashboard.png" width="600" alt="Dashboard"/><br/>
-  <b>Dashboard</b>
-</p>
-
-<p align="center">
-  <img src="./public/screenshots/zuno.damonthomas.dev_dashboard_mobile.png" width="220" alt="Mobile View"/><br/>
-  <b>Mobile View</b>
-</p>
-
-<p align="center">
-  <img src="./public/screenshots/zuno.damonthomas.dev_landing.png" width="600" alt="Login Page"/><br/>
-  <b>Login Page</b>
-</p>
-
-<p align="center">
-  <img src="./public/screenshots/zuno.damonthomas.dev_profile_.png" width="600" alt="Profile Page"/><br/>
-  <b>Profile Page</b>
-</p>
+<table>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard.png" width="600" alt="Dashboard"/><br/>
+      <b>Dashboard</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard_mobile.png" width="180" alt="Mobile View"/><br/>
+      <b>Mobile View</b>
+    </td>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_landing.png" width="320" alt="Login Page"/><br/>
+      <b>Login Page</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_profile_.png" width="600" alt="Profile Page"/><br/>
+      <b>Profile Page</b>
+    </td>
+  </tr>
+</table>
 
 ---
 

@@ -7,6 +7,8 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
 
 ## Screenshots
 
+<div align="center">
+
 <table>
   <tr>
     <td colspan="2" align="center">
@@ -16,11 +18,11 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
   </tr>
   <tr>
     <td align="center">
-      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard_mobile.png" width="180" alt="Mobile View"/><br/>
+      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard_mobile.png" width="200" alt="Mobile View"/><br/>
       <b>Mobile View</b>
     </td>
     <td align="center">
-      <img src="./public/screenshots/zuno.damonthomas.dev_landing.png" width="320" alt="Login Page"/><br/>
+      <img src="./public/screenshots/zuno.damonthomas.dev_landing.png" width="400" alt="Login Page"/><br/>
       <b>Login Page</b>
     </td>
   </tr>
@@ -31,6 +33,8 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
     </td>
   </tr>
 </table>
+
+</div>
 
 ---
 

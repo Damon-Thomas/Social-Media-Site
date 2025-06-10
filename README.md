@@ -5,6 +5,26 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
 
 ---
 
+## Screenshots
+
+### Login Page
+
+![Login Page](./public/screenshots/zuno.damonthomas.dev_landing.png)
+
+### Dashboard
+
+![Dashboard](./public/screenshots/zuno.damonthomas.dev_dashboard.png)
+
+### Mobile View
+
+![Mobile](./public/screenshots/zuno.damonthomas.dev*dashboard*(iPhone SE).png)
+
+### Profile Page
+
+![Profile](./public/screenshots/zuno.damonthomas.dev_profile_.png)
+
+---
+
 ## Zuno 1.0
 
 Due to time constraints, I had to delay a few features. This version is Zuno 1.0, and I plan to return to implement the rest. Future improvements include:

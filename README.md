@@ -7,21 +7,28 @@ Built as part of [The Odin Project’s Odin-Book assignment](https://www.theodin
 
 ## Screenshots
 
-### Login Page
-
-![Login Page](./public/screenshots/zuno.damonthomas.dev_landing.png)
-
-### Dashboard
-
-![Dashboard](./public/screenshots/zuno.damonthomas.dev_dashboard.png)
-
-### Mobile View
-
-![Mobile](./public/screenshots/zuno.damonthomas.dev*dashboard*(iPhone SE).png)
-
-### Profile Page
-
-![Profile](./public/screenshots/zuno.damonthomas.dev_profile_.png)
+<table>
+  <tr>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard_mobile.png" width="180"/><br/>
+      <b>Mobile View</b>
+    </td>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_dashboard.png" width="320"/><br/>
+      <b>Dashboard</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_landing.png" width="320"/><br/>
+      <b>Login Page</b>
+    </td>
+    <td align="center">
+      <img src="./public/screenshots/zuno.damonthomas.dev_profile_.png" width="320"/><br/>
+      <b>Profile Page</b>
+    </td>
+  </tr>
+</table>
 
 ---
 
